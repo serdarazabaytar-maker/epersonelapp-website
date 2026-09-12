@@ -4,9 +4,12 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, Menu, X, ArrowRight, ArrowUpRight } from "lucide-react";
 import { LOGOS, NAV_LINKS, SOLUTIONS } from "@/data/site";
 
+// Mega menü ve mobil çözümler listesi görsel sırası: EP, EPapp, EPfood, EPkurye
+const MEGA_ITEMS = ["ep", "epapp", "epfood", "epkurye"].map((id) => SOLUTIONS.find((s) => s.id === id));
+
 const MegaMenu = ({ onNavigate }) => (
   <div className="grid grid-cols-2 gap-2" data-testid="mega-menu">
-    {SOLUTIONS.map((s) => (
+    {MEGA_ITEMS.map((s) => (
       <Link
         key={s.id}
         to={s.path}
@@ -252,7 +255,7 @@ export const Header = () => {
                     className="overflow-hidden"
                   >
                     <div className="space-y-1 pb-2 pl-4">
-                      {SOLUTIONS.map((s) => (
+                      {MEGA_ITEMS.map((s) => (
                         <Link
                           key={s.id}
                           to={s.path}
