@@ -59,6 +59,11 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Talep Paneli (/admin) eklendi: JWT auth (bcrypt, httpOnly cookie + Bearer, brute-force kilidi, env'den seed), KPI kartları (Yeni/Görüşme Bekleyen/Teklif Verilen/Olumlu), filtreler (çözüm/tip/durum/şube/tarih), arama (firma/yetkili/telefon/e-posta), satır detayı, durum değiştirme (6 durum), not ekleme, Ara/WhatsApp/E-posta aksiyonları. Sahte lead üretilmedi. Backend: /api/auth/* + /api/admin/leads (+PATCH status, +POST notes)
 - CORS artık FRONTEND_URL ile kısıtlı (credentials uyumlu)
 
+## Güncellemeler (12 Eylül 2026 — tur 4)
+- Talep Paneli'ne CSV dışa aktarma eklendi (GET /api/admin/leads/export, yalnızca yetkili kullanıcı, aktif filtre+arama ile uyumlu, UTF-8 BOM + ";" ayraç, 12 TR sütun: tarih/saat ayrı)
+- Sayfalama eklendi: 25/50/100 kayıt seçenekleri, sayfa bilgisi ve önceki/sonraki kontrolleri; filtre/arama değişiminde sayfa 1'e döner
+- Referans logo altyapısı onaylandı (logo:null → gerçek dosya gelince otomatik geçiş; sahte logo/monogram yok), iletişim numaraları altyapısı onaylandı (CONTACT null → "Yakında"; tel:/wa.me hazır), SEO landing sayfaları kullanıcı kararıyla ertelendi
+
 ## Backlog (öncelikli)
 - P0: Gerçek referans logo dosyaları (/public/assets/references → data'da logo alanı)
 - P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)

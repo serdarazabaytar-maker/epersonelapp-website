@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
-import { Phone, MessageCircle, Mail, LogOut, Search, ChevronDown, Inbox, Loader2, Plus } from "lucide-react";
+import { Phone, MessageCircle, Mail, LogOut, Search, ChevronDown, ChevronLeft, ChevronRight, Inbox, Loader2, Plus, Download } from "lucide-react";
 import Seo from "@/components/Seo";
 import { LOGOS, BRANCH_OPTIONS } from "@/data/site";
 
@@ -53,8 +53,7 @@ const fmtDate = (iso) =>
 
 const trPhoneLink = (phone) => {
   const d = (phone || "").replace(/\D/g, "");
-  const int = d.startsWith("0") ? `9${d}` : d;
-  return int;
+  return d.startsWith("0") ? `9${d}` : d;
 };
 
 const selectCls =
@@ -258,18 +257,27 @@ const Panel = ({ user, onLogout }) => {
   const [kpis, setKpis] = useState({ new: 0, meeting_planned: 0, offer_sent: 0, won: 0 });
   const [filters, setFilters] = useState({ status: "", solution: "", form_type: "", branch_count: "", period: "" });
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [total, setTotal] = useState(0);
   const [openId, setOpenId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const debounce = useRef(null);
 
-  const load = useCallback(async () => {
+  const activeParams = useCallback(() => {
     const params = {};
     Object.entries(filters).forEach(([k, v]) => v && (params[k] = v));
     if (search.trim()) params.q = search.trim();
-    const { data } = await api.get("/admin/leads", { params });
+    return params;
+  }, [filters, search]);
+
+  const load = useCallback(async () => {
+    const { data } = await api.get("/admin/leads", { params: { ...activeParams(), page, page_size: pageSize } });
     setLeads(data.items);
     setKpis(data.kpis);
-  }, [filters, search]);
+    setTotal(data.total);
+  }, [activeParams, page, pageSize]);
 
   useEffect(() => {
     setLoading(true);
@@ -280,9 +288,32 @@ const Panel = ({ user, onLogout }) => {
       .finally(() => setLoading(false));
   }, [load, onLogout]);
 
+  const applyFilter = (key, value) => {
+    setPage(1);
+    setFilters((f) => ({ ...f, [key]: value }));
+  };
+
   const onSearch = (v) => {
     clearTimeout(debounce.current);
-    debounce.current = setTimeout(() => setSearch(v), 350);
+    debounce.current = setTimeout(() => {
+      setPage(1);
+      setSearch(v);
+    }, 350);
+  };
+
+  const exportCsv = async () => {
+    setExporting(true);
+    try {
+      const { data } = await api.get("/admin/leads/export", { params: activeParams(), responseType: "blob" });
+      const url = URL.createObjectURL(new Blob([data], { type: "text/csv;charset=utf-8" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "epersonel-talepler.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
   };
 
   const changeStatus = async (id, status) => {
@@ -294,6 +325,8 @@ const Panel = ({ user, onLogout }) => {
   const noteAdded = (id, note) => {
     setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, notes: [...(l.notes || []), note] } : l)));
   };
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   const KPI_CARDS = [
     { key: "new", label: "Yeni Talepler", testId: "kpi-new" },
@@ -344,36 +377,46 @@ const Panel = ({ user, onLogout }) => {
               className="w-full rounded-xl border border-line bg-white py-2.5 pl-10 pr-4 text-sm font-medium focus:border-ink focus:outline-none"
             />
           </div>
-          <select value={filters.solution} onChange={(e) => setFilters((f) => ({ ...f, solution: e.target.value }))} className={selectCls} data-testid="filter-solution" aria-label="Çözüm filtresi">
+          <select value={filters.solution} onChange={(e) => applyFilter("solution", e.target.value)} className={selectCls} data-testid="filter-solution" aria-label="Çözüm filtresi">
             <option value="">Tüm Çözümler</option>
             {Object.entries(SOLUTION_LABELS).map(([k, v]) => (
               <option key={k} value={k}>{v}</option>
             ))}
           </select>
-          <select value={filters.form_type} onChange={(e) => setFilters((f) => ({ ...f, form_type: e.target.value }))} className={selectCls} data-testid="filter-type" aria-label="Talep tipi filtresi">
+          <select value={filters.form_type} onChange={(e) => applyFilter("form_type", e.target.value)} className={selectCls} data-testid="filter-type" aria-label="Talep tipi filtresi">
             <option value="">Tüm Tipler</option>
             {Object.entries(TYPE_LABELS).map(([k, v]) => (
               <option key={k} value={k}>{v}</option>
             ))}
           </select>
-          <select value={filters.status} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))} className={selectCls} data-testid="filter-status" aria-label="Durum filtresi">
+          <select value={filters.status} onChange={(e) => applyFilter("status", e.target.value)} className={selectCls} data-testid="filter-status" aria-label="Durum filtresi">
             <option value="">Tüm Durumlar</option>
             {Object.entries(STATUSES).map(([k, v]) => (
               <option key={k} value={k}>{v.label}</option>
             ))}
           </select>
-          <select value={filters.branch_count} onChange={(e) => setFilters((f) => ({ ...f, branch_count: e.target.value }))} className={selectCls} data-testid="filter-branch" aria-label="Şube sayısı filtresi">
+          <select value={filters.branch_count} onChange={(e) => applyFilter("branch_count", e.target.value)} className={selectCls} data-testid="filter-branch" aria-label="Şube sayısı filtresi">
             <option value="">Tüm Şube Sayıları</option>
             {BRANCH_OPTIONS.map((o) => (
               <option key={o} value={o}>{o}</option>
             ))}
           </select>
-          <select value={filters.period} onChange={(e) => setFilters((f) => ({ ...f, period: e.target.value }))} className={selectCls} data-testid="filter-period" aria-label="Tarih filtresi">
+          <select value={filters.period} onChange={(e) => applyFilter("period", e.target.value)} className={selectCls} data-testid="filter-period" aria-label="Tarih filtresi">
             <option value="">Tüm Zamanlar</option>
             <option value="today">Bugün</option>
             <option value="7d">Son 7 Gün</option>
             <option value="30d">Son 30 Gün</option>
           </select>
+          <button
+            type="button"
+            onClick={exportCsv}
+            disabled={exporting}
+            data-testid="export-csv-button"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-60"
+          >
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            CSV İndir
+          </button>
         </div>
 
         <div className="mt-6 overflow-hidden rounded-3xl border border-line bg-white" data-testid="leads-list">
@@ -427,6 +470,51 @@ const Panel = ({ user, onLogout }) => {
               })}
             </ul>
           )}
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3" data-testid="pagination">
+          <p className="text-sm text-mute">
+            Toplam <span className="font-bold text-ink" data-testid="pagination-total">{total}</span> talep
+          </p>
+          <div className="flex items-center gap-2">
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+              className={selectCls}
+              data-testid="page-size-select"
+              aria-label="Sayfa başına kayıt"
+            >
+              <option value={25}>25 kayıt</option>
+              <option value={50}>50 kayıt</option>
+              <option value={100}>100 kayıt</option>
+            </select>
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              data-testid="page-prev"
+              aria-label="Önceki sayfa"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:border-ink disabled:opacity-40"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="px-2 text-sm font-bold text-ink" data-testid="page-info">
+              {page} / {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              data-testid="page-next"
+              aria-label="Sonraki sayfa"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:border-ink disabled:opacity-40"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

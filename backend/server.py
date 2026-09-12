@@ -12,6 +12,8 @@ import logging
 import re
 import uuid
 import ipaddress
+import io
+import csv
 from html import escape
 from html.parser import HTMLParser
 from urllib.parse import urlparse
@@ -418,18 +420,25 @@ async def create_lead(payload: LeadCreate):
 
 # --- Admin / Talep Paneli (korumalı) ---
 PERIODS = {"today": timedelta(days=1), "7d": timedelta(days=7), "30d": timedelta(days=30)}
+TYPE_LABELS_TR = {
+    "gorusme": "Görüşme Talebi",
+    "teklif": "Teklif Talebi",
+    "iletisim": "İletişim Formu",
+    "teslimat": "EPkurye Teslimat Teklifi",
+    "basvuru": "EP Başvuru",
+}
+STATUS_LABELS_TR = {
+    "new": "Yeni",
+    "contacted": "İletişime Geçildi",
+    "meeting_planned": "Görüşme Planlandı",
+    "offer_sent": "Teklif Verildi",
+    "won": "Olumlu",
+    "lost": "Olumsuz",
+}
+PAGE_SIZES = {25, 50, 100}
 
 
-@api_router.get("/admin/leads")
-async def list_leads(
-    status: Optional[str] = None,
-    solution: Optional[str] = None,
-    form_type: Optional[str] = None,
-    branch_count: Optional[str] = None,
-    period: Optional[str] = None,
-    q: Optional[str] = None,
-    user: dict = Depends(get_current_user),
-):
+def _lead_query(status=None, solution=None, form_type=None, branch_count=None, period=None, q=None) -> dict:
     query = {}
     if status in LEAD_STATUSES:
         query["status"] = status
@@ -445,15 +454,90 @@ async def list_leads(
     if q:
         rx = {"$regex": re.escape(q.strip()), "$options": "i"}
         query["$or"] = [{"business_name": rx}, {"contact_name": rx}, {"email": rx}, {"phone": rx}]
+    return query
 
-    items = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).limit(200).to_list(200)
+
+def _type_label(doc: dict) -> str:
+    if doc.get("form_type") == "teklif" and doc.get("source_page") == "/epfood":
+        return "EPfood Teklif Talebi"
+    if doc.get("form_type") == "teklif" and doc.get("source_page") == "/epapp":
+        return "EPapp Teklif Talebi"
+    return TYPE_LABELS_TR.get(doc.get("form_type"), doc.get("form_type") or "")
+
+
+@api_router.get("/admin/leads")
+async def list_leads(
+    status: Optional[str] = None,
+    solution: Optional[str] = None,
+    form_type: Optional[str] = None,
+    branch_count: Optional[str] = None,
+    period: Optional[str] = None,
+    q: Optional[str] = None,
+    page: int = 1,
+    page_size: int = 25,
+    user: dict = Depends(get_current_user),
+):
+    query = _lead_query(status, solution, form_type, branch_count, period, q)
+    page = max(1, page)
+    page_size = page_size if page_size in PAGE_SIZES else 25
+    total = await db.leads.count_documents(query)
+    items = (
+        await db.leads.find(query, {"_id": 0})
+        .sort("created_at", -1)
+        .skip((page - 1) * page_size)
+        .limit(page_size)
+        .to_list(page_size)
+    )
     kpis = {
         "new": await db.leads.count_documents({"status": "new"}),
         "meeting_planned": await db.leads.count_documents({"status": "meeting_planned"}),
         "offer_sent": await db.leads.count_documents({"status": "offer_sent"}),
         "won": await db.leads.count_documents({"status": "won"}),
     }
-    return {"items": items, "kpis": kpis}
+    return {"items": items, "kpis": kpis, "total": total, "page": page, "page_size": page_size}
+
+
+@api_router.get("/admin/leads/export")
+async def export_leads(
+    status: Optional[str] = None,
+    solution: Optional[str] = None,
+    form_type: Optional[str] = None,
+    branch_count: Optional[str] = None,
+    period: Optional[str] = None,
+    q: Optional[str] = None,
+    user: dict = Depends(get_current_user),
+):
+    query = _lead_query(status, solution, form_type, branch_count, period, q)
+    items = await db.leads.find(query, {"_id": 0, "notes": 0}).sort("created_at", -1).to_list(10000)
+    buf = io.StringIO()
+    writer = csv.writer(buf, delimiter=";")
+    writer.writerow([
+        "İşletme Adı", "Şube Sayısı", "Yetkili Kişi", "Telefon", "E-posta",
+        "İlgilendiği Çözüm", "Talep Tipi", "Durum", "Mesaj / İhtiyaç",
+        "Talebin Geldiği Sayfa", "Tarih", "Saat",
+    ])
+    for d in items:
+        dt = datetime.fromisoformat(d["created_at"])
+        writer.writerow([
+            d.get("business_name", ""),
+            d.get("branch_count", ""),
+            d.get("contact_name", ""),
+            d.get("phone", ""),
+            d.get("email", ""),
+            SOLUTION_LABELS.get(d.get("solution") or "", "—"),
+            _type_label(d),
+            STATUS_LABELS_TR.get(d.get("status"), d.get("status", "")),
+            (d.get("message") or "").replace("\n", " "),
+            d.get("source_page", ""),
+            dt.strftime("%d.%m.%Y"),
+            dt.strftime("%H:%M"),
+        ])
+    content = "\ufeff" + buf.getvalue()
+    return Response(
+        content=content,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=epersonel-talepler.csv", "Cache-Control": "no-store"},
+    )
 
 
 class StatusUpdate(BaseModel):
