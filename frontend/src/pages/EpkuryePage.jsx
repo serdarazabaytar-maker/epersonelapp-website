@@ -32,13 +32,13 @@ const Hero = () => (
     <div className="mx-auto max-w-7xl px-5 md:px-8">
       <Reveal className="max-w-3xl">
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
-          <img src={LOGOS.epkurye} alt="ePKURYE logosu" className="h-5 w-auto object-contain" />
+          <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-5 w-auto object-contain" />
           Teslimat Operasyonu
         </p>
         <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="epkurye-hero-title">
           Sipariş hazır.
           <br />
-          <span className="text-mute">Gerisini ePKURYE'ye bırakın.</span>
+          <span className="text-mute">Gerisini EPkurye'ye bırakın.</span>
         </h1>
         <p className="mt-6 max-w-xl text-base leading-relaxed text-mute md:text-lg">
           Hemen teslim, randevulu teslim, moto kurye ve işletmeye özel frigolu panelvan çözümleri.
@@ -128,13 +128,13 @@ const AnyChannel = () => (
       <SectionHead
         eyebrow="TESLİMAT KATMANI"
         title="Nereden sipariş gelirse gelsin."
-        desc="EP, ePAPP, ePFOOD veya kendi harici satış kanalınız — tüm siparişlerin teslimatını ePKURYE üstlenebilir."
+        desc="EP, EPapp, EPfood veya kendi harici satış kanalınız — tüm siparişlerin teslimatını EPkurye üstlenebilir."
         testId="epkurye-flow-heading"
       />
       <Reveal delay={0.1}>
         <div className="mx-auto mt-14 flex max-w-2xl flex-col items-center gap-3" data-testid="epkurye-flow">
           <div className="flex flex-wrap justify-center gap-2">
-            {["EP", "ePAPP", "ePFOOD", "Harici satış kanalı"].map((s) => (
+            {["EP", "EPapp", "EPfood", "Harici satış kanalı"].map((s) => (
               <span key={s} className="rounded-full border border-line bg-white px-5 py-2.5 text-sm font-bold text-ink">
                 {s}
               </span>
@@ -142,7 +142,7 @@ const AnyChannel = () => (
           </div>
           <ArrowDown className="mt-2 h-5 w-5 text-mute" aria-hidden="true" />
           <div className="rounded-full bg-white px-8 py-4 shadow-[0_16px_50px_rgba(16,17,16,0.1)]">
-            <img src={LOGOS.epkurye} alt="ePKURYE" className="h-7 w-auto object-contain" loading="lazy" />
+            <img src={LOGOS.epkurye} alt="EPkurye" className="h-7 w-auto object-contain" loading="lazy" />
           </div>
           <ArrowDown className="h-5 w-5 text-mute" aria-hidden="true" />
           <span className="rounded-full bg-ink px-8 py-4 text-sm font-bold text-white">Müşteri</span>
@@ -158,7 +158,6 @@ const References = () => (
       <SectionHead
         eyebrow="REFERANSLAR"
         title="Teslimatını bize emanet edenler."
-        desc="Referans logoları ve vaka çalışmaları ekleniyor."
         testId="epkurye-references-heading"
       />
       <div className="mt-14">
@@ -194,13 +193,13 @@ export default function EpkuryePage() {
   return (
     <>
       <Seo
-        title="ePKURYE — Teslimat ve Kurye Operasyonu | Epersonel"
+        title="EPkurye — Teslimat ve Kurye Operasyonu | Epersonel"
         siteName="Epersonel"
         description="30–45 dakika hemen teslim, randevulu teslim, moto kurye ve işletmeye özel frigolu panelvan çözümleri."
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Service",
-          name: "ePKURYE — Teslimat ve Kurye Operasyonu",
+          name: "EPkurye — Teslimat ve Kurye Operasyonu",
           provider: { "@type": "Organization", name: "Epersonel" },
           serviceType: "Teslimat ve kurye operasyonu",
         }}

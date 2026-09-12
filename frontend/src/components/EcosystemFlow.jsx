@@ -81,7 +81,7 @@ export const EcosystemFlow = () => (
           <Connector delay={0.9} />
 
           <div className="flex items-center gap-3 rounded-full bg-white px-6 py-3">
-            <img src={LOGOS.epkurye} alt="ePKURYE" className="h-5 w-auto object-contain" loading="lazy" />
+            <img src={LOGOS.epkurye} alt="EPkurye" className="h-5 w-auto object-contain" loading="lazy" />
           </div>
 
           <Connector delay={1.3} />

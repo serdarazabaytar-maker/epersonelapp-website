@@ -99,7 +99,7 @@ const Hero = () => (
     <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2">
       <Reveal>
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
-          <img src={LOGOS.epfood} alt="ePFOOD logosu" className="h-5 w-auto object-contain" />
+          <img src={LOGOS.epfood} alt="EPfood logosu" className="h-5 w-auto object-contain" />
           Restoran & Yeme-İçme
         </p>
         <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="epfood-hero-title">
@@ -223,7 +223,7 @@ const Features = () => (
       <FeatureRow
         num="05"
         title="4 tablet yerine tek ekran."
-        desc="Trendyol Yemek, Yemeksepeti, GetirYemek ve diğer desteklenen platformlardan gelen tüm siparişler tek ePFOOD sipariş ekranında birleşir."
+        desc="Trendyol Yemek, Yemeksepeti, GetirYemek ve diğer desteklenen platformlardan gelen tüm siparişler tek EPfood sipariş ekranında birleşir."
         testId="epfood-feature-orders"
       >
         <DashboardMock tab="siparisler" compact />
@@ -232,16 +232,16 @@ const Features = () => (
       <Reveal>
         <div className="grid items-center gap-8 rounded-[2rem] bg-ink p-10 text-white md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epfood-kurye-band">
           <div>
-            <img src={LOGOS.epkurye} alt="ePKURYE logosu" className="h-7 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
+            <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-7 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
             <h3 className="mt-5 text-3xl font-bold tracking-tight md:text-4xl">Mutfaktan kapıya kadar.</h3>
             <p className="mt-3 max-w-lg text-base text-white/60">
-              Restoran siparişlerinizi ePKURYE ile teslim edin; 30–45 dakika hemen teslim ve randevulu teslim seçenekleriyle.
+              Restoran siparişlerinizi EPkurye ile teslim edin; 30–45 dakika hemen teslim ve randevulu teslim seçenekleriyle.
             </p>
           </div>
           <div className="flex flex-col items-start gap-3">
             <ArrowDown className="h-5 w-5 rotate-[-135deg] text-white/40" aria-hidden="true" />
             <CTAButton to="/epkurye" testId="epfood-kurye-cta">
-              ePKURYE'yi Keşfet
+              EPkurye'yi Keşfet
             </CTAButton>
           </div>
         </div>
@@ -255,8 +255,7 @@ const References = () => (
     <div className="mx-auto max-w-7xl px-5 md:px-8">
       <SectionHead
         eyebrow="REFERANSLAR"
-        title="ePFOOD'a güvenen restoranlar."
-        desc="Referans logoları ve vaka çalışmaları ekleniyor."
+        title="EPfood'a güvenen restoranlar."
         testId="epfood-references-heading"
       />
       <div className="mt-14">
@@ -272,7 +271,7 @@ const Quote = () => (
       <SectionHead
         eyebrow="TEKLİF"
         title="Restoranınızı dijitale taşıyalım."
-        desc="Menünüzü ve operasyonunuzu anlatın, size özel ePFOOD kurulum teklifi hazırlayalım."
+        desc="Menünüzü ve operasyonunuzu anlatın, size özel EPfood kurulum teklifi hazırlayalım."
         testId="epfood-quote-heading"
       />
       <Reveal delay={0.1}>
@@ -286,13 +285,13 @@ export default function EpfoodPage() {
   return (
     <div data-accent="food">
       <Seo
-        title="ePFOOD — Restoranlar İçin Dijital Satış | Epersonel"
+        title="EPfood — Restoranlar İçin Dijital Satış | Epersonel"
         siteName="Epersonel"
         description="Panel kurulumu, menü yapısı, ürün seçenekleri, görseller, sipariş yönetimi ve teslimat çözümleri."
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Service",
-          name: "ePFOOD — Restoran Dijital Satış",
+          name: "EPfood — Restoran Dijital Satış",
           provider: { "@type": "Organization", name: "Epersonel" },
           serviceType: "Restoran dijital sipariş operasyonu",
         }}

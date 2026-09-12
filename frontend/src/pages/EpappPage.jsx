@@ -58,7 +58,7 @@ const Hero = () => (
     <div className="mx-auto max-w-7xl px-5 md:px-8">
       <Reveal className="max-w-3xl">
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
-          <img src={LOGOS.epapp} alt="ePAPP logosu" className="h-5 w-auto object-contain" />
+          <img src={LOGOS.epapp} alt="EPapp logosu" className="h-5 w-auto object-contain" />
           Orta & Büyük Ölçekli İşletmeler
         </p>
         <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="epapp-hero-title">
@@ -290,14 +290,14 @@ const Features = () => (
       <Reveal>
         <div className="grid items-center gap-8 rounded-[2rem] bg-coal p-10 text-white md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epapp-kurye-band">
           <div>
-            <img src={LOGOS.epkurye} alt="ePKURYE logosu" className="h-7 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
-            <h3 className="mt-5 text-3xl font-bold tracking-tight md:text-4xl">Siparişler ePKURYE'ye yönlendirilebilir.</h3>
+            <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-7 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
+            <h3 className="mt-5 text-3xl font-bold tracking-tight md:text-4xl">Siparişler EPkurye'ye yönlendirilebilir.</h3>
             <p className="mt-3 max-w-lg text-base text-white/60">
-              Dilediğiniz kanaldan gelen siparişlerin teslimatını ePKURYE operasyonuna devredin.
+              Dilediğiniz kanaldan gelen siparişlerin teslimatını EPkurye operasyonuna devredin.
             </p>
           </div>
           <CTAButton to="/epkurye" testId="epapp-kurye-cta">
-            ePKURYE'yi Keşfet
+            EPkurye'yi Keşfet
           </CTAButton>
         </div>
       </Reveal>
@@ -310,8 +310,7 @@ const References = () => (
     <div className="mx-auto max-w-7xl px-5 md:px-8">
       <SectionHead
         eyebrow="REFERANSLAR"
-        title="ePAPP'e güvenen markalar."
-        desc="Referans logoları ve vaka çalışmaları ekleniyor."
+        title="EPapp'e güvenen markalar."
         testId="epapp-references-heading"
       />
       <div className="mt-14">
@@ -327,7 +326,7 @@ const Quote = () => (
       <SectionHead
         eyebrow="TEKLİF"
         title="Altyapınızı birlikte tasarlayalım."
-        desc="İşletme yapınızı anlatın, size özel ePAPP kurulum modeli ve teklifi hazırlayalım."
+        desc="İşletme yapınızı anlatın, size özel EPapp kurulum modeli ve teklifi hazırlayalım."
         testId="epapp-quote-heading"
       />
       <Reveal delay={0.1}>
@@ -341,13 +340,13 @@ export default function EpappPage() {
   return (
     <>
       <Seo
-        title="ePAPP — Dijital Satış Altyapısı | Epersonel"
+        title="EPapp — Dijital Satış Altyapısı | Epersonel"
         siteName="Epersonel"
         description="Pazaryeri entegrasyonları, personel sipariş uygulaması, merkezi yönetim paneli ve markanıza özel mobil & web sipariş sistemi."
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Service",
-          name: "ePAPP — Dijital Satış Altyapısı",
+          name: "EPapp — Dijital Satış Altyapısı",
           provider: { "@type": "Organization", name: "Epersonel" },
           serviceType: "Dijital satış altyapısı ve entegrasyon",
         }}

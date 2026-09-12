@@ -1,9 +1,9 @@
+import { REFERENCES } from "@/data/site";
 import { Reveal } from "./Reveal";
 
-// Placeholder yapı — gerçek müşteri logoları /public/assets/references altına eklendiğinde
-// bu liste gerçek logolarla doldurulacak. Gri kutu → gerçek logo geçişi hover'da renklenir.
-const SLOTS = Array.from({ length: 8 }, (_, i) => `Marka ${String(i + 1).padStart(2, "0")}`);
-
+// Referans logo bandı — gerçek logo dosyaları (/public/assets/references) eklendiğinde
+// data'daki `logo` alanı doldurulur; o zamana kadar marka adı wordmark olarak gösterilir.
+// Logolar gri/monochrome başlar, hover'da gerçek rengine döner.
 export const LogoBand = () => (
   <section className="border-y border-line bg-white py-14" aria-label="Referanslar" data-testid="logo-band">
     <Reveal>
@@ -15,13 +15,25 @@ export const LogoBand = () => (
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent" aria-hidden="true" />
       <div className="marquee-track gap-4 pr-4">
-        {[...SLOTS, ...SLOTS].map((name, i) => (
+        {[...REFERENCES, ...REFERENCES].map((r, i) => (
           <div
-            key={`${name}-${i}`}
-            className="flex h-16 w-44 shrink-0 items-center justify-center rounded-2xl border border-dashed border-line bg-mist grayscale transition-all duration-500 hover:border-ink hover:grayscale-0"
-            aria-hidden={i >= SLOTS.length}
+            key={`${r.id}-${i}`}
+            className="group flex h-16 w-48 shrink-0 items-center justify-center rounded-2xl border border-line bg-white px-5 transition-all duration-500 hover:border-ink"
+            aria-hidden={i >= REFERENCES.length}
+            data-testid={i < REFERENCES.length ? `marquee-brand-${r.id}` : undefined}
           >
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-mute">{name}</span>
+            {r.logo ? (
+              <img
+                src={r.logo}
+                alt={`${r.name} logosu`}
+                className="max-h-8 w-auto object-contain grayscale transition-all duration-500 group-hover:grayscale-0"
+                loading="lazy"
+              />
+            ) : (
+              <span className="whitespace-nowrap text-sm font-extrabold tracking-tight text-mute transition-colors duration-500 group-hover:text-ink">
+                {r.name}
+              </span>
+            )}
           </div>
         ))}
       </div>

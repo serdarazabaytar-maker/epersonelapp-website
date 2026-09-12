@@ -42,10 +42,20 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Yasal metinler hukuki inceleme bekliyor
 - sitemap.xml / robots.txt alan adı yayında güncellenecek
 
+## Güncellemeler (12 Eylül 2026 — tur 2)
+- Ürün isimleri site genelinde standartlaştırıldı: EP, EPapp, EPkurye, EPfood (tüm eski varyasyonlar temizlendi; logo assetleri orijinal haliyle korunuyor)
+- Yeni EPkurye logosu işlenip eskisinin yerine kondu (/public/assets/logos/epkurye.png)
+- Favicon: yeşil daire beyaz "e", daire dışı tamamen transparan; 16/32/48/180/192/512 PNG + ICO seti üretildi
+- Gerçek referanslar eklendi (Bronto, Vatan, Sibela Supermarket, Tek Gross, Show Supermarket, Barış Gross, Carrefour, Baytar Burger) — yalnızca logo/marka/hizmet alanları; uydurma metrik yok. `logo: null` → gerçek logo gelince otomatik geçiş. Monogram fallback
+- Resend (Emergent managed) e-posta entegrasyonu: her lead'de (1) ekibe bildirim (LEAD_NOTIFICATION_EMAIL), (2) kullanıcıya "Talebinizi Aldık | Epersonel" onayı. Guardrail gate (_assert_safe_email) her gönderimde çalışıyor. /app/backend/.env.example eklendi
+- Şube sayısı seçenekleri "2–5 Şube" formatına güncellendi (frontend + backend validasyonu tutarlı)
+- İletişim kartları merkezi CONTACT config'ine bağlandı (site.js): e-posta info@epersonelapp.com (mailto aktif), telefon/WhatsApp null → "Yakında" (sahte numara yok)
+
 ## Backlog (öncelikli)
-- P0: Gerçek referans logoları + vaka çalışmaları, gerçek iletişim bilgileri, gerçek metrikler
-- P0: Form bildirimleri için CRM/e-posta (Resend) entegrasyonu (backend'de entegrasyon noktası hazır)
+- P0: Gerçek referans logo dosyaları (/public/assets/references → data'da logo alanı)
+- P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)
+- P0: Gerçek metrikler (Aktif İşletme / Şube / Sipariş)
+- P1: SEO landing sayfaları (kullanıcı kararıyla ertelendi): /pazaryeri-entegrasyonu, /trendyol-entegrasyonu, /yemeksepeti-entegrasyonu, /getir-entegrasyonu, /restoran-siparis-entegrasyonu, /kurye-hizmeti — mimari hazır (Seo + SectionHead + FeatureRow pattern)
 - P1: Admin "gelen talepler" görüntüleme sayfası
-- P1: SEO landing sayfaları: /pazaryeri-entegrasyonu, /trendyol-entegrasyonu, /yemeksepeti-entegrasyonu, /getir-entegrasyonu, /restoran-siparis-entegrasyonu, /kurye-hizmeti
-- P1: Gerçek uygulama ekran görüntüleriyle mockup değişimi (component'ler buna hazır)
-- P2: Müşteri paneli "Giriş Yap", sosyal medya hesapları, blog
+- P1: Gerçek uygulama ekran görüntüleriyle mockup değişimi
+- P2: Müşteri paneli "Giriş Yap", sosyal medya hesapları, yasal metinlerin hukuki onayı, sitemap/robots alan adı güncellemesi

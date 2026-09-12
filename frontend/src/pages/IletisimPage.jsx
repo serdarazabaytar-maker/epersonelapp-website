@@ -1,16 +1,63 @@
-import { Phone, Mail, MessageCircle } from "lucide-react";
+import { Phone, Mail, MessageCircle, ArrowUpRight } from "lucide-react";
 import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { LeadForm } from "@/components/LeadForm";
+import { CONTACT } from "@/data/site";
 
-// İletişim kartları — gerçek telefon, WhatsApp ve e-posta bilgileri eklendiğinde güncellenecek.
-const CONTACT_CARDS = [
-  { icon: Phone, title: "Telefon", note: "Bilgi ekleniyor" },
-  { icon: MessageCircle, title: "WhatsApp", note: "Bilgi ekleniyor" },
-  { icon: Mail, title: "E-posta", note: "Bilgi ekleniyor" },
-];
+// İletişim kartları merkezi CONTACT config'inden beslenir (src/data/site.js).
+// Telefon / WhatsApp gerçek numara tanımlanana kadar tıklanamaz "Yakında" olarak görünür.
+const ContactCard = ({ icon: Icon, title, value, href, testId }) => {
+  const inner = (
+    <>
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-ink text-white">
+        <Icon className="h-5 w-5" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-base font-bold text-ink">{title}</p>
+        <p className="truncate text-sm text-mute">{value || "Yakında eklenecek"}</p>
+      </div>
+      {href && <ArrowUpRight className="h-4 w-4 shrink-0 text-mute transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
+    </>
+  );
+  const cls = `group flex items-center gap-5 rounded-3xl border border-line bg-white p-6 transition-all duration-300 ${
+    href ? "hover:-translate-y-0.5 hover:border-ink" : "cursor-default"
+  }`;
+  return href ? (
+    <a href={href} className={cls} data-testid={testId}>
+      {inner}
+    </a>
+  ) : (
+    <div className={cls} data-testid={testId} title="Yakında">
+      {inner}
+    </div>
+  );
+};
 
 export default function IletisimPage() {
+  const cards = [
+    {
+      icon: Phone,
+      title: "Telefon",
+      value: CONTACT.phone,
+      href: CONTACT.phone ? `tel:${CONTACT.phone.replace(/\s/g, "")}` : null,
+      testId: "contact-card-telefon",
+    },
+    {
+      icon: MessageCircle,
+      title: "WhatsApp",
+      value: CONTACT.whatsapp,
+      href: CONTACT.whatsapp ? `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, "")}` : null,
+      testId: "contact-card-whatsapp",
+    },
+    {
+      icon: Mail,
+      title: "E-posta",
+      value: CONTACT.email,
+      href: CONTACT.email ? `mailto:${CONTACT.email}` : null,
+      testId: "contact-card-eposta",
+    },
+  ];
+
   return (
     <>
       <Seo
@@ -34,20 +81,9 @@ export default function IletisimPage() {
               </p>
             </Reveal>
             <div className="mt-12 space-y-3">
-              {CONTACT_CARDS.map((c, i) => (
+              {cards.map((c, i) => (
                 <Reveal key={c.title} delay={0.1 + i * 0.07}>
-                  <div
-                    className="flex items-center gap-5 rounded-3xl border border-line bg-white p-6"
-                    data-testid={`contact-card-${c.title.toLowerCase()}`}
-                  >
-                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-ink text-white">
-                      <c.icon className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <p className="text-base font-bold text-ink">{c.title}</p>
-                      <p className="text-sm text-mute">{c.note}</p>
-                    </div>
-                  </div>
+                  <ContactCard {...c} />
                 </Reveal>
               ))}
             </div>

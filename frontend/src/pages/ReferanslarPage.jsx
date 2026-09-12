@@ -15,14 +15,14 @@ export default function ReferanslarPage() {
       <Seo
         title="Referanslar | Epersonel"
         siteName="Epersonel"
-        description="EP, ePAPP, ePKURYE ve ePFOOD çözümlerine güvenen işletmeler."
+        description="EP, EPapp, EPkurye ve EPfood çözümlerine güvenen işletmeler."
       />
       <section className="pb-24 pt-36 md:pt-44" data-testid="references-page">
         <div className="mx-auto max-w-7xl px-5 md:px-8">
           <SectionHead
             eyebrow="REFERANSLAR"
             title="Bize güvenen markalar."
-            desc="Referans logoları ve vaka çalışmaları şu anda hazırlanıyor; gerçek müşteri sonuçlarıyla güncellenecek."
+            desc="Çözümlerimize güvenen işletmelerden bazıları."
             testId="references-heading"
           />
           <Reveal delay={0.1}>

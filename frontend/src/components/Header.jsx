@@ -23,7 +23,7 @@ const MegaMenu = ({ onNavigate }) => (
       </Link>
     ))}
     <p className="col-span-2 mt-1 border-t border-line px-5 pt-4 text-xs leading-relaxed text-mute">
-      ePKURYE, diğer tüm çözümlerin teslimat katmanı olarak da kullanılabilir.
+      EPkurye, diğer tüm çözümlerin teslimat katmanı olarak da kullanılabilir.
     </p>
   </div>
 );

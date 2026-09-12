@@ -24,21 +24,21 @@ const HERO_TABS = [
   },
   {
     id: "epapp",
-    name: "ePAPP",
+    name: "EPapp",
     title: "Tüm satış kanallarınızı tek altyapıda birleştirin.",
     desc: "Pazaryeri entegrasyonları, personel sipariş uygulaması ve markanıza özel mobil & web sipariş sistemi.",
     visual: "dashboard",
   },
   {
     id: "epkurye",
-    name: "ePKURYE",
+    name: "EPkurye",
     title: "Siparişten kapıya kadar teslimatı yönetin.",
     desc: "30–45 dakika hemen teslim, randevulu teslim, moto kurye ve frigolu panelvan çözümleri.",
     visual: "map",
   },
   {
     id: "epfood",
-    name: "ePFOOD",
+    name: "EPfood",
     title: "Restoranınızın dijital sipariş operasyonunu kurun.",
     desc: "Panel kurulumu, menü, ürün seçenekleri, görseller, sipariş yönetimi ve teslimat.",
     visual: "phone-epfood",
@@ -388,9 +388,8 @@ const Cases = () => (
     <div className="mx-auto max-w-7xl px-5 md:px-8">
       <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
         <SectionHead
-          eyebrow="BAŞARI HİKÂYELERİ"
-          title="Birlikte büyüdüğümüz işletmeler."
-          desc="Vaka çalışmaları yayına hazırlanıyor; gerçek müşteri sonuçlarıyla güncellenecek."
+          eyebrow="REFERANSLAR"
+          title="Bize güvenen markalar."
           testId="cases-heading"
         />
         <Reveal delay={0.1}>
@@ -400,7 +399,7 @@ const Cases = () => (
         </Reveal>
       </div>
       <div className="mt-14">
-        <CaseCards />
+        <CaseCards limit={3} />
       </div>
     </div>
   </section>
@@ -451,9 +450,9 @@ export default function HomePage() {
           description: "Dijital satış kanalları kuran, sipariş operasyonlarını yöneten ve teslimat üstlenen teknoloji + operasyon şirketi.",
           brand: [
             { "@type": "Brand", name: "EP" },
-            { "@type": "Brand", name: "ePAPP" },
-            { "@type": "Brand", name: "ePKURYE" },
-            { "@type": "Brand", name: "ePFOOD" },
+            { "@type": "Brand", name: "EPapp" },
+            { "@type": "Brand", name: "EPkurye" },
+            { "@type": "Brand", name: "EPfood" },
           ],
         }}
       />

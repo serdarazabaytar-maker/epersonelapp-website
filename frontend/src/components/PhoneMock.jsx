@@ -99,7 +99,7 @@ const PersonelScreen = () => (
 const EpfoodScreen = () => (
   <div className="flex h-full flex-col bg-mist">
     <div className="bg-ink px-5 pb-5 pt-4 text-white">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-food">ePFOOD</p>
+      <p className="text-[10px] font-bold uppercase tracking-widest text-food">EPfood</p>
       <p className="mt-1 text-base font-bold">Menü Yönetimi</p>
       <div className="mt-3 flex gap-2">
         {["Burgerler", "Menüler", "İçecek", "Tatlı"].map((c, i) => (
