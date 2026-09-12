@@ -560,6 +560,10 @@ async def list_team(user: dict = Depends(get_current_user)):
 
 class TeamMemberCreate(BaseModel):
     name: str = Field(min_length=2, max_length=80)
+    email: Optional[EmailStr] = None
+    role: str = Field(default="Ekip Üyesi", max_length=60)
+    active: bool = True
+    assignable: bool = True
 
 
 @api_router.post("/admin/team", status_code=201)
@@ -568,7 +572,15 @@ async def create_team_member(body: TeamMemberCreate, user: dict = Depends(get_cu
     existing = await db.team_members.find_one({"name": name}, {"_id": 0})
     if existing:
         return existing
-    member = {"id": str(uuid.uuid4()), "name": name, "created_at": datetime.now(timezone.utc).isoformat()}
+    member = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "email": str(body.email).lower() if body.email else None,
+        "role": body.role.strip(),
+        "active": body.active,
+        "assignable": body.assignable,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
     await db.team_members.insert_one(dict(member))
     return member
 
@@ -577,20 +589,47 @@ class AssignUpdate(BaseModel):
     member_id: Optional[str] = None  # None = Atanmamış
 
 
+def _assignment_notification_html(member_name: str, doc: dict) -> str:
+    rows = "".join([
+        _row("İşletme Adı", doc["business_name"]),
+        _row("Şube Sayısı", doc["branch_count"]),
+        _row("Yetkili Kişi", doc["contact_name"]),
+        _row("Telefon", doc["phone"]),
+        _row("E-posta", doc["email"]),
+        _row("İlgilendiği Çözüm", SOLUTION_LABELS.get(doc.get("solution") or "", "Belirtilmedi")),
+        _row("Talep Tipi", _type_label(doc)),
+        _row("Mesaj / İhtiyaç", doc.get("message")),
+        _row("Sayfa", doc.get("source_page")),
+        _row("Tarih", doc["created_at"]),
+    ])
+    inner = (
+        f'<p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#101110">Merhaba {escape(member_name)},</p>'
+        '<p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#101110">Yeni bir talep size atandı.</p>'
+        f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0">{rows}</table>'
+        '<p style="margin:16px 0 0;font-size:14px;line-height:1.6;color:#656A65">Talep detaylarını yönetim panelinden görüntüleyebilirsiniz.</p>'
+    )
+    return _email_shell(f"Yeni Talep Size Atandı | {doc['business_name']}", inner)
+
+
 @api_router.patch("/admin/leads/{lead_id}/assign")
 async def assign_lead(lead_id: str, body: AssignUpdate, user: dict = Depends(get_current_user)):
+    lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Talep bulunamadı")
     member = None
     if body.member_id:
         member = await db.team_members.find_one({"id": body.member_id}, {"_id": 0})
         if not member:
             raise HTTPException(status_code=404, detail="Ekip üyesi bulunamadı")
+        if not member.get("active", True) or not member.get("assignable", True):
+            raise HTTPException(status_code=400, detail="Bu ekip üyesi atanabilir durumda değil")
     entry = {
         "member_id": member["id"] if member else None,
         "member_name": member["name"] if member else None,
         "at": datetime.now(timezone.utc).isoformat(),
         "by": user.get("email"),
     }
-    result = await db.leads.update_one(
+    await db.leads.update_one(
         {"id": lead_id},
         {
             "$set": {
@@ -600,8 +639,18 @@ async def assign_lead(lead_id: str, body: AssignUpdate, user: dict = Depends(get
             "$push": {"assignment_history": entry},
         },
     )
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Talep bulunamadı")
+    # Bildirim yalnızca ilk atamada veya atanan kişi değiştiğinde; "Atanmamış" yapılırsa gönderilmez.
+    if member and member["id"] != lead.get("assignee"):
+        member_email = member.get("email")
+        if EMAIL_KEY and member_email:
+            try:
+                await send_email(
+                    to=member_email,
+                    subject=f"Yeni Talep Size Atandı | {lead['business_name']}",
+                    html=_assignment_notification_html(member["name"], lead),
+                )
+            except Exception:
+                logger.exception("Atama bildirim e-postası gönderilemedi")
     return {"assignee": entry["member_id"], "assignee_name": entry["member_name"], "history_entry": entry}
 
 
@@ -667,7 +716,15 @@ async def seed_team():
         existing = await db.team_members.find_one({"name": name})
         if not existing:
             await db.team_members.insert_one(
-                {"id": str(uuid.uuid4()), "name": name, "created_at": datetime.now(timezone.utc).isoformat()}
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": name,
+                    "email": None,
+                    "role": "Ekip Üyesi",
+                    "active": True,
+                    "assignable": True,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                }
             )
             logger.info("Ekip üyesi eklendi: %s", name)
 

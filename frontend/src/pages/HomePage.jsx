@@ -30,18 +30,18 @@ const HERO_TABS = [
     visual: "dashboard",
   },
   {
-    id: "epkurye",
-    name: "EPkurye",
-    title: "Siparişten kapıya kadar teslimatı yönetin.",
-    desc: "30–45 dakika hemen teslim, randevulu teslim, moto kurye ve frigolu panelvan çözümleri.",
-    visual: "map",
-  },
-  {
     id: "epfood",
     name: "EPfood",
     title: "Restoranınızın dijital sipariş operasyonunu kurun.",
     desc: "Panel kurulumu, menü, ürün seçenekleri, görseller, sipariş yönetimi ve teslimat.",
     visual: "phone-epfood",
+  },
+  {
+    id: "epkurye",
+    name: "EPkurye",
+    title: "Siparişten kapıya kadar teslimatı yönetin.",
+    desc: "30–45 dakika hemen teslim, randevulu teslim, moto kurye ve frigolu panelvan çözümleri.",
+    visual: "map",
   },
 ];
 

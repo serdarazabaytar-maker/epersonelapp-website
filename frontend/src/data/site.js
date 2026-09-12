@@ -43,18 +43,6 @@ export const SOLUTIONS = [
     logo: LOGOS.epapp,
   },
   {
-    id: "epkurye",
-    name: "EPkurye",
-    path: "/epkurye",
-    label: "TESLİMAT OPERASYONU",
-    tagline: "Teslimat ve kurye operasyonu",
-    title: "Teslimatı bize bırakın.",
-    desc: "Hemen teslim, randevulu teslim, moto kurye ve frigolu panelvan çözümleri.",
-    tags: ["30–45 dk", "3,5 km", "Randevulu", "Moto Kurye", "Frigolu"],
-    cta: "EPkurye'yi Keşfet",
-    logo: LOGOS.epkurye,
-  },
-  {
     id: "epfood",
     name: "EPfood",
     path: "/epfood",
@@ -65,6 +53,18 @@ export const SOLUTIONS = [
     tags: ["Panel", "Menü", "Opsiyon", "Görsel", "Sipariş", "Kurye"],
     cta: "EPfood'u Keşfet",
     logo: LOGOS.epfood,
+  },
+  {
+    id: "epkurye",
+    name: "EPkurye",
+    path: "/epkurye",
+    label: "TESLİMAT OPERASYONU",
+    tagline: "Teslimat ve kurye operasyonu",
+    title: "Teslimatı bize bırakın.",
+    desc: "Hemen teslim, randevulu teslim, moto kurye ve frigolu panelvan çözümleri.",
+    tags: ["30–45 dk", "3,5 km", "Randevulu", "Moto Kurye", "Frigolu"],
+    cta: "EPkurye'yi Keşfet",
+    logo: LOGOS.epkurye,
   },
 ];
 

@@ -68,6 +68,12 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Talep atama sistemi: ekip üyeleri db.team_members'da (TEAM_MEMBERS env veya POST /api/admin/team ile eklenir; sahte üye yok). PATCH /api/admin/leads/{id}/assign ile atama/değiştirme/"Atanmamış"a alma; her lead'de assignment_history (kime, ne zaman, kim tarafından). Panelde: Atanan Kişi filtresi (+Atanmamış), "Atanmamış Talepler" KPI kartı, listede atanan görünümü, detayda atama select'i + geçmiş
 - Doğrulama sonrası test talepleri ve test üyesi DB'den temizlendi (panel gerçek veriyle başlıyor)
 
+## Güncellemeler (12 Eylül 2026 — tur 6)
+- Ekip üyesi modeli genişletildi: Ad Soyad, E-posta, Rol, Aktif/Pasif, Atanabilir/Atanamaz (POST /api/admin/team veya TEAM_MEMBERS env). Atama dropdown'ları yalnızca aktif+atanabilir üyeleri gösterir; "Atanmamış" her zaman var. Atanabilir olmayan üyeye atama backend'de 400 ile reddedilir
+- Atama bildirim e-postası: talep ilk kez atandığında veya atanan kişi değiştiğinde, atanan üyenin e-postasına "Yeni Talep Size Atandı | [İşletme]" gider (tüm talep alanlarıyla). "Atanmamış" yapılınca mail yok, aynı kişiye tekrar atamada mail yok. Üye e-postası team_members datasından gelir
+- Çözüm sırası site genelinde EP → EPapp → EPfood → EPkurye olarak sabitlendi (hero tabları, bento grid, footer, filtreler, form seçenekleri)
+- Test kayıtları temizlendi (leads: 0, team: 0)
+
 ## Backlog (öncelikli)
 - P0: Gerçek referans logo dosyaları (/public/assets/references → data'da logo alanı)
 - P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)

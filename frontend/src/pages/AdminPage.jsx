@@ -138,7 +138,7 @@ const LoginScreen = ({ onLogin }) => {
   );
 };
 
-const LeadDetail = ({ lead, team, onStatusChange, onAssign, onNoteAdded }) => {
+const LeadDetail = ({ lead, team, assignableTeam, onStatusChange, onAssign, onNoteAdded }) => {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const tel = trPhoneLink(lead.phone);
@@ -227,7 +227,7 @@ const LeadDetail = ({ lead, team, onStatusChange, onAssign, onNoteAdded }) => {
               aria-label="Atanan kişi"
             >
               <option value="">Atanmamış</option>
-              {team.map((m) => (
+              {assignableTeam.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.name}
                 </option>
@@ -381,6 +381,9 @@ const Panel = ({ user, onLogout }) => {
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
+  // Atama listelerinde yalnızca aktif ve atanabilir üyeler görünür
+  const assignableTeam = team.filter((m) => m.active !== false && m.assignable !== false);
+
   const KPI_CARDS = [
     { key: "new", label: "Yeni Talepler", testId: "kpi-new" },
     { key: "meeting_planned", label: "Görüşme Bekleyenler", testId: "kpi-meeting" },
@@ -452,7 +455,7 @@ const Panel = ({ user, onLogout }) => {
           <select value={filters.assignee} onChange={(e) => applyFilter("assignee", e.target.value)} className={selectCls} data-testid="filter-assignee" aria-label="Atanan kişi filtresi">
             <option value="">Tüm Atamalar</option>
             <option value="unassigned">Atanmamış</option>
-            {team.map((m) => (
+            {assignableTeam.map((m) => (
               <option key={m.id} value={m.id}>{m.name}</option>
             ))}
           </select>
@@ -529,7 +532,7 @@ const Panel = ({ user, onLogout }) => {
                       <ChevronDown className={`h-4 w-4 justify-self-end text-mute transition-transform ${open ? "rotate-180" : ""}`} />
                     </button>
                     <AnimatePresence initial={false}>
-                      {open && <LeadDetail lead={lead} team={team} onStatusChange={changeStatus} onAssign={assignLead} onNoteAdded={noteAdded} />}
+                      {open && <LeadDetail lead={lead} team={team} assignableTeam={assignableTeam} onStatusChange={changeStatus} onAssign={assignLead} onNoteAdded={noteAdded} />}
                     </AnimatePresence>
                   </li>
                 );
