@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --brand-rgb: 66 255 0;
+}
+
+[data-accent="food"] {
+    --brand-rgb: 255 149 0;
+}
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 120 1% 6.5%;
+        --card: 0 0% 100%;
+        --card-foreground: 120 1% 6.5%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 120 1% 6.5%;
+        --primary: 120 1% 6.5%;
+        --primary-foreground: 0 0% 98%;
+        --secondary: 120 2% 96.5%;
+        --secondary-foreground: 120 1% 6.5%;
+        --muted: 120 2% 96.5%;
+        --muted-foreground: 130 3% 40%;
+        --accent: 120 2% 96.5%;
+        --accent-foreground: 120 1% 6.5%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 120 3% 91%;
+        --input: 120 3% 91%;
+        --ring: 120 1% 6.5%;
+        --radius: 0.75rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    html {
+        -webkit-text-size-adjust: 100%;
+    }
+    body {
+        @apply bg-white text-ink font-sans antialiased;
+        font-feature-settings: "ss01" on;
+        text-rendering: optimizeLegibility;
+    }
+    ::selection {
+        background: rgb(var(--brand-rgb));
+        color: #101110;
+    }
+    :focus-visible {
+        outline: 2px solid #101110;
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+/* Editorial marquee */
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 70s linear infinite;
+}
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+/* Subtle grain for dark sections */
+.grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Dark grid pattern */
+.coal-grid {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 56px 56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+        animation: none;
+    }
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit;
+        margin-right: inherit;
+        margin-top: inherit;
+        margin-bottom: inherit;
+        padding-left: inherit;
+        padding-right: inherit;
+        padding-top: inherit;
+        padding-bottom: inherit;
+        column-gap: inherit;
+        row-gap: inherit;
+        gap: inherit;
+        border-left-width: inherit;
+        border-right-width: inherit;
+        border-top-width: inherit;
+        border-bottom-width: inherit;
+        border-left-style: inherit;
+        border-right-style: inherit;
+        border-top-style: inherit;
+        border-bottom-style: inherit;
+        border-left-color: inherit;
+        border-right-color: inherit;
+        border-top-color: inherit;
+        border-bottom-color: inherit;
+    }
+}

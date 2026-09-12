@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Yayına geçerken alan adını güncelleyin
+Sitemap: https://digital-sales-hub-65.preview.emergentagent.com/sitemap.xml

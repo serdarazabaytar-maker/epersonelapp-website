@@ -1,0 +1,196 @@
+{
+  "project_type": "Corporate Technology & Operations SaaS Landing / Multi-page Platform",
+  "language": "Turkish (tr-TR)",
+  "typography": {
+    "font_family": "Manrope, sans-serif",
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "scale": {
+      "hero_headline_desktop": "text-5xl lg:text-[72px] leading-[1.08] tracking-tight font-bold",
+      "hero_headline_mobile": "text-4xl sm:text-5xl leading-[1.1] tracking-tight font-bold",
+      "section_title_desktop": "text-3xl lg:text-[48px] leading-[1.15] tracking-tight font-bold",
+      "section_title_mobile": "text-2xl sm:text-3xl leading-[1.2] font-bold",
+      "subsection_title": "text-xl sm:text-2xl leading-snug font-semibold",
+      "card_title": "text-lg sm:text-xl font-semibold",
+      "body_large": "text-[17px] sm:text-[19px] leading-relaxed font-normal",
+      "body_normal": "text-[15px] sm:text-[16px] leading-relaxed font-normal",
+      "caption": "text-[13px] sm:text-[14px] leading-normal font-medium tracking-wide uppercase"
+    }
+  },
+  "colors": {
+    "archetype": "SWISS & HIGH-CONTRAST / SIGNATURE NEON ACCENT",
+    "theme": "Light theme dominant (#FFFFFF) with dark ecosystem section (#0D0E0D)",
+    "palette": {
+      "background_primary": "#FFFFFF",
+      "background_secondary": "#F6F7F6",
+      "background_dark": "#0D0E0D",
+      "background_dark_card": "#161816",
+      "text_primary": "#101110",
+      "text_secondary": "#656A65",
+      "text_dark_primary": "#F6F7F6",
+      "text_dark_secondary": "#A1A6A1",
+      "border_light": "#E7E9E7",
+      "border_dark": "#262926",
+      "accent_ep_neon": "#22C55E",
+      "accent_ep_neon_hover": "#16A34A",
+      "accent_epfood_orange": "#F97316",
+      "accent_epfood_orange_hover": "#EA580C"
+    },
+    "rules": [
+      "Site must NOT look like a green website. Use neon green (#22C55E) strictly as signature accents, status badges, active indicators, and high-impact CTAs.",
+      "Use #101110 black for primary headings, contrast blocks, and main structural CTAs.",
+      "ePFOOD page (/epfood) uses #F97316 orange accent on its dedicated sub-page only.",
+      "Dark mode container (#0D0E0D) is specifically reserved for Ecosystem / Integration Flow diagram section."
+    ]
+  },
+  "header_navigation": {
+    "type": "Sticky Translucent Blur Header",
+    "classes": "sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 border-b border-[#E7E9E7] transition-all duration-300",
+    "mega_menu": {
+      "trigger": "Çözümlerimiz",
+      "items": [
+        {
+          "name": "EP",
+          "tagline": "KOBİ Pazar Yeri & Satış Operasyonları",
+          "path": "/ep",
+          "badge": "Pazar Yeri",
+          "accent": "text-[#22C55E]"
+        },
+        {
+          "name": "ePAPP",
+          "tagline": "Kurumsal Dijital Satış Altyapısı",
+          "path": "/epapp",
+          "badge": "Enterprise",
+          "accent": "text-[#101110]"
+        },
+        {
+          "name": "ePKURYE",
+          "tagline": "Teslimat & Kurye Operasyon Yönetimi",
+          "path": "/epkurye",
+          "badge": "Lojistik",
+          "accent": "text-[#22C55E]"
+        },
+        {
+          "name": "ePFOOD",
+          "tagline": "Restoran Dijital Satış & Paket Servis Altyapısı",
+          "path": "/epfood",
+          "badge": "Restoran",
+          "accent": "text-[#F97316]"
+        }
+      ]
+    },
+    "nav_links": [
+      { "label": "Çözümlerimiz", "mega": true },
+      { "label": "Ekosistem", "path": "#ekosistem" },
+      { "label": "Neden Epersonel", "path": "#neden-epersonel" },
+      { "label": "Referanslar", "path": "/referanslar" },
+      { "label": "Hakkımızda", "path": "/hakkimizda" },
+      { "label": "İletişim", "path": "/iletisim" }
+    ],
+    "cta": {
+      "label": "Teklif Alın",
+      "path": "/iletisim",
+      "data_testid": "header-cta-button"
+    }
+  },
+  "key_sections": {
+    "hero": {
+      "layout": "Fixed left content (50%) + Dynamic right auto-rotating panel (50%)",
+      "left_headline": "Dijital Satış Kanallarınızı Oluşturun, Yönetin ve Teslim Edin.",
+      "left_subtext": "EPERSONEL; pazar yerlerinden kendi dijital mağazanıza, sipariş operasyonlarından son kilometre kurye teslimatına kadar tüm uçtan uca ticaret operasyonunu tek çatı altında birleştirir.",
+      "tabs": [
+        { "id": "ep", "label": "EP", "subtitle": "KOBİ Operasyonları", "badge": "Pazar Yeri Bağlantısı" },
+        { "id": "epapp", "label": "ePAPP", "subtitle": "Enterprise Altyapı", "badge": "Kendi Dijital Kanalın" },
+        { "id": "epkurye", "label": "ePKURYE", "subtitle": "Kurye & Teslimat", "badge": "Canlı Harita & Operasyon" },
+        { "id": "epfood", "label": "ePFOOD", "subtitle": "Restoran Sistemleri", "badge": "Sipariş & Menü Yönetimi" }
+      ],
+      "auto_rotate_seconds": 6
+    },
+    "marquee": {
+      "title": "Türkiye'nin Öncü Markalarının Güvendiği Operasyon Altyapısı",
+      "speed": "slow drift",
+      "style": "Monochrome default, vibrant color on hover"
+    },
+    "bento_solutions_grid": {
+      "mode": "2x2 Bento Grid with Asymmetric Spans",
+      "cards": [
+        { "key": "EP", "title": "EP — KOBİ Pazar Yeri Yöneticisi", "span": "col-span-12 lg:col-span-6" },
+        { "key": "ePAPP", "title": "ePAPP — Kurumsal Özel Satış Altyapısı", "span": "col-span-12 lg:col-span-6" },
+        { "key": "ePKURYE", "title": "ePKURYE — Akıllı Kurye & Lojistik Ağı", "span": "col-span-12 lg:col-span-6" },
+        { "key": "ePFOOD", "title": "ePFOOD — Restoran Satış & Paket Servis Altyapısı", "span": "col-span-12 lg:col-span-6" }
+      ]
+    },
+    "ecosystem_flow_diagram": {
+      "background": "#0D0E0D",
+      "nodes": [
+        "Sipariş Kanalları (Trendyol, Hepsiburada, Yemeksepeti, ePAPP, Web)",
+        "EPERSONEL Merkezi Sipariş & Stok Motoru",
+        "Hazırlık & Mağaza / Depo İçi Operasyon",
+        "ePKURYE & Lojistik Dağıtım Motoru",
+        "Müşteri Teslimatı & Anlık Takip"
+      ],
+      "visual_effects": "Animated dotted lines, pulse status dots (#22C55E), step progression timeline"
+    },
+    "dashboard_showcase": {
+      "title": "Gerçek Zamanlı Operasyon Kontrol Paneli",
+      "subtitle": "Otter tarzı tek ekrandan tüm kanalları, stokları ve kuryeleri yönetin.",
+      "tabs": ["Siparişler", "Ürünler", "Stok", "Fiyat", "Personel", "Şubeler"]
+    },
+    "metrics": [
+      { "value": "12.5M+", "label": "Yıllık İşlenen Sipariş", "data_testid": "metric-orders" },
+      { "value": "99.98%", "label": "Sistem Çalışma Süresi (SLA)", "data_testid": "metric-uptime" },
+      { "value": "4.200+", "label": "Aktif Aktif Mağaza & Restoran", "data_testid": "metric-merchants" },
+      { "value": "18 dk", "label": "Ortalama Teslimat Süresi", "data_testid": "metric-delivery" }
+    ],
+    "lead_capture_form": {
+      "fields": [
+        { "name": "fullName", "label": "Ad Soyad", "type": "text", "required": true },
+        { "name": "companyName", "label": "Şirket / Marka Adı", "type": "text", "required": true },
+        { "name": "email", "label": "Kurumsal E-posta", "type": "email", "required": true },
+        { "name": "phone", "label": "Telefon Numarası", "type": "tel", "placeholder": "05XX XXX XX XX", "required": true },
+        { "name": "solution", "label": "İlgilendiğiniz Çözüm", "type": "select", "options": ["EP (Pazar Yeri)", "ePAPP (Enterprise)", "ePKURYE (Teslimat)", "ePFOOD (Restoran)", "Tümü / Uçtan Uca"], "required": true }
+      ],
+      "kvkk_checkbox": true,
+      "submit_button": "Ücretsiz Demo ve Teklif Alın"
+    }
+  },
+  "media_assets": {
+    "tablet_dashboard": "https://images.unsplash.com/photo-1728044849291-69f90d443aea?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "laptop_operations": "https://images.unsplash.com/photo-1633113092754-523fd2d9a90c?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "mobile_pos": "https://images.unsplash.com/photo-1601972602288-3be527b4f18a?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "courier_urban": "https://images.unsplash.com/photo-1768423083233-b3f696c9b703?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "courier_scooter": "https://images.unsplash.com/photo-1779497698614-31d91a61227e?crop=entropy&cs=srgb&fm=jpg&q=85"
+  },
+  "motion_and_interactions": {
+    "library": "framer-motion, lenis (smooth scroll)",
+    "effects": [
+      "Scroll reveal with staggered children opacity & y-axis translation",
+      "Auto-rotating tab cross-fade with sliding indicator line",
+      "Monochrome reference logo hover color fill and lift",
+      "Courier live route map path animation with glowing point marker",
+      "Ecosystem animated flow with glowing signal pulses",
+      "Button arrow icon translation on hover"
+    ]
+  },
+  "data_testid_policy": {
+    "rule": "ALL interactive and key informational elements MUST include a data-testid attribute in kebab-case format.",
+    "examples": [
+      "data-testid=\"header-logo\"",
+      "data-testid=\"header-cta-button\"",
+      "data-testid=\"hero-tab-ep\"",
+      "data-testid=\"hero-tab-epapp\"",
+      "data-testid=\"hero-tab-epkurye\"",
+      "data-testid=\"hero-tab-epfood\"",
+      "data-testid=\"bento-card-ep\"",
+      "data-testid=\"dashboard-tab-siparisler\"",
+      "data-testid=\"lead-form-submit-button\"",
+      "data-testid=\"lead-form-input-phone\"",
+      "data-testid=\"faq-accordion-item-1\""
+    ]
+  },
+  "instructions_to_main_agent": "Ensure Turkish content is 100% natural and professional. Do NOT use placeholder text. Maintain high contrast, large whitespace, precise sub-solution badges, and crisp responsive grid layouts across all 8 sub-pages."
+}

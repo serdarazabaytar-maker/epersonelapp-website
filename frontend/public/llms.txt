@@ -1,0 +1,12 @@
+# Epersonel
+
+> İşletmelerin dijital satış kanallarını kuran, birbirine bağlayan, sipariş operasyonlarını yöneten ve gerektiğinde teslimatı da üstlenen teknoloji + operasyon şirketi.
+
+## Çözümler
+- EP (/ep): Küçük işletmeler için pazaryeri operasyonu — market, kasap, manav, şarküteri, petshop, su bayii
+- ePAPP (/epapp): Orta ve büyük ölçekli işletmeler için dijital satış altyapısı — pazaryeri entegrasyonları, personel uygulaması, markaya özel mobil & web sipariş
+- ePKURYE (/epkurye): Teslimat ve kurye operasyonu — 30–45 dk hemen teslim, randevulu teslim, moto kurye, frigolu panelvan
+- ePFOOD (/epfood): Restoran ve yeme-içme işletmeleri için dijital satış — panel kurulumu, menü, opsiyonlar, sipariş yönetimi
+
+## Sayfalar
+/, /ep, /epapp, /epkurye, /epfood, /referanslar, /hakkimizda, /iletisim
