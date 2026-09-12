@@ -64,6 +64,10 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Sayfalama eklendi: 25/50/100 kayıt seçenekleri, sayfa bilgisi ve önceki/sonraki kontrolleri; filtre/arama değişiminde sayfa 1'e döner
 - Referans logo altyapısı onaylandı (logo:null → gerçek dosya gelince otomatik geçiş; sahte logo/monogram yok), iletişim numaraları altyapısı onaylandı (CONTACT null → "Yakında"; tel:/wa.me hazır), SEO landing sayfaları kullanıcı kararıyla ertelendi
 
+## Güncellemeler (12 Eylül 2026 — tur 5)
+- Talep atama sistemi: ekip üyeleri db.team_members'da (TEAM_MEMBERS env veya POST /api/admin/team ile eklenir; sahte üye yok). PATCH /api/admin/leads/{id}/assign ile atama/değiştirme/"Atanmamış"a alma; her lead'de assignment_history (kime, ne zaman, kim tarafından). Panelde: Atanan Kişi filtresi (+Atanmamış), "Atanmamış Talepler" KPI kartı, listede atanan görünümü, detayda atama select'i + geçmiş
+- Doğrulama sonrası test talepleri ve test üyesi DB'den temizlendi (panel gerçek veriyle başlıyor)
+
 ## Backlog (öncelikli)
 - P0: Gerçek referans logo dosyaları (/public/assets/references → data'da logo alanı)
 - P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)

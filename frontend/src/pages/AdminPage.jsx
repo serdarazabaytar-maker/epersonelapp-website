@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
-import { Phone, MessageCircle, Mail, LogOut, Search, ChevronDown, ChevronLeft, ChevronRight, Inbox, Loader2, Plus, Download } from "lucide-react";
+import { Phone, MessageCircle, Mail, LogOut, Search, ChevronDown, ChevronLeft, ChevronRight, Inbox, Loader2, Plus, Download, UserPlus } from "lucide-react";
 import Seo from "@/components/Seo";
 import { LOGOS, BRANCH_OPTIONS } from "@/data/site";
 
@@ -138,7 +138,7 @@ const LoginScreen = ({ onLogin }) => {
   );
 };
 
-const LeadDetail = ({ lead, onStatusChange, onNoteAdded }) => {
+const LeadDetail = ({ lead, team, onStatusChange, onAssign, onNoteAdded }) => {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const tel = trPhoneLink(lead.phone);
@@ -171,6 +171,7 @@ const LeadDetail = ({ lead, onStatusChange, onNoteAdded }) => {
             ["E-posta", lead.email],
             ["Telefon", lead.phone],
             ["Şube Sayısı", lead.branch_count],
+            ["Atanan Kişi", lead.assignee_name || "Atanmamış"],
             ["Sayfa", lead.source_page || "—"],
             ["Tarih", fmtDate(lead.created_at)],
             lead.meeting_type ? ["Görüşme Türü", lead.meeting_type] : null,
@@ -190,6 +191,18 @@ const LeadDetail = ({ lead, onStatusChange, onNoteAdded }) => {
               <p className="mt-2 leading-relaxed text-ink">{lead.message}</p>
             </div>
           )}
+          <div className="rounded-2xl border border-line bg-white p-4" data-testid={`assign-history-${lead.id}`}>
+            <p className="text-xs font-bold uppercase tracking-wider text-mute">Atama Geçmişi</p>
+            <div className="mt-2 space-y-1.5">
+              {(lead.assignment_history || []).length === 0 && <p className="text-sm text-mute">Henüz atama yapılmadı.</p>}
+              {[...(lead.assignment_history || [])].reverse().map((h, i) => (
+                <p key={`${h.at}-${i}`} className="flex items-center justify-between gap-3 text-sm">
+                  <span className="font-semibold text-ink">{h.member_name || "Atanmamış"}</span>
+                  <span className="text-[11px] text-mute">{fmtDate(h.at)}</span>
+                </p>
+              ))}
+            </div>
+          </div>
         </div>
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -206,6 +219,20 @@ const LeadDetail = ({ lead, onStatusChange, onNoteAdded }) => {
                 </option>
               ))}
             </select>
+            <select
+              value={lead.assignee || ""}
+              onChange={(e) => onAssign(lead.id, e.target.value || null)}
+              data-testid={`assign-select-${lead.id}`}
+              className={selectCls}
+              aria-label="Atanan kişi"
+            >
+              <option value="">Atanmamış</option>
+              {team.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name}
+                </option>
+              ))}
+            </select>
             <a href={`tel:+${tel}`} data-testid={`action-call-${lead.id}`} className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2.5 text-xs font-bold text-white">
               <Phone className="h-3.5 w-3.5" /> Ara
             </a>
@@ -216,6 +243,12 @@ const LeadDetail = ({ lead, onStatusChange, onNoteAdded }) => {
               <Mail className="h-3.5 w-3.5" /> E-posta
             </a>
           </div>
+          {team.length === 0 && (
+            <p className="mt-3 flex items-center gap-2 text-xs text-mute" data-testid="team-empty-note">
+              <UserPlus className="h-3.5 w-3.5" />
+              Ekip üyesi henüz tanımlı değil — atama listesi, üyeler eklendiğinde burada görünür.
+            </p>
+          )}
           <div className="mt-6">
             <p className="text-xs font-bold uppercase tracking-wider text-mute">Notlar</p>
             <div className="mt-3 space-y-2">
@@ -254,8 +287,9 @@ const LeadDetail = ({ lead, onStatusChange, onNoteAdded }) => {
 
 const Panel = ({ user, onLogout }) => {
   const [leads, setLeads] = useState([]);
-  const [kpis, setKpis] = useState({ new: 0, meeting_planned: 0, offer_sent: 0, won: 0 });
-  const [filters, setFilters] = useState({ status: "", solution: "", form_type: "", branch_count: "", period: "" });
+  const [team, setTeam] = useState([]);
+  const [kpis, setKpis] = useState({ new: 0, meeting_planned: 0, offer_sent: 0, won: 0, unassigned: 0 });
+  const [filters, setFilters] = useState({ status: "", solution: "", form_type: "", branch_count: "", period: "", assignee: "" });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -287,6 +321,13 @@ const Panel = ({ user, onLogout }) => {
       })
       .finally(() => setLoading(false));
   }, [load, onLogout]);
+
+  useEffect(() => {
+    api
+      .get("/admin/team")
+      .then((r) => setTeam(r.data.items))
+      .catch(() => {});
+  }, []);
 
   const applyFilter = (key, value) => {
     setPage(1);
@@ -322,6 +363,18 @@ const Panel = ({ user, onLogout }) => {
     load();
   };
 
+  const assignLead = async (id, memberId) => {
+    const { data } = await api.patch(`/admin/leads/${id}/assign`, { member_id: memberId });
+    setLeads((ls) =>
+      ls.map((l) =>
+        l.id === id
+          ? { ...l, assignee: data.assignee, assignee_name: data.assignee_name, assignment_history: [...(l.assignment_history || []), data.history_entry] }
+          : l
+      )
+    );
+    load();
+  };
+
   const noteAdded = (id, note) => {
     setLeads((ls) => ls.map((l) => (l.id === id ? { ...l, notes: [...(l.notes || []), note] } : l)));
   };
@@ -333,6 +386,7 @@ const Panel = ({ user, onLogout }) => {
     { key: "meeting_planned", label: "Görüşme Bekleyenler", testId: "kpi-meeting" },
     { key: "offer_sent", label: "Teklif Verilenler", testId: "kpi-offer" },
     { key: "won", label: "Olumlu Talepler", testId: "kpi-won" },
+    { key: "unassigned", label: "Atanmamış Talepler", testId: "kpi-unassigned" },
   ];
 
   return (
@@ -358,7 +412,7 @@ const Panel = ({ user, onLogout }) => {
       </div>
 
       <div className="mx-auto max-w-7xl px-5 py-8 md:px-8">
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
           {KPI_CARDS.map((k) => (
             <div key={k.key} className="rounded-3xl border border-line bg-white p-6" data-testid={k.testId}>
               <p className="text-xs font-bold uppercase tracking-wider text-mute">{k.label}</p>
@@ -393,6 +447,13 @@ const Panel = ({ user, onLogout }) => {
             <option value="">Tüm Durumlar</option>
             {Object.entries(STATUSES).map(([k, v]) => (
               <option key={k} value={k}>{v.label}</option>
+            ))}
+          </select>
+          <select value={filters.assignee} onChange={(e) => applyFilter("assignee", e.target.value)} className={selectCls} data-testid="filter-assignee" aria-label="Atanan kişi filtresi">
+            <option value="">Tüm Atamalar</option>
+            <option value="unassigned">Atanmamış</option>
+            {team.map((m) => (
+              <option key={m.id} value={m.id}>{m.name}</option>
             ))}
           </select>
           <select value={filters.branch_count} onChange={(e) => applyFilter("branch_count", e.target.value)} className={selectCls} data-testid="filter-branch" aria-label="Şube sayısı filtresi">
@@ -456,14 +517,19 @@ const Panel = ({ user, onLogout }) => {
                         </span>
                         <p className="mt-1.5 text-xs text-mute">{typeLabel(lead)}</p>
                       </div>
-                      <p className="hidden text-sm font-semibold text-mute md:block">{fmtDate(lead.created_at)}</p>
+                      <div className="hidden md:block">
+                        <p className="text-sm font-semibold text-mute">{fmtDate(lead.created_at)}</p>
+                        <p className="mt-1 text-xs font-semibold text-mute" data-testid={`lead-assignee-${lead.id}`}>
+                          {lead.assignee_name ? `Atanan: ${lead.assignee_name}` : "Atanmamış"}
+                        </p>
+                      </div>
                       <span className={`justify-self-start rounded-full px-3 py-1.5 text-[11px] font-bold ${st.cls}`} data-testid={`lead-status-${lead.id}`}>
                         {st.label}
                       </span>
                       <ChevronDown className={`h-4 w-4 justify-self-end text-mute transition-transform ${open ? "rotate-180" : ""}`} />
                     </button>
                     <AnimatePresence initial={false}>
-                      {open && <LeadDetail lead={lead} onStatusChange={changeStatus} onNoteAdded={noteAdded} />}
+                      {open && <LeadDetail lead={lead} team={team} onStatusChange={changeStatus} onAssign={assignLead} onNoteAdded={noteAdded} />}
                     </AnimatePresence>
                   </li>
                 );

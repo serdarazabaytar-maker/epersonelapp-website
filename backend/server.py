@@ -438,8 +438,9 @@ STATUS_LABELS_TR = {
 PAGE_SIZES = {25, 50, 100}
 
 
-def _lead_query(status=None, solution=None, form_type=None, branch_count=None, period=None, q=None) -> dict:
+def _lead_query(status=None, solution=None, form_type=None, branch_count=None, period=None, q=None, assignee=None) -> dict:
     query = {}
+    conditions = []
     if status in LEAD_STATUSES:
         query["status"] = status
     if solution in SOLUTIONS:
@@ -453,7 +454,13 @@ def _lead_query(status=None, solution=None, form_type=None, branch_count=None, p
         query["created_at"] = {"$gte": threshold}
     if q:
         rx = {"$regex": re.escape(q.strip()), "$options": "i"}
-        query["$or"] = [{"business_name": rx}, {"contact_name": rx}, {"email": rx}, {"phone": rx}]
+        conditions.append({"$or": [{"business_name": rx}, {"contact_name": rx}, {"email": rx}, {"phone": rx}]})
+    if assignee == "unassigned":
+        conditions.append({"$or": [{"assignee": None}, {"assignee": {"$exists": False}}]})
+    elif assignee:
+        query["assignee"] = assignee
+    if conditions:
+        query["$and"] = conditions
     return query
 
 
@@ -473,11 +480,12 @@ async def list_leads(
     branch_count: Optional[str] = None,
     period: Optional[str] = None,
     q: Optional[str] = None,
+    assignee: Optional[str] = None,
     page: int = 1,
     page_size: int = 25,
     user: dict = Depends(get_current_user),
 ):
-    query = _lead_query(status, solution, form_type, branch_count, period, q)
+    query = _lead_query(status, solution, form_type, branch_count, period, q, assignee)
     page = max(1, page)
     page_size = page_size if page_size in PAGE_SIZES else 25
     total = await db.leads.count_documents(query)
@@ -493,6 +501,7 @@ async def list_leads(
         "meeting_planned": await db.leads.count_documents({"status": "meeting_planned"}),
         "offer_sent": await db.leads.count_documents({"status": "offer_sent"}),
         "won": await db.leads.count_documents({"status": "won"}),
+        "unassigned": await db.leads.count_documents({"$or": [{"assignee": None}, {"assignee": {"$exists": False}}]}),
     }
     return {"items": items, "kpis": kpis, "total": total, "page": page, "page_size": page_size}
 
@@ -538,6 +547,62 @@ async def export_leads(
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=epersonel-talepler.csv", "Cache-Control": "no-store"},
     )
+
+
+# --- Ekip üyeleri ve talep atama ---
+# Ekip yapısı reusable: üyeler db.team_members koleksiyonunda tutulur; gerçek isimler
+# TEAM_MEMBERS env'i (virgüllü liste) veya POST /api/admin/team ile eklenir. Sahte üye yok.
+@api_router.get("/admin/team")
+async def list_team(user: dict = Depends(get_current_user)):
+    items = await db.team_members.find({}, {"_id": 0}).sort("name", 1).to_list(200)
+    return {"items": items}
+
+
+class TeamMemberCreate(BaseModel):
+    name: str = Field(min_length=2, max_length=80)
+
+
+@api_router.post("/admin/team", status_code=201)
+async def create_team_member(body: TeamMemberCreate, user: dict = Depends(get_current_user)):
+    name = body.name.strip()
+    existing = await db.team_members.find_one({"name": name}, {"_id": 0})
+    if existing:
+        return existing
+    member = {"id": str(uuid.uuid4()), "name": name, "created_at": datetime.now(timezone.utc).isoformat()}
+    await db.team_members.insert_one(dict(member))
+    return member
+
+
+class AssignUpdate(BaseModel):
+    member_id: Optional[str] = None  # None = Atanmamış
+
+
+@api_router.patch("/admin/leads/{lead_id}/assign")
+async def assign_lead(lead_id: str, body: AssignUpdate, user: dict = Depends(get_current_user)):
+    member = None
+    if body.member_id:
+        member = await db.team_members.find_one({"id": body.member_id}, {"_id": 0})
+        if not member:
+            raise HTTPException(status_code=404, detail="Ekip üyesi bulunamadı")
+    entry = {
+        "member_id": member["id"] if member else None,
+        "member_name": member["name"] if member else None,
+        "at": datetime.now(timezone.utc).isoformat(),
+        "by": user.get("email"),
+    }
+    result = await db.leads.update_one(
+        {"id": lead_id},
+        {
+            "$set": {
+                "assignee": member["id"] if member else None,
+                "assignee_name": member["name"] if member else None,
+            },
+            "$push": {"assignment_history": entry},
+        },
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Talep bulunamadı")
+    return {"assignee": entry["member_id"], "assignee_name": entry["member_name"], "history_entry": entry}
 
 
 class StatusUpdate(BaseModel):
@@ -593,6 +658,18 @@ async def startup():
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
     await seed_admin()
+    await seed_team()
+
+
+async def seed_team():
+    raw = os.environ.get("TEAM_MEMBERS", "")
+    for name in [n.strip() for n in raw.split(",") if n.strip()]:
+        existing = await db.team_members.find_one({"name": name})
+        if not existing:
+            await db.team_members.insert_one(
+                {"id": str(uuid.uuid4()), "name": name, "created_at": datetime.now(timezone.utc).isoformat()}
+            )
+            logger.info("Ekip üyesi eklendi: %s", name)
 
 
 @app.on_event("shutdown")
