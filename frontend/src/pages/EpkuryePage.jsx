@@ -3,7 +3,7 @@ import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
 import { CTAButton } from "@/components/CTAButton";
-import { MapMock } from "@/components/MapMock";
+import { SystemVisual } from "@/components/SystemVisual";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
 import { LOGOS } from "@/data/site";
@@ -29,7 +29,7 @@ const SERVICES = [
 const Hero = () => (
   <section className="relative overflow-hidden pb-20 pt-36 md:pt-44" data-testid="epkurye-hero">
     <div className="pointer-events-none absolute -right-40 -top-40 h-[420px] w-[420px] rounded-full bg-brand/10 blur-3xl" aria-hidden="true" />
-    <div className="mx-auto max-w-7xl px-5 md:px-8">
+    <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2">
       <Reveal className="max-w-3xl">
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
           <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-5 w-auto object-contain" />
@@ -52,8 +52,8 @@ const Hero = () => (
           </CTAButton>
         </div>
       </Reveal>
-      <Reveal delay={0.2} className="mt-16">
-        <MapMock className="h-[400px] md:h-[480px]" />
+      <Reveal delay={0.15}>
+        <SystemVisual variant="epkurye" />
       </Reveal>
     </div>
   </section>

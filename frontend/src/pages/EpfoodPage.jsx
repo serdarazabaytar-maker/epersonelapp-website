@@ -8,6 +8,7 @@ import { PhoneMock } from "@/components/PhoneMock";
 import { DashboardMock } from "@/components/DashboardMock";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
+import { SystemVisual } from "@/components/SystemVisual";
 import { LOGOS } from "@/data/site";
 
 const Chips = ({ items }) => (
@@ -117,8 +118,8 @@ const Hero = () => (
           </CTAButton>
         </div>
       </Reveal>
-      <Reveal delay={0.15} className="flex justify-center">
-        <PhoneMock variant="epfood" />
+      <Reveal delay={0.15}>
+        <SystemVisual variant="epfood" />
       </Reveal>
     </div>
   </section>

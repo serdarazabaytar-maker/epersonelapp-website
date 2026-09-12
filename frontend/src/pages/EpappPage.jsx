@@ -8,6 +8,7 @@ import { DashboardMock } from "@/components/DashboardMock";
 import { PhoneMock } from "@/components/PhoneMock";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
+import { SystemVisual } from "@/components/SystemVisual";
 import { LOGOS } from "@/data/site";
 
 const Chips = ({ items, dark = false }) => (
@@ -55,8 +56,8 @@ const FeatureRow = ({ num, title, desc, bullets, chips, children, reverse = fals
 
 const Hero = () => (
   <section className="relative overflow-hidden bg-mist pb-20 pt-36 md:pt-44" data-testid="epapp-hero">
-    <div className="mx-auto max-w-7xl px-5 md:px-8">
-      <Reveal className="max-w-3xl">
+    <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2">
+      <Reveal>
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
           <img src={LOGOS.epapp} alt="EPapp logosu" className="h-5 w-auto object-contain" />
           Orta & Büyük Ölçekli İşletmeler
@@ -79,8 +80,8 @@ const Hero = () => (
           </CTAButton>
         </div>
       </Reveal>
-      <Reveal delay={0.2} className="mt-16">
-        <DashboardMock tab="siparisler" />
+      <Reveal delay={0.15}>
+        <SystemVisual variant="epapp" />
       </Reveal>
     </div>
   </section>

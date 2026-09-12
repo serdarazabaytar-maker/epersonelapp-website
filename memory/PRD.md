@@ -74,6 +74,9 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Çözüm sırası site genelinde EP → EPapp → EPfood → EPkurye olarak sabitlendi (hero tabları, bento grid, footer, filtreler, form seçenekleri)
 - Test kayıtları temizlendi (leads: 0, team: 0)
 
+## Güncellemeler (12 Eylül 2026 — tur 7)
+- 4 çözüm sayfasının hero görsel sistemi sıfırdan kuruldu: ortak `SystemVisual` bileşeni (merkez mockup + floating sistem kartları + bağlantı çizgileri + akan veri noktaları + mikro float animasyonları, prefers-reduced-motion destekli). Varyantlar: EP (telefon + Ürün/Stok/Fiyat/Kampanya/Pazaryeri/Barkod + geometrik sepet aksanı), EPapp (büyük dashboard + personel telefonu + 8 modül), EPfood (turuncu vurgulu telefon + Menü/Opsiyon/Ekstra/Görsel/Sipariş/Kurye + mini ürün çipleri), EPkurye (harita + 6 operasyon kartı + rota animasyonu). Mobilde kart sayısı azalır, çizgiler gizlenir. Ürün-reklamı estetiği yok; sistem/operasyon dili
+
 ## Backlog (öncelikli)
 - P0: Gerçek referans logo dosyaları (/public/assets/references → data'da logo alanı)
 - P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)

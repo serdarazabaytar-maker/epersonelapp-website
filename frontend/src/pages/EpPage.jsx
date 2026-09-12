@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
 import { CTAButton } from "@/components/CTAButton";
 import { PhoneMock } from "@/components/PhoneMock";
+import { SystemVisual } from "@/components/SystemVisual";
 import { FAQ } from "@/components/FAQ";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
@@ -60,21 +60,8 @@ const Hero = () => (
           </div>
         </Reveal>
       </div>
-      <Reveal delay={0.15} className="relative hidden justify-center lg:flex">
-        <div className="relative">
-          <PhoneMock variant="ep" />
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="absolute -right-24 top-16 rounded-2xl border border-line bg-white p-4 shadow-xl"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-mute">Bugün</p>
-            <p className="mt-1 text-2xl font-extrabold text-ink">
-              38 <span className="text-sm font-bold text-mute">sipariş</span>
-            </p>
-          </motion.div>
-        </div>
+      <Reveal delay={0.15} className="relative mt-4 lg:mt-0">
+        <SystemVisual variant="ep" />
       </Reveal>
     </div>
   </section>
