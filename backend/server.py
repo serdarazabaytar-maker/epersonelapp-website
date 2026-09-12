@@ -1,5 +1,10 @@
-from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
+from fastapi import FastAPI, APIRouter, Request, Response, HTTPException, Depends
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
@@ -10,15 +15,12 @@ import ipaddress
 from html import escape
 from html.parser import HTMLParser
 from urllib.parse import urlparse
-from pathlib import Path
 import httpx
+import bcrypt
+import jwt
 from pydantic import BaseModel, Field, EmailStr, field_validator
 from typing import Optional
-from datetime import datetime, timezone
-
-
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+from datetime import datetime, timezone, timedelta
 
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
@@ -33,6 +35,7 @@ BRANCH_OPTIONS = {"1 Şube", "2–5 Şube", "6–20 Şube", "21–50 Şube", "51
 SOLUTIONS = {"ep", "epapp", "epkurye", "epfood"}
 SOLUTION_LABELS = {"ep": "EP", "epapp": "EPapp", "epkurye": "EPkurye", "epfood": "EPfood"}
 FORM_TYPES = {"gorusme", "teklif", "iletisim", "teslimat", "basvuru"}
+LEAD_STATUSES = {"new", "contacted", "meeting_planned", "offer_sent", "won", "lost"}
 
 # Emergent managed e-posta (Resend) — EMAIL_BASE_URL sabittir, env'den okunmaz.
 EMAIL_BASE_URL = "https://integrations.emergentagent.com"
@@ -40,6 +43,137 @@ EMAIL_KEY = os.environ.get("EMERGENT_EMAIL_KEY")
 EMAIL_FROM_NAME = os.environ.get("EMAIL_FROM_NAME", "Epersonel")
 EMAIL_REPLY_TO = os.environ.get("EMAIL_REPLY_TO")
 LEAD_NOTIFICATION_EMAIL = os.environ.get("LEAD_NOTIFICATION_EMAIL")
+
+JWT_ALGORITHM = "HS256"
+
+
+# --- Auth yardımcıları ---
+def get_jwt_secret() -> str:
+    return os.environ["JWT_SECRET"]
+
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+
+
+def create_access_token(user_id: str, email: str) -> str:
+    payload = {"sub": user_id, "email": email, "exp": datetime.now(timezone.utc) + timedelta(minutes=15), "type": "access"}
+    return jwt.encode(payload, get_jwt_secret(), algorithm=JWT_ALGORITHM)
+
+
+def create_refresh_token(user_id: str) -> str:
+    payload = {"sub": user_id, "exp": datetime.now(timezone.utc) + timedelta(days=7), "type": "refresh"}
+    return jwt.encode(payload, get_jwt_secret(), algorithm=JWT_ALGORITHM)
+
+
+async def get_current_user(request: Request) -> dict:
+    token = request.cookies.get("access_token")
+    if not token:
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+    if not token:
+        raise HTTPException(status_code=401, detail="Oturum gerekli")
+    try:
+        payload = jwt.decode(token, get_jwt_secret(), algorithms=[JWT_ALGORITHM])
+        if payload.get("type") != "access":
+            raise HTTPException(status_code=401, detail="Geçersiz token tipi")
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Oturum süresi doldu")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Geçersiz token")
+    user = await db.users.find_one({"id": payload["sub"]}, {"_id": 0, "password_hash": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="Kullanıcı bulunamadı")
+    return user
+
+
+async def seed_admin():
+    admin_email = os.environ.get("ADMIN_EMAIL", "").lower()
+    admin_password = os.environ.get("ADMIN_PASSWORD", "")
+    if not admin_email or not admin_password:
+        logger.warning("ADMIN_EMAIL / ADMIN_PASSWORD tanımlı değil; admin seed atlandı")
+        return
+    existing = await db.users.find_one({"email": admin_email})
+    if existing is None:
+        await db.users.insert_one({
+            "id": str(uuid.uuid4()),
+            "email": admin_email,
+            "password_hash": hash_password(admin_password),
+            "name": "Epersonel Admin",
+            "role": "admin",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+        logger.info("Admin kullanıcısı oluşturuldu: %s", admin_email)
+    elif not verify_password(admin_password, existing["password_hash"]):
+        await db.users.update_one({"email": admin_email}, {"$set": {"password_hash": hash_password(admin_password)}})
+        logger.info("Admin şifresi güncellendi: %s", admin_email)
+
+
+class LoginBody(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=1)
+
+
+@api_router.post("/auth/login")
+async def login(body: LoginBody, request: Request, response: Response):
+    email = body.email.lower()
+    ip = request.client.host if request.client else "unknown"
+    ident = f"{ip}:{email}"
+    attempts = await db.login_attempts.find_one({"identifier": ident})
+    if attempts and attempts.get("count", 0) >= 5:
+        last = attempts.get("last_at")
+        if last and (datetime.now(timezone.utc) - datetime.fromisoformat(last)).total_seconds() < 900:
+            raise HTTPException(status_code=429, detail="Çok fazla hatalı deneme. 15 dakika sonra tekrar deneyin.")
+    user = await db.users.find_one({"email": email})
+    if not user or not verify_password(body.password, user["password_hash"]):
+        await db.login_attempts.update_one(
+            {"identifier": ident},
+            {"$inc": {"count": 1}, "$set": {"last_at": datetime.now(timezone.utc).isoformat()}},
+            upsert=True,
+        )
+        raise HTTPException(status_code=401, detail="E-posta veya şifre hatalı")
+    await db.login_attempts.delete_one({"identifier": ident})
+    access = create_access_token(user["id"], email)
+    refresh = create_refresh_token(user["id"])
+    response.set_cookie("access_token", access, httponly=True, secure=True, samesite="none", max_age=900, path="/")
+    response.set_cookie("refresh_token", refresh, httponly=True, secure=True, samesite="none", max_age=604800, path="/")
+    return {"user": {"email": email, "name": user.get("name", "Admin"), "role": user.get("role", "admin")}, "access_token": access}
+
+
+@api_router.post("/auth/logout")
+async def logout(response: Response):
+    response.delete_cookie("access_token", path="/")
+    response.delete_cookie("refresh_token", path="/")
+    return {"ok": True}
+
+
+@api_router.get("/auth/me")
+async def me(user: dict = Depends(get_current_user)):
+    return user
+
+
+@api_router.post("/auth/refresh")
+async def refresh(request: Request, response: Response):
+    token = request.cookies.get("refresh_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Oturum gerekli")
+    try:
+        payload = jwt.decode(token, get_jwt_secret(), algorithms=[JWT_ALGORITHM])
+        if payload.get("type") != "refresh":
+            raise HTTPException(status_code=401, detail="Geçersiz token tipi")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Geçersiz token")
+    user = await db.users.find_one({"id": payload["sub"]})
+    if not user:
+        raise HTTPException(status_code=401, detail="Kullanıcı bulunamadı")
+    access = create_access_token(user["id"], user["email"])
+    response.set_cookie("access_token", access, httponly=True, secure=True, samesite="none", max_age=900, path="/")
+    return {"access_token": access}
 
 
 # --- E-posta guardrail gate (G2/G3 yapısal kontroller) ---
@@ -252,6 +386,7 @@ async def create_lead(payload: LeadCreate):
     doc = payload.model_dump()
     doc["id"] = str(uuid.uuid4())
     doc["status"] = "new"
+    doc["notes"] = []
     doc["created_at"] = datetime.now(timezone.utc).isoformat()
     await db.leads.insert_one(doc)
 
@@ -281,12 +416,84 @@ async def create_lead(payload: LeadCreate):
     return {"ok": True, "message": "Talebiniz alındı."}
 
 
+# --- Admin / Talep Paneli (korumalı) ---
+PERIODS = {"today": timedelta(days=1), "7d": timedelta(days=7), "30d": timedelta(days=30)}
+
+
+@api_router.get("/admin/leads")
+async def list_leads(
+    status: Optional[str] = None,
+    solution: Optional[str] = None,
+    form_type: Optional[str] = None,
+    branch_count: Optional[str] = None,
+    period: Optional[str] = None,
+    q: Optional[str] = None,
+    user: dict = Depends(get_current_user),
+):
+    query = {}
+    if status in LEAD_STATUSES:
+        query["status"] = status
+    if solution in SOLUTIONS:
+        query["solution"] = solution
+    if form_type in FORM_TYPES:
+        query["form_type"] = form_type
+    if branch_count in BRANCH_OPTIONS:
+        query["branch_count"] = branch_count
+    if period in PERIODS:
+        threshold = (datetime.now(timezone.utc) - PERIODS[period]).isoformat()
+        query["created_at"] = {"$gte": threshold}
+    if q:
+        rx = {"$regex": re.escape(q.strip()), "$options": "i"}
+        query["$or"] = [{"business_name": rx}, {"contact_name": rx}, {"email": rx}, {"phone": rx}]
+
+    items = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).limit(200).to_list(200)
+    kpis = {
+        "new": await db.leads.count_documents({"status": "new"}),
+        "meeting_planned": await db.leads.count_documents({"status": "meeting_planned"}),
+        "offer_sent": await db.leads.count_documents({"status": "offer_sent"}),
+        "won": await db.leads.count_documents({"status": "won"}),
+    }
+    return {"items": items, "kpis": kpis}
+
+
+class StatusUpdate(BaseModel):
+    status: str
+
+    @field_validator("status")
+    @classmethod
+    def check_status(cls, v: str) -> str:
+        if v not in LEAD_STATUSES:
+            raise ValueError("Geçersiz durum")
+        return v
+
+
+@api_router.patch("/admin/leads/{lead_id}")
+async def update_lead_status(lead_id: str, body: StatusUpdate, user: dict = Depends(get_current_user)):
+    result = await db.leads.update_one({"id": lead_id}, {"$set": {"status": body.status}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Talep bulunamadı")
+    return {"ok": True}
+
+
+class NoteCreate(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)
+
+
+@api_router.post("/admin/leads/{lead_id}/notes", status_code=201)
+async def add_lead_note(lead_id: str, body: NoteCreate, user: dict = Depends(get_current_user)):
+    note = {"id": str(uuid.uuid4()), "text": body.text.strip(), "by": user.get("email"), "at": datetime.now(timezone.utc).isoformat()}
+    result = await db.leads.update_one({"id": lead_id}, {"$push": {"notes": note}})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Talep bulunamadı")
+    return note
+
+
 app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=[os.environ.get("FRONTEND_URL", "http://localhost:3000")],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -295,6 +502,13 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+
+
+@app.on_event("startup")
+async def startup():
+    await db.users.create_index("email", unique=True)
+    await db.login_attempts.create_index("identifier")
+    await seed_admin()
 
 
 @app.on_event("shutdown")

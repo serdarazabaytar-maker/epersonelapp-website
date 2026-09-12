@@ -13,6 +13,7 @@ import ReferanslarPage from "@/pages/ReferanslarPage";
 import HakkimizdaPage from "@/pages/HakkimizdaPage";
 import IletisimPage from "@/pages/IletisimPage";
 import { LegalPage } from "@/pages/LegalPages";
+import AdminPage from "@/pages/AdminPage";
 
 const ScrollManager = () => {
   const { pathname, hash } = useLocation();
@@ -31,6 +32,19 @@ const ScrollManager = () => {
     else window.scrollTo(0, 0);
   }, [pathname, hash]);
   return null;
+};
+
+// /admin kendi tam ekran düzenini kullanır; public header/footer gizlenir.
+const Chrome = ({ children }) => {
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith("/admin");
+  return (
+    <>
+      {!isAdmin && <Header />}
+      <main>{children}</main>
+      {!isAdmin && <Footer />}
+    </>
+  );
 };
 
 function App() {
@@ -54,8 +68,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
-      <Header />
-      <main>
+      <Chrome>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/ep" element={<EpPage />} />
@@ -68,10 +81,10 @@ function App() {
           <Route path="/kvkk" element={<LegalPage kind="kvkk" />} />
           <Route path="/gizlilik-politikasi" element={<LegalPage kind="gizlilik" />} />
           <Route path="/cerez-politikasi" element={<LegalPage kind="cerez" />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </main>
-      <Footer />
+      </Chrome>
     </BrowserRouter>
   );
 }

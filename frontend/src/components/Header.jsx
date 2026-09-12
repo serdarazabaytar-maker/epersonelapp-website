@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, Menu, X, ArrowRight, ArrowUpRight } from "lucide-react";
 import { LOGOS, NAV_LINKS, SOLUTIONS } from "@/data/site";
 
@@ -28,13 +28,74 @@ const MegaMenu = ({ onNavigate }) => (
   </div>
 );
 
+// "Çözümler" tetikleyicisi: Çözümler yazısı ↔ 4 çözüm logosu arasında otomatik döner.
+// Hover/focus'ta rotasyon durur ve "Çözümler" yazısına döner; çıkışta ~650ms sonra devam eder.
+const ROT_STATES = ["text", "ep", "epapp", "epkurye", "epfood"];
+
+const SolutionsTrigger = ({ rotating, rotIdx, reduce, megaOpen, onFocus, onBlur }) => {
+  const state = ROT_STATES[rotIdx];
+  const showText = !rotating || reduce || state === "text";
+  const activeKey = showText ? "text" : state;
+  return (
+    <button
+      type="button"
+      data-testid="nav-solutions-trigger"
+      aria-expanded={megaOpen}
+      aria-label="Çözümler menüsü"
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onClick={undefined}
+      className="flex cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold text-ink transition-colors hover:bg-mist"
+    >
+      <span className="relative flex h-6 w-[118px] items-center justify-center overflow-hidden" data-testid="solutions-rotator">
+        <AnimatePresence mode="wait">
+          {showText ? (
+            <motion.span
+              key="text"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              className="whitespace-nowrap"
+            >
+              Çözümler
+            </motion.span>
+          ) : (
+            <motion.span
+              key={state}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="flex h-6 w-full items-center justify-center"
+            >
+              <img
+                src={LOGOS[state]}
+                alt=""
+                aria-hidden="true"
+                className="h-5 w-auto max-w-[110px] object-contain"
+                loading="lazy"
+              />
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </span>
+      <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-300 ${megaOpen ? "rotate-180" : ""}`} />
+    </button>
+  );
+};
+
 export const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSolutions, setMobileSolutions] = useState(false);
+  const [rotIdx, setRotIdx] = useState(0);
+  const [rotating, setRotating] = useState(true);
   const closeTimer = useRef(null);
+  const resumeTimer = useRef(null);
   const location = useLocation();
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -44,16 +105,33 @@ export const Header = () => {
   }, []);
 
   useEffect(() => {
+    if (!rotating || reduce) return undefined;
+    const t = setInterval(() => setRotIdx((i) => (i + 1) % ROT_STATES.length), 2200);
+    return () => clearInterval(t);
+  }, [rotating, reduce]);
+
+  useEffect(() => {
     setMobileOpen(false);
     setMegaOpen(false);
   }, [location.pathname]);
 
+  const pauseRotation = () => {
+    clearTimeout(resumeTimer.current);
+    setRotating(false);
+  };
+  const queueResume = () => {
+    clearTimeout(resumeTimer.current);
+    resumeTimer.current = setTimeout(() => setRotating(true), 650);
+  };
+
   const openMega = () => {
     clearTimeout(closeTimer.current);
+    pauseRotation();
     setMegaOpen(true);
   };
   const scheduleClose = () => {
     closeTimer.current = setTimeout(() => setMegaOpen(false), 180);
+    queueResume();
   };
 
   return (
@@ -72,16 +150,18 @@ export const Header = () => {
           {NAV_LINKS.map((link) =>
             link.mega ? (
               <div key={link.label} className="relative" onMouseEnter={openMega} onMouseLeave={scheduleClose}>
-                <button
-                  type="button"
-                  data-testid="nav-solutions-trigger"
-                  aria-expanded={megaOpen}
-                  onClick={() => setMegaOpen((v) => !v)}
-                  className="flex items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-semibold text-ink transition-colors hover:bg-mist"
-                >
-                  {link.label}
-                  <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${megaOpen ? "rotate-180" : ""}`} />
-                </button>
+                <div onClick={() => setMegaOpen((v) => !v)}>
+                  <SolutionsTrigger
+                    rotating={rotating}
+                    rotIdx={rotIdx}
+                    reduce={reduce}
+                    megaOpen={megaOpen}
+                    onFocus={pauseRotation}
+                    onBlur={() => {
+                      if (!megaOpen) queueResume();
+                    }}
+                  />
+                </div>
                 <AnimatePresence>
                   {megaOpen && (
                     <motion.div

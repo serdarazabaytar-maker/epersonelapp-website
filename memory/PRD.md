@@ -51,6 +51,14 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Şube sayısı seçenekleri "2–5 Şube" formatına güncellendi (frontend + backend validasyonu tutarlı)
 - İletişim kartları merkezi CONTACT config'ine bağlandı (site.js): e-posta info@epersonelapp.com (mailto aktif), telefon/WhatsApp null → "Yakında" (sahte numara yok)
 
+## Güncellemeler (12 Eylül 2026 — tur 3)
+- Header "Çözümler" tetikleyicisi otomatik dönen alana çevrildi: Çözümler → EP → EPapp → EPkurye → EPfood logoları (2.2s, fade+slide, sabit container, layout shift yok). Hover/focus'ta rotasyon durur ve "Çözümler"e döner; çıkıştan ~650ms sonra devam eder. Mobilde rotasyon yok. prefers-reduced-motion destekli
+- Epersonel ana logosu yeni yüklenen dosyadan temizlendi (transparan zemin, dengeli crop, halo temizliği) — header/footer/ekosistem/admin genelinde aynı asset
+- EPkurye logosu doğru dosyayla değiştirildi (kullanıcının "kurye (2).png" adlı dosyası aslında Epersonel wordmark'ı içeriyordu; eşleşme düzeltildi)
+- Referans kartlarından monogram kaldırıldı (kullanıcı kuralı: sahte logo/monogram yok); yalnızca marka adı + hizmetler, gerçek logo gelince otomatik geçiş
+- Talep Paneli (/admin) eklendi: JWT auth (bcrypt, httpOnly cookie + Bearer, brute-force kilidi, env'den seed), KPI kartları (Yeni/Görüşme Bekleyen/Teklif Verilen/Olumlu), filtreler (çözüm/tip/durum/şube/tarih), arama (firma/yetkili/telefon/e-posta), satır detayı, durum değiştirme (6 durum), not ekleme, Ara/WhatsApp/E-posta aksiyonları. Sahte lead üretilmedi. Backend: /api/auth/* + /api/admin/leads (+PATCH status, +POST notes)
+- CORS artık FRONTEND_URL ile kısıtlı (credentials uyumlu)
+
 ## Backlog (öncelikli)
 - P0: Gerçek referans logo dosyaları (/public/assets/references → data'da logo alanı)
 - P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)
