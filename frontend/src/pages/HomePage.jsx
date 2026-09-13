@@ -8,8 +8,7 @@ import { SectionHead } from "@/components/SectionHead";
 import { CTAButton } from "@/components/CTAButton";
 import { LogoBand } from "@/components/LogoBand";
 import { DashboardMock } from "@/components/DashboardMock";
-import { PhoneMock } from "@/components/PhoneMock";
-import { MapMock } from "@/components/MapMock";
+import { SystemVisual } from "@/components/SystemVisual";
 import { EcosystemFlow } from "@/components/EcosystemFlow";
 import { CaseCards } from "@/components/CaseCards";
 import { SOLUTIONS, METRICS } from "@/data/site";
@@ -44,45 +43,6 @@ const HERO_TABS = [
     visual: "map",
   },
 ];
-
-const HeroVisual = ({ visual }) => {
-  if (visual === "dashboard") {
-    return (
-      <div className="flex h-full items-center justify-center p-2">
-        <DashboardMock tab="siparisler" compact />
-      </div>
-    );
-  }
-  if (visual === "map") {
-    return (
-      <div className="flex h-full items-center justify-center p-2">
-        <MapMock className="h-full max-h-[380px] w-full" />
-      </div>
-    );
-  }
-  return (
-    <div className="relative flex h-full items-end justify-center">
-      <PhoneMock variant={visual === "phone-epfood" ? "epfood" : "ep"} className="translate-y-10" />
-      {visual === "phone-ep" && (
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-          className="absolute right-2 top-6 hidden rounded-2xl border border-line bg-white p-4 shadow-xl sm:block"
-        >
-          <p className="text-[10px] font-bold uppercase tracking-widest text-mute">Pazaryeri akışı</p>
-          <div className="mt-2 space-y-1.5">
-            {["Trendyol Go Market", "Yemeksepeti Mahalle", "Getir Çarşı"].map((p) => (
-              <p key={p} className="flex items-center gap-2 text-xs font-semibold text-ink">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand" /> {p}
-              </p>
-            ))}
-          </div>
-        </motion.div>
-      )}
-    </div>
-  );
-};
 
 const Hero = () => {
   const [active, setActive] = useState(0);
@@ -212,8 +172,8 @@ const Hero = () => {
               >
                 <h2 className="text-xl font-bold tracking-tight text-ink md:text-2xl">{tab.title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-mute">{tab.desc}</p>
-                <div className="mt-5 h-[340px] overflow-hidden rounded-2xl bg-white/60 sm:h-[380px]">
-                  <HeroVisual visual={tab.visual} />
+                <div className="mt-5 h-[340px] sm:h-[380px]">
+                  <SystemVisual variant={tab.id} fill />
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -413,13 +373,14 @@ const BigCTA = () => (
           <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-brand/15 blur-3xl" aria-hidden="true" />
           <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
             <span className="inline-block h-2 w-2 rounded-[3px] bg-brand" aria-hidden="true" />
-            Başlayalım
+            Nereden başlayacağınızdan emin değil misiniz?
           </p>
           <h2 className="mt-6 max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-            İşletmeniz için doğru çözümü birlikte belirleyelim.
+            İhtiyacınızı anlatın, doğru çözümü birlikte bulalım.
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-mute md:text-lg">
-            İhtiyacınızı anlatın, size uygun teknoloji ve operasyon modelini birlikte oluşturalım.
+            İşletmenizin yapısını dinliyor, satış kanallarınızı ve operasyonunuzu analiz ediyor, size en uygun
+            teknoloji + operasyon modelini birlikte belirliyoruz.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <CTAButton to="/iletisim" testId="home-cta-meeting">

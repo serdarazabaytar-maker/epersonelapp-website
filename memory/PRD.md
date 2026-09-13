@@ -77,6 +77,12 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 ## Güncellemeler (12 Eylül 2026 — tur 7)
 - 4 çözüm sayfasının hero görsel sistemi sıfırdan kuruldu: ortak `SystemVisual` bileşeni (merkez mockup + floating sistem kartları + bağlantı çizgileri + akan veri noktaları + mikro float animasyonları, prefers-reduced-motion destekli). Varyantlar: EP (telefon + Ürün/Stok/Fiyat/Kampanya/Pazaryeri/Barkod + geometrik sepet aksanı), EPapp (büyük dashboard + personel telefonu + 8 modül), EPfood (turuncu vurgulu telefon + Menü/Opsiyon/Ekstra/Görsel/Sipariş/Kurye + mini ürün çipleri), EPkurye (harita + 6 operasyon kartı + rota animasyonu). Mobilde kart sayısı azalır, çizgiler gizlenir. Ürün-reklamı estetiği yok; sistem/operasyon dili
 
+## Güncellemeler (13 Eylül 2026 — tur 8, fork oturumu)
+- 25 maddelik büyük revizyon seti tamamlandı: global header rotator hover mantığı, site genelinde çözüm sırası (EP → EPapp → EPfood → EPkurye), EPkurye müşteri pini harita görseli, 3 katmanlı referans sistemi (marquee + çözüm kartları + /referanslar sayfası), Admin Panel referans yönetimi (Emergent Object Storage ile logo yükleme, POST /api/admin/references/{id}/logo), "Küçük işletmeler" gibi premium olmayan ifadeler temizlendi, yeni favicon + çözüm logoları, lead formlarına İl/İlçe bağımlı dropdown (yerel il-ilce.json), public "Giriş Yap" butonu tüm sayfalardan kaldırıldı, EP fiyatlandırmada EP Plus default aktif
+- Kritik hata düzeltildi: /ep sayfası lucide-react'ta bulunmayan `Cheese` ikonu import'u yüzünden çöküyordu → `Sandwich` ile değiştirildi, sayfa sorunsuz yükleniyor
+- Kapsamlı QA (testing agent, iteration_1): Backend 18/18 pytest geçti (health, auth, lead CRUD/atama, referans CRUD). Frontend 8 public sayfa 0 konsol hatası, "Giriş Yap" hiçbir yerde yok, mega menü sıralaması doğru, iletişim formu uçtan uca çalışıyor (İstanbul→Kadıköy ilçe dolumu + POST 201 + başarı mesajı), admin giriş + lead listesi + durum/atama çalışıyor, mobil 375px'te taşma yok, stok fotoğraf yok
+- Test verileri DB'den temizlendi (leads: 0, referanslar: 8 gerçek seed kaydı korundu)
+
 ## Backlog (öncelikli)
 - P0: Gerçek referans logo dosyaları (/public/assets/references → data'da logo alanı)
 - P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)

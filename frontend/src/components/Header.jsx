@@ -33,7 +33,7 @@ const MegaMenu = ({ onNavigate }) => (
 
 // "Çözümler" tetikleyicisi: Çözümler yazısı ↔ 4 çözüm logosu arasında otomatik döner.
 // Hover/focus'ta rotasyon durur ve "Çözümler" yazısına döner; çıkışta ~650ms sonra devam eder.
-const ROT_STATES = ["text", "ep", "epapp", "epkurye", "epfood"];
+const ROT_STATES = ["text", "ep", "epapp", "epfood", "epkurye"];
 
 const SolutionsTrigger = ({ rotating, rotIdx, reduce, megaOpen, onFocus, onBlur }) => {
   const state = ROT_STATES[rotIdx];
@@ -195,14 +195,6 @@ export const Header = () => {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          {/* Müşteri paneli yayına alındığında bağlanacak */}
-          <span
-            data-testid="header-login-link"
-            className="cursor-default rounded-full px-4 py-2 text-[15px] font-semibold text-mute"
-            title="Yakında"
-          >
-            Giriş Yap
-          </span>
           <Link
             to="/iletisim"
             data-testid="header-cta"

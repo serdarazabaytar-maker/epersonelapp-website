@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
@@ -6,9 +7,9 @@ import { SectionHead } from "@/components/SectionHead";
 import { CTAButton } from "@/components/CTAButton";
 import { DashboardMock } from "@/components/DashboardMock";
 import { PhoneMock } from "@/components/PhoneMock";
+import { SystemVisual } from "@/components/SystemVisual";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
-import { SystemVisual } from "@/components/SystemVisual";
 import { LOGOS } from "@/data/site";
 
 const Chips = ({ items, dark = false }) => (
@@ -60,7 +61,7 @@ const Hero = () => (
       <Reveal>
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
           <img src={LOGOS.epapp} alt="EPapp logosu" className="h-5 w-auto object-contain" />
-          Orta & Büyük Ölçekli İşletmeler
+          Çok Şubeli İşletmeler
         </p>
         <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="epapp-hero-title">
           Tüm dijital satış kanallarınız.
@@ -120,6 +121,119 @@ const AdminPanel = () => {
     </div>
   );
 };
+
+// Markaya özel mobil + web kanalı: telefon mockup + web mockup + floating UI kartları.
+const BrandChannelVisual = () => (
+  <div className="relative rounded-[2rem] border border-white/10 bg-white/5 p-6 md:p-8" data-testid="brand-channel-visual">
+    <div className="relative overflow-hidden rounded-2xl bg-white text-ink shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
+      <div className="flex items-center gap-2 border-b border-line bg-mist px-4 py-3">
+        <span className="h-2.5 w-2.5 rounded-full bg-line" />
+        <span className="h-2.5 w-2.5 rounded-full bg-line" />
+        <span className="h-2.5 w-2.5 rounded-full bg-brand" />
+        <span className="ml-3 rounded-md border border-line bg-white px-3 py-1 text-[11px] font-semibold text-mute">
+          siparis.markaniz.com
+        </span>
+      </div>
+      <div className="p-5">
+        <div className="flex items-center justify-between">
+          <span className="rounded-lg bg-ink px-3 py-1.5 text-xs font-extrabold text-white">Markanız</span>
+          <span className="rounded-full bg-mist px-3 py-1 text-[11px] font-bold text-ink">Sepet · 2 ürün</span>
+        </div>
+        <div className="mt-4 space-y-2.5">
+          {[
+            ["Izgara Köfte Menü", "₺249,90"],
+            ["Tavuk Şinitzel", "₺219,90"],
+            ["Mercimek Çorbası", "₺79,90"],
+          ].map(([n, pr], i) => (
+            <motion.div
+              key={n}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 + i * 0.1 }}
+              className="flex items-center gap-3 rounded-xl border border-line bg-white p-3"
+            >
+              <div className="h-10 w-10 shrink-0 rounded-lg bg-mist" />
+              <p className="flex-1 truncate text-[13px] font-bold">{n}</p>
+              <p className="text-[13px] font-extrabold">{pr}</p>
+            </motion.div>
+          ))}
+        </div>
+        <div className="mt-4 flex items-center justify-between rounded-xl bg-ink px-4 py-3 text-white">
+          <span className="text-xs font-bold">Online ödeme ile tamamla</span>
+          <span className="rounded-full bg-brand px-3 py-1 text-[11px] font-extrabold text-ink">Sipariş Ver</span>
+        </div>
+      </div>
+    </div>
+    <div className="absolute -bottom-6 -right-2 z-10 hidden origin-bottom-right scale-[0.42] sm:block md:-right-4" aria-hidden="true">
+      <PhoneMock variant="personel" />
+    </div>
+    {[
+      { label: "iOS", x: "-4%", y: "12%" },
+      { label: "Android", x: "88%", y: "6%" },
+      { label: "Web", x: "92%", y: "45%" },
+    ].map((p, i) => (
+      <motion.span
+        key={p.label}
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4 + i * 0.12 }}
+        className="absolute z-20 rounded-full border border-white/15 bg-white px-4 py-2 text-xs font-extrabold text-ink shadow-xl"
+        style={{ left: p.x, top: p.y }}
+      >
+        {p.label}
+      </motion.span>
+    ))}
+  </div>
+);
+
+const BrandChannel = () => (
+  <section className="grain coal-grid relative overflow-hidden bg-coal py-24 text-white md:py-32" data-testid="epapp-brand-channel">
+    <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2 lg:gap-20">
+      <Reveal>
+        <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-white/50">
+          <span className="inline-block h-2 w-2 rounded-[3px] bg-brand" aria-hidden="true" />
+          Markaya Özel Mobil & Web
+        </p>
+        <h2 className="mt-6 text-4xl font-bold leading-[1.06] tracking-tight sm:text-5xl">
+          Pazaryerlerinde satış yapın.
+          <br />
+          <span className="text-white/50">Kendi sipariş kanalınızı da büyütün.</span>
+        </h2>
+        <p className="mt-6 max-w-lg text-base leading-relaxed text-white/60 md:text-lg">
+          Markanıza özel iOS ve Android uygulaması ile web sipariş kanalını kuruyoruz. Tüm siparişler EPapp merkezi
+          yönetimine akar; müşteri verisi sizde kalır.
+        </p>
+        <Chips
+          dark
+          items={[
+            "Markaya özel tasarım",
+            "iOS",
+            "Android",
+            "Web sipariş",
+            "Online ödeme",
+            "Yemek kartı",
+            "Kapıda ödeme",
+            "Bildirimler",
+            "Kampanyalar",
+            "Müşteri verisi",
+            "Sipariş entegrasyonu",
+            "Merkezi yönetim",
+          ]}
+        />
+        <div className="mt-9">
+          <CTAButton href="#teklif" testId="epapp-brand-cta">
+            Teklif Talep Et
+          </CTAButton>
+        </div>
+      </Reveal>
+      <Reveal delay={0.15}>
+        <BrandChannelVisual />
+      </Reveal>
+    </div>
+  </section>
+);
 
 const Features = () => (
   <section className="py-12 md:py-16" data-testid="epapp-features">
@@ -244,60 +358,23 @@ const Features = () => (
 
       <FeatureRow
         num="07"
-        title="Markaya Özel Mobil & Web Sipariş"
-        desc="Pazaryerinde satış yapın. Ama müşterinizi kendi markanıza da taşıyın."
-        chips={[
-          "Markaya özel tasarım",
-          "iOS",
-          "Android",
-          "Web",
-          "Kredi / banka kartı",
-          "Yemek kartı",
-          "Kapıda ödeme",
-          "Bildirim",
-          "Kampanya",
-          "Müşteri verisi",
-          "Entegrasyon",
-        ]}
-        testId="epapp-feature-branded"
-      >
-        <div className="rounded-3xl bg-ink p-8 text-white">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">Markanızın uygulaması</p>
-          <p className="mt-4 text-2xl font-bold leading-snug tracking-tight md:text-3xl">
-            Pazaryerinde satış yapın.
-            <br />
-            <span className="text-white/50">Müşterinizi kendi markanıza taşıyın.</span>
-          </p>
-          <div className="mt-8 flex gap-3">
-            {["iOS", "Android", "Web"].map((p) => (
-              <span key={p} className="rounded-full bg-white px-4 py-2 text-[13px] font-bold text-ink">
-                {p}
-              </span>
-            ))}
-          </div>
-        </div>
-      </FeatureRow>
-
-      <FeatureRow
-        num="08"
         title="Bir şubeden yüzlerce şubeye."
         desc="Çoklu şube yapısı merkezi yönetim ekranından izlenir; her şubenin performansı anlık takip edilir."
-        reverse
         testId="epapp-feature-branches"
       >
         <DashboardMock tab="subeler" compact />
       </FeatureRow>
 
       <Reveal>
-        <div className="grid items-center gap-8 rounded-[2rem] bg-coal p-10 text-white md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epapp-kurye-band">
+        <div className="grid items-center gap-8 rounded-[2rem] border border-line bg-mist p-10 md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epapp-kurye-band">
           <div>
-            <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-7 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
-            <h3 className="mt-5 text-3xl font-bold tracking-tight md:text-4xl">Siparişler EPkurye'ye yönlendirilebilir.</h3>
-            <p className="mt-3 max-w-lg text-base text-white/60">
+            <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-7 w-auto object-contain" loading="lazy" />
+            <h3 className="mt-5 text-3xl font-bold tracking-tight text-ink md:text-4xl">Siparişler EPkurye'ye yönlendirilebilir.</h3>
+            <p className="mt-3 max-w-lg text-base text-mute">
               Dilediğiniz kanaldan gelen siparişlerin teslimatını EPkurye operasyonuna devredin.
             </p>
           </div>
-          <CTAButton to="/epkurye" testId="epapp-kurye-cta">
+          <CTAButton to="/epkurye" variant="dark" testId="epapp-kurye-cta">
             EPkurye'yi Keşfet
           </CTAButton>
         </div>
@@ -307,13 +384,9 @@ const Features = () => (
 );
 
 const References = () => (
-  <section className="bg-mist py-24 md:py-32" data-testid="epapp-references">
+  <section className="py-24 md:py-32" data-testid="epapp-references">
     <div className="mx-auto max-w-7xl px-5 md:px-8">
-      <SectionHead
-        eyebrow="REFERANSLAR"
-        title="EPapp'e güvenen markalar."
-        testId="epapp-references-heading"
-      />
+      <SectionHead eyebrow="REFERANSLAR" title="EPapp'e güvenen markalar." testId="epapp-references-heading" />
       <div className="mt-14">
         <CaseCards solution="epapp" />
       </div>
@@ -322,7 +395,7 @@ const References = () => (
 );
 
 const Quote = () => (
-  <section id="teklif" className="scroll-mt-24 py-24 md:py-32" data-testid="epapp-quote">
+  <section id="teklif" className="scroll-mt-24 bg-mist py-24 md:py-32" data-testid="epapp-quote">
     <div className="mx-auto grid max-w-7xl gap-12 px-5 md:px-8 lg:grid-cols-2">
       <SectionHead
         eyebrow="TEKLİF"
@@ -341,7 +414,7 @@ export default function EpappPage() {
   return (
     <>
       <Seo
-        title="EPapp — Dijital Satış Altyapısı | Epersonel"
+        title="EPapp — Çok Şubeli İşletmeler İçin Dijital Satış Altyapısı | Epersonel"
         siteName="Epersonel"
         description="Pazaryeri entegrasyonları, personel sipariş uygulaması, merkezi yönetim paneli ve markanıza özel mobil & web sipariş sistemi."
         jsonLd={{
@@ -354,6 +427,7 @@ export default function EpappPage() {
       />
       <Hero />
       <Features />
+      <BrandChannel />
       <References />
       <Quote />
     </>

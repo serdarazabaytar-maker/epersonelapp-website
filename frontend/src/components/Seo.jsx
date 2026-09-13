@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+const DEFAULT_IMAGE = "/og-image.png";
+
 const setMeta = (attr, key, content) => {
   let el = document.head.querySelector(`meta[${attr}="${key}"]`);
   if (!content) {
@@ -39,12 +41,13 @@ export default function Seo({ title, siteName, description, image, jsonLd }) {
       setMeta("property", "og:description", description);
       setMeta("name", "twitter:description", description);
     }
-    if (image) {
-      const abs = window.location.origin + image;
-      setMeta("property", "og:image", abs);
-      setMeta("name", "twitter:image", abs);
-      setMeta("name", "twitter:card", "summary_large_image");
-    }
+    const img = image || DEFAULT_IMAGE;
+    const abs = window.location.origin + img;
+    setMeta("property", "og:image", abs);
+    setMeta("property", "og:image:width", "1200");
+    setMeta("property", "og:image:height", "630");
+    setMeta("name", "twitter:image", abs);
+    setMeta("name", "twitter:card", "summary_large_image");
 
     let script;
     if (jsonLd) {

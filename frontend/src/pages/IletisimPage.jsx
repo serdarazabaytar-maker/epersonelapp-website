@@ -5,7 +5,7 @@ import { LeadForm } from "@/components/LeadForm";
 import { CONTACT } from "@/data/site";
 
 // İletişim kartları merkezi CONTACT config'inden beslenir (src/data/site.js).
-// Telefon / WhatsApp gerçek numara tanımlanana kadar tıklanamaz "Yakında" olarak görünür.
+// WhatsApp numarası tanımlanana kadar kart tıklanamaz "Yakında" olarak görünür.
 const ContactCard = ({ icon: Icon, title, value, href, testId }) => {
   const inner = (
     <>
@@ -39,14 +39,14 @@ export default function IletisimPage() {
       icon: Phone,
       title: "Telefon",
       value: CONTACT.phone,
-      href: CONTACT.phone ? `tel:${CONTACT.phone.replace(/\s/g, "")}` : null,
+      href: CONTACT.phoneTel ? `tel:${CONTACT.phoneTel}` : null,
       testId: "contact-card-telefon",
     },
     {
       icon: MessageCircle,
       title: "WhatsApp",
       value: CONTACT.whatsapp,
-      href: CONTACT.whatsapp ? `https://wa.me/${CONTACT.whatsapp.replace(/\D/g, "")}` : null,
+      href: CONTACT.whatsapp ? `https://wa.me/${String(CONTACT.whatsapp).replace(/\D/g, "")}` : null,
       testId: "contact-card-whatsapp",
     },
     {

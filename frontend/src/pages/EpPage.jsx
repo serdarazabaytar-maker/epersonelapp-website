@@ -1,4 +1,5 @@
-import { Check } from "lucide-react";
+import { useState } from "react";
+import { Check, ShoppingBasket, Beef, Apple, Sandwich, PawPrint, Droplets } from "lucide-react";
 import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
@@ -10,7 +11,15 @@ import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
 import { EP_PRICING, EP_FAQ, LOGOS } from "@/data/site";
 
-const SECTORS = ["Market", "Kasap", "Manav", "Şarküteri", "Petshop", "Su Bayii"];
+const SECTORS = [
+  { label: "Market", icon: ShoppingBasket },
+  { label: "Kasap", icon: Beef },
+  { label: "Manav", icon: Apple },
+  { label: "Şarküteri", icon: Sandwich },
+  { label: "Petshop", icon: PawPrint },
+  { label: "Su Bayii", icon: Droplets },
+];
+
 const PLATFORMS = ["Trendyol Go Market", "Yemeksepeti Mahalle", "Getir Çarşı", "ve diğer desteklenen platformlar"];
 
 const FLOW = [
@@ -32,7 +41,7 @@ const Hero = () => (
         <Reveal>
           <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
             <img src={LOGOS.ep} alt="EP logosu" className="h-5 w-auto object-contain" />
-            Küçük İşletmeler İçin
+            Yerel İşletmeler İçin
           </p>
           <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="ep-hero-title">
             Pazaryerlerinde satışa başlayın.
@@ -71,8 +80,11 @@ const Sectors = () => (
   <section className="border-y border-line bg-mist py-14" data-testid="ep-sectors">
     <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-3 px-5 md:px-8">
       {SECTORS.map((s, i) => (
-        <Reveal key={s} delay={i * 0.05}>
-          <span className="rounded-full border border-line bg-white px-6 py-3 text-[15px] font-bold text-ink">{s}</span>
+        <Reveal key={s.label} delay={i * 0.05}>
+          <span className="flex items-center gap-2.5 rounded-full border border-line bg-white px-5 py-3 text-[15px] font-bold text-ink transition-colors hover:border-ink">
+            <s.icon className="h-4 w-4 text-ink" strokeWidth={2.2} aria-hidden="true" />
+            {s.label}
+          </span>
         </Reveal>
       ))}
     </div>
@@ -82,11 +94,7 @@ const Sectors = () => (
 const Flow = () => (
   <section className="py-24 md:py-32" data-testid="ep-flow">
     <div className="mx-auto max-w-7xl px-5 md:px-8">
-      <SectionHead
-        eyebrow="NASIL ÇALIŞIR"
-        title="Başvurudan satışa, altı adım."
-        testId="ep-flow-heading"
-      />
+      <SectionHead eyebrow="NASIL ÇALIŞIR" title="Başvurudan satışa, altı adım." testId="ep-flow-heading" />
       <div className="mt-14 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
         {FLOW.map((step, i) => (
           <div key={step} className="group bg-white p-8 transition-colors duration-300 hover:bg-mist">
@@ -130,63 +138,80 @@ const AppSection = () => (
   </section>
 );
 
-const Pricing = () => (
-  <section className="py-24 md:py-32" data-testid="ep-pricing">
-    <div className="mx-auto max-w-7xl px-5 md:px-8">
-      <SectionHead
-        eyebrow="FİYATLANDIRMA"
-        title="İşletmenize uyan paketi seçin."
-        align="center"
-        testId="ep-pricing-heading"
-      />
-      <div className="mt-16 grid items-stretch gap-5 lg:grid-cols-3">
-        {EP_PRICING.map((p, i) => (
-          <Reveal key={p.name} delay={i * 0.08} className="h-full">
-            <article
-              data-testid={`pricing-${p.name.toLowerCase().replace(/\s+/g, "-")}`}
-              className={`relative flex h-full flex-col rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1.5 md:p-10 ${
-                p.featured
-                  ? "bg-ink text-white shadow-[0_30px_90px_rgba(16,17,16,0.3)]"
-                  : "border border-line bg-white hover:border-ink"
-              }`}
-            >
-              {p.badge && (
-                <span className="absolute -top-3.5 left-8 rounded-full bg-brand px-4 py-1.5 text-xs font-bold text-ink">
-                  {p.badge}
-                </span>
-              )}
-              <h3 className={`text-lg font-bold ${p.featured ? "text-white" : "text-ink"}`}>{p.name}</h3>
-              <p className="mt-5 flex items-baseline gap-2">
-                <span className={`text-5xl font-extrabold tracking-tight ${p.featured ? "text-white" : "text-ink"}`}>
-                  ₺{p.price}
-                </span>
-                <span className={`text-xs font-semibold ${p.featured ? "text-white/50" : "text-mute"}`}>+ KDV / ay</span>
-              </p>
-              <ul className="mt-8 flex-1 space-y-3">
-                {p.features.map((f) => (
-                  <li key={f} className={`flex items-center gap-3 text-[15px] font-medium ${p.featured ? "text-white/85" : "text-ink"}`}>
-                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${p.featured ? "bg-brand text-ink" : "bg-mist text-ink"}`}>
-                      <Check className="h-3 w-3" strokeWidth={3} />
+// İnteraktif pricing: varsayılan aktif EP Plus; hover'da aktiflik karta geçer, çıkınca Plus'a döner.
+// Aktif kart: beyaz/açık yeşil yüzey + yeşil border/glow (tam siyah yok).
+const Pricing = () => {
+  const [active, setActive] = useState("EP Plus");
+  return (
+    <section className="py-24 md:py-32" data-testid="ep-pricing">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
+        <SectionHead
+          eyebrow="FİYATLANDIRMA"
+          title="İşletmenize uyan paketi seçin."
+          align="center"
+          testId="ep-pricing-heading"
+        />
+        <div className="mt-16 grid items-stretch gap-5 lg:grid-cols-3" onMouseLeave={() => setActive("EP Plus")}>
+          {EP_PRICING.map((p, i) => {
+            const isActive = active === p.name;
+            return (
+              <Reveal key={p.name} delay={i * 0.08} className="h-full">
+                <article
+                  onMouseEnter={() => setActive(p.name)}
+                  data-testid={`pricing-${p.name.toLowerCase().replace(/\s+/g, "-")}`}
+                  className={`relative flex h-full flex-col rounded-[2rem] p-8 transition-all duration-300 md:p-10 ${
+                    isActive
+                      ? "-translate-y-1.5 border-2 border-brand bg-white shadow-[0_24px_70px_rgba(var(--brand-rgb),0.28)]"
+                      : "border border-line bg-white"
+                  }`}
+                >
+                  {isActive && (
+                    <div
+                      className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-b from-brand/[0.08] to-transparent"
+                      aria-hidden="true"
+                    />
+                  )}
+                  {p.badge && (
+                    <span className="absolute -top-3.5 left-8 z-10 rounded-full bg-brand px-4 py-1.5 text-xs font-bold text-ink">
+                      {p.badge}
                     </span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <CTAButton
-                href="#basvuru"
-                variant={p.featured ? "primary" : "ghost"}
-                className="mt-9 w-full"
-                testId={`pricing-cta-${i}`}
-              >
-                Hemen Başla
-              </CTAButton>
-            </article>
-          </Reveal>
-        ))}
+                  )}
+                  <h3 className="relative text-lg font-bold text-ink">{p.name}</h3>
+                  <p className="relative mt-5 flex items-baseline gap-2">
+                    <span className="text-5xl font-extrabold tracking-tight text-ink">₺{p.price}</span>
+                    <span className="text-xs font-semibold text-mute">+ KDV / ay</span>
+                  </p>
+                  <ul className="relative mt-8 flex-1 space-y-3">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex items-center gap-3 text-[15px] font-medium text-ink">
+                        <span
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                            isActive ? "bg-brand text-ink" : "bg-mist text-ink"
+                          }`}
+                        >
+                          <Check className="h-3 w-3" strokeWidth={3} />
+                        </span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <CTAButton
+                    href="#basvuru"
+                    variant={isActive ? "primary" : "ghost"}
+                    className="relative mt-9 w-full"
+                    testId={`pricing-cta-${i}`}
+                  >
+                    Hemen Başla
+                  </CTAButton>
+                </article>
+              </Reveal>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const CrossSell = () => (
   <section className="bg-coal py-24 text-white md:py-32" data-testid="ep-cross-sell">
@@ -226,11 +251,7 @@ const FaqSection = () => (
 const References = () => (
   <section className="bg-mist py-24 md:py-32" data-testid="ep-references">
     <div className="mx-auto max-w-7xl px-5 md:px-8">
-      <SectionHead
-        eyebrow="REFERANSLAR"
-        title="EP'ye güvenen işletmeler."
-        testId="ep-references-heading"
-      />
+      <SectionHead eyebrow="REFERANSLAR" title="EP'ye güvenen işletmeler." testId="ep-references-heading" />
       <div className="mt-14">
         <CaseCards solution="ep" />
       </div>
@@ -258,7 +279,7 @@ export default function EpPage() {
   return (
     <>
       <Seo
-        title="EP — Küçük İşletmeler İçin Pazaryeri Operasyonu | Epersonel"
+        title="EP — Yerel İşletmeler İçin Pazaryeri Operasyonu | Epersonel"
         siteName="Epersonel"
         description="Market, kasap, manav, şarküteri, petshop ve su bayileri için pazaryeri mağaza açılışı, ürün yükleme, stok & fiyat yönetimi ve EP uygulaması."
         jsonLd={{

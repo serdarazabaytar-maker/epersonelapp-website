@@ -7,8 +7,10 @@ import { useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle2, Loader2, ArrowRight } from "lucide-react";
 import { BRANCH_OPTIONS, SOLUTIONS } from "@/data/site";
+import IL_ILCE from "@/data/il-ilce.json";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const ILLER = Object.keys(IL_ILCE);
 
 const schema = z.object({
   businessName: z.string().min(2, "İşletme adı gerekli"),
@@ -18,6 +20,8 @@ const schema = z.object({
   phone: z
     .string()
     .refine((v) => /^0?[2-5]\d{9}$/.test(v.replace(/\D/g, "")), "Geçerli bir telefon numarası girin"),
+  il: z.string().min(1, "İl seçin"),
+  ilce: z.string().min(1, "İlçe seçin"),
   solution: z.string().optional(),
   meetingType: z.string().optional(),
   deliveryType: z.string().optional(),
@@ -38,7 +42,7 @@ const formatPhone = (value) => {
 };
 
 const inputCls =
-  "w-full rounded-xl border border-line bg-white px-4 py-3.5 text-[15px] font-medium text-ink placeholder:text-mute/60 transition-colors focus:border-ink focus:outline-none";
+  "w-full rounded-xl border border-line bg-white px-4 py-3.5 text-[15px] font-medium text-ink placeholder:text-mute/60 transition-colors focus:border-ink focus:outline-none disabled:cursor-not-allowed disabled:bg-mist disabled:text-mute";
 const labelCls = "mb-2 block text-sm font-bold text-ink";
 const errCls = "mt-1.5 text-[13px] font-semibold text-red-600";
 
@@ -71,8 +75,11 @@ export const LeadForm = ({
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { solution: defaultSolution || "", meetingType: showMeetingType ? "Online Görüşme" : undefined, kvkk: false },
+    defaultValues: { solution: defaultSolution || "", il: "", ilce: "", meetingType: showMeetingType ? "Online Görüşme" : undefined, kvkk: false },
   });
+
+  const selectedIl = watch("il");
+  const ilceOptions = (selectedIl && IL_ILCE[selectedIl]) || [];
 
   const onSubmit = async (values) => {
     const payload = {
@@ -81,6 +88,8 @@ export const LeadForm = ({
       contact_name: values.contactName.trim(),
       email: values.email.trim(),
       phone: values.phone,
+      il: values.il,
+      ilce: values.ilce,
       solution: values.solution || null,
       meeting_type: values.meetingType || null,
       delivery_type: values.deliveryType || null,
@@ -185,6 +194,43 @@ export const LeadForm = ({
             </select>
           </Field>
         )}
+        <Field label="İl" error={errors.il?.message}>
+          <select
+            {...register("il")}
+            data-testid={`${testId}-il-select`}
+            className={inputCls}
+            onChange={(e) => {
+              setValue("il", e.target.value, { shouldValidate: true });
+              setValue("ilce", "");
+            }}
+          >
+            <option value="" disabled>
+              Seçin
+            </option>
+            {ILLER.map((il) => (
+              <option key={il} value={il}>
+                {il}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="İlçe" error={errors.ilce?.message}>
+          <select
+            {...register("ilce")}
+            data-testid={`${testId}-ilce-select`}
+            className={inputCls}
+            disabled={!selectedIl}
+          >
+            <option value="" disabled>
+              {selectedIl ? "Seçin" : "Önce il seçin"}
+            </option>
+            {ilceOptions.map((ilce) => (
+              <option key={ilce} value={ilce}>
+                {ilce}
+              </option>
+            ))}
+          </select>
+        </Field>
         {showMeetingType && (
           <Field label="Görüşme Türü" required={false}>
             <div className="flex gap-2" data-testid={`${testId}-meeting-type`}>

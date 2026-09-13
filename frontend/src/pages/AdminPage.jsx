@@ -4,6 +4,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Phone, MessageCircle, Mail, LogOut, Search, ChevronDown, ChevronLeft, ChevronRight, Inbox, Loader2, Plus, Download, UserPlus } from "lucide-react";
 import Seo from "@/components/Seo";
 import { LOGOS, BRANCH_OPTIONS } from "@/data/site";
+import { ReferencesManager } from "@/components/admin/ReferencesManager";
+import IL_ILCE from "@/data/il-ilce.json";
+
+const ILLER = Object.keys(IL_ILCE);
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const TOKEN_KEY = "ep_admin_token";
@@ -40,7 +44,7 @@ const TYPE_LABELS = {
   basvuru: "EP Başvuru",
 };
 
-const SOLUTION_LABELS = { ep: "EP", epapp: "EPapp", epkurye: "EPkurye", epfood: "EPfood" };
+const SOLUTION_LABELS = { ep: "EP", epapp: "EPapp", epfood: "EPfood", epkurye: "EPkurye" };
 
 const typeLabel = (lead) => {
   if (lead.form_type === "teklif" && lead.source_page === "/epfood") return "EPfood Teklif Talebi";
@@ -90,7 +94,7 @@ const LoginScreen = ({ onLogin }) => {
         className="w-full max-w-sm rounded-3xl border border-line bg-white p-8 shadow-[0_24px_80px_rgba(16,17,16,0.08)]"
       >
         <img src={LOGOS.epersonel} alt="Epersonel" className="h-7 w-auto object-contain" />
-        <h1 className="mt-6 text-2xl font-bold tracking-tight text-ink">Talep Paneli</h1>
+        <h1 className="mt-6 text-2xl font-bold tracking-tight text-ink">Yönetim Paneli</h1>
         <p className="mt-1 text-sm text-mute">Devam etmek için giriş yapın.</p>
         <div className="mt-7 space-y-4">
           <div>
@@ -171,6 +175,8 @@ const LeadDetail = ({ lead, team, assignableTeam, onStatusChange, onAssign, onNo
             ["E-posta", lead.email],
             ["Telefon", lead.phone],
             ["Şube Sayısı", lead.branch_count],
+            ["İl", lead.il || "—"],
+            ["İlçe", lead.ilce || "—"],
             ["Atanan Kişi", lead.assignee_name || "Atanmamış"],
             ["Sayfa", lead.source_page || "—"],
             ["Tarih", fmtDate(lead.created_at)],
@@ -286,10 +292,11 @@ const LeadDetail = ({ lead, team, assignableTeam, onStatusChange, onAssign, onNo
 };
 
 const Panel = ({ user, onLogout }) => {
+  const [tab, setTab] = useState("leads");
   const [leads, setLeads] = useState([]);
   const [team, setTeam] = useState([]);
   const [kpis, setKpis] = useState({ new: 0, meeting_planned: 0, offer_sent: 0, won: 0, unassigned: 0 });
-  const [filters, setFilters] = useState({ status: "", solution: "", form_type: "", branch_count: "", period: "", assignee: "" });
+  const [filters, setFilters] = useState({ status: "", solution: "", form_type: "", branch_count: "", period: "", assignee: "", il: "" });
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -314,13 +321,14 @@ const Panel = ({ user, onLogout }) => {
   }, [activeParams, page, pageSize]);
 
   useEffect(() => {
+    if (tab !== "leads") return;
     setLoading(true);
     load()
       .catch((e) => {
         if (e.response?.status === 401) onLogout();
       })
       .finally(() => setLoading(false));
-  }, [load, onLogout]);
+  }, [load, onLogout, tab]);
 
   useEffect(() => {
     api
@@ -380,8 +388,6 @@ const Panel = ({ user, onLogout }) => {
   };
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-
-  // Atama listelerinde yalnızca aktif ve atanabilir üyeler görünür
   const assignableTeam = team.filter((m) => m.active !== false && m.assignable !== false);
 
   const KPI_CARDS = [
@@ -398,7 +404,24 @@ const Panel = ({ user, onLogout }) => {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 md:px-8">
           <div className="flex items-center gap-4">
             <img src={LOGOS.epersonel} alt="Epersonel" className="h-6 w-auto object-contain" />
-            <span className="rounded-full bg-ink px-3 py-1 text-[11px] font-bold text-white">Talep Paneli</span>
+            <div className="flex gap-1 rounded-full bg-mist p-1" data-testid="admin-tabs">
+              {[
+                ["leads", "Talepler"],
+                ["references", "Referanslar"],
+              ].map(([k, label]) => (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => setTab(k)}
+                  data-testid={`admin-tab-${k}`}
+                  className={`rounded-full px-4 py-1.5 text-[13px] font-bold transition-colors ${
+                    tab === k ? "bg-ink text-white" : "text-mute hover:text-ink"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden text-sm font-semibold text-mute sm:block">{user.email}</span>
@@ -415,176 +438,188 @@ const Panel = ({ user, onLogout }) => {
       </div>
 
       <div className="mx-auto max-w-7xl px-5 py-8 md:px-8">
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-          {KPI_CARDS.map((k) => (
-            <div key={k.key} className="rounded-3xl border border-line bg-white p-6" data-testid={k.testId}>
-              <p className="text-xs font-bold uppercase tracking-wider text-mute">{k.label}</p>
-              <p className="mt-2 text-4xl font-extrabold tracking-tight text-ink">{kpis[k.key]}</p>
+        {tab === "references" ? (
+          <ReferencesManager api={api} />
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+              {KPI_CARDS.map((k) => (
+                <div key={k.key} className="rounded-3xl border border-line bg-white p-6" data-testid={k.testId}>
+                  <p className="text-xs font-bold uppercase tracking-wider text-mute">{k.label}</p>
+                  <p className="mt-2 text-4xl font-extrabold tracking-tight text-ink">{kpis[k.key]}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-2.5 rounded-3xl border border-line bg-white p-4" data-testid="admin-filters">
-          <div className="relative min-w-[220px] flex-1">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-mute" />
-            <input
-              onChange={(e) => onSearch(e.target.value)}
-              placeholder="Firma, yetkili, telefon veya e-posta ara"
-              data-testid="admin-search-input"
-              className="w-full rounded-xl border border-line bg-white py-2.5 pl-10 pr-4 text-sm font-medium focus:border-ink focus:outline-none"
-            />
-          </div>
-          <select value={filters.solution} onChange={(e) => applyFilter("solution", e.target.value)} className={selectCls} data-testid="filter-solution" aria-label="Çözüm filtresi">
-            <option value="">Tüm Çözümler</option>
-            {Object.entries(SOLUTION_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>{v}</option>
-            ))}
-          </select>
-          <select value={filters.form_type} onChange={(e) => applyFilter("form_type", e.target.value)} className={selectCls} data-testid="filter-type" aria-label="Talep tipi filtresi">
-            <option value="">Tüm Tipler</option>
-            {Object.entries(TYPE_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>{v}</option>
-            ))}
-          </select>
-          <select value={filters.status} onChange={(e) => applyFilter("status", e.target.value)} className={selectCls} data-testid="filter-status" aria-label="Durum filtresi">
-            <option value="">Tüm Durumlar</option>
-            {Object.entries(STATUSES).map(([k, v]) => (
-              <option key={k} value={k}>{v.label}</option>
-            ))}
-          </select>
-          <select value={filters.assignee} onChange={(e) => applyFilter("assignee", e.target.value)} className={selectCls} data-testid="filter-assignee" aria-label="Atanan kişi filtresi">
-            <option value="">Tüm Atamalar</option>
-            <option value="unassigned">Atanmamış</option>
-            {assignableTeam.map((m) => (
-              <option key={m.id} value={m.id}>{m.name}</option>
-            ))}
-          </select>
-          <select value={filters.branch_count} onChange={(e) => applyFilter("branch_count", e.target.value)} className={selectCls} data-testid="filter-branch" aria-label="Şube sayısı filtresi">
-            <option value="">Tüm Şube Sayıları</option>
-            {BRANCH_OPTIONS.map((o) => (
-              <option key={o} value={o}>{o}</option>
-            ))}
-          </select>
-          <select value={filters.period} onChange={(e) => applyFilter("period", e.target.value)} className={selectCls} data-testid="filter-period" aria-label="Tarih filtresi">
-            <option value="">Tüm Zamanlar</option>
-            <option value="today">Bugün</option>
-            <option value="7d">Son 7 Gün</option>
-            <option value="30d">Son 30 Gün</option>
-          </select>
-          <button
-            type="button"
-            onClick={exportCsv}
-            disabled={exporting}
-            data-testid="export-csv-button"
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-60"
-          >
-            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-            CSV İndir
-          </button>
-        </div>
-
-        <div className="mt-6 overflow-hidden rounded-3xl border border-line bg-white" data-testid="leads-list">
-          {loading ? (
-            <div className="flex items-center justify-center py-20 text-mute">
-              <Loader2 className="h-5 w-5 animate-spin" />
+            <div className="mt-6 flex flex-wrap items-center gap-2.5 rounded-3xl border border-line bg-white p-4" data-testid="admin-filters">
+              <div className="relative min-w-[220px] flex-1">
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-mute" />
+                <input
+                  onChange={(e) => onSearch(e.target.value)}
+                  placeholder="Firma, yetkili, telefon veya e-posta ara"
+                  data-testid="admin-search-input"
+                  className="w-full rounded-xl border border-line bg-white py-2.5 pl-10 pr-4 text-sm font-medium focus:border-ink focus:outline-none"
+                />
+              </div>
+              <select value={filters.solution} onChange={(e) => applyFilter("solution", e.target.value)} className={selectCls} data-testid="filter-solution" aria-label="Çözüm filtresi">
+                <option value="">Tüm Çözümler</option>
+                {Object.entries(SOLUTION_LABELS).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+              <select value={filters.form_type} onChange={(e) => applyFilter("form_type", e.target.value)} className={selectCls} data-testid="filter-type" aria-label="Talep tipi filtresi">
+                <option value="">Tüm Tipler</option>
+                {Object.entries(TYPE_LABELS).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
+              </select>
+              <select value={filters.status} onChange={(e) => applyFilter("status", e.target.value)} className={selectCls} data-testid="filter-status" aria-label="Durum filtresi">
+                <option value="">Tüm Durumlar</option>
+                {Object.entries(STATUSES).map(([k, v]) => (
+                  <option key={k} value={k}>{v.label}</option>
+                ))}
+              </select>
+              <select value={filters.assignee} onChange={(e) => applyFilter("assignee", e.target.value)} className={selectCls} data-testid="filter-assignee" aria-label="Atanan kişi filtresi">
+                <option value="">Tüm Atamalar</option>
+                <option value="unassigned">Atanmamış</option>
+                {assignableTeam.map((m) => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
+              </select>
+              <select value={filters.il} onChange={(e) => applyFilter("il", e.target.value)} className={selectCls} data-testid="filter-il" aria-label="İl filtresi">
+                <option value="">Tüm İller</option>
+                {ILLER.map((il) => (
+                  <option key={il} value={il}>{il}</option>
+                ))}
+              </select>
+              <select value={filters.branch_count} onChange={(e) => applyFilter("branch_count", e.target.value)} className={selectCls} data-testid="filter-branch" aria-label="Şube sayısı filtresi">
+                <option value="">Tüm Şube Sayıları</option>
+                {BRANCH_OPTIONS.map((o) => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </select>
+              <select value={filters.period} onChange={(e) => applyFilter("period", e.target.value)} className={selectCls} data-testid="filter-period" aria-label="Tarih filtresi">
+                <option value="">Tüm Zamanlar</option>
+                <option value="today">Bugün</option>
+                <option value="7d">Son 7 Gün</option>
+                <option value="30d">Son 30 Gün</option>
+              </select>
+              <button
+                type="button"
+                onClick={exportCsv}
+                disabled={exporting}
+                data-testid="export-csv-button"
+                className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 disabled:opacity-60"
+              >
+                {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                CSV İndir
+              </button>
             </div>
-          ) : leads.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center" data-testid="leads-empty">
-              <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-mist text-mute">
-                <Inbox className="h-6 w-6" />
-              </span>
-              <p className="mt-4 font-bold text-ink">Talep bulunamadı</p>
-              <p className="mt-1 text-sm text-mute">Filtreleri değiştirin veya yeni talepleri bekleyin.</p>
-            </div>
-          ) : (
-            <ul className="divide-y divide-line">
-              {leads.map((lead) => {
-                const st = STATUSES[lead.status] || STATUSES.new;
-                const open = openId === lead.id;
-                return (
-                  <li key={lead.id}>
-                    <button
-                      type="button"
-                      onClick={() => setOpenId(open ? null : lead.id)}
-                      data-testid={`lead-row-${lead.id}`}
-                      aria-expanded={open}
-                      className="grid w-full grid-cols-2 items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-mist md:grid-cols-[1.5fr_1fr_1fr_auto_auto]"
-                    >
-                      <div>
-                        <p className="font-bold text-ink">{lead.business_name}</p>
-                        <p className="text-sm text-mute">{lead.contact_name}</p>
-                      </div>
-                      <div className="hidden md:block">
-                        <span className="rounded-full border border-line bg-mist px-3 py-1 text-[11px] font-bold text-ink">
-                          {SOLUTION_LABELS[lead.solution] || "—"}
-                        </span>
-                        <p className="mt-1.5 text-xs text-mute">{typeLabel(lead)}</p>
-                      </div>
-                      <div className="hidden md:block">
-                        <p className="text-sm font-semibold text-mute">{fmtDate(lead.created_at)}</p>
-                        <p className="mt-1 text-xs font-semibold text-mute" data-testid={`lead-assignee-${lead.id}`}>
-                          {lead.assignee_name ? `Atanan: ${lead.assignee_name}` : "Atanmamış"}
-                        </p>
-                      </div>
-                      <span className={`justify-self-start rounded-full px-3 py-1.5 text-[11px] font-bold ${st.cls}`} data-testid={`lead-status-${lead.id}`}>
-                        {st.label}
-                      </span>
-                      <ChevronDown className={`h-4 w-4 justify-self-end text-mute transition-transform ${open ? "rotate-180" : ""}`} />
-                    </button>
-                    <AnimatePresence initial={false}>
-                      {open && <LeadDetail lead={lead} team={team} assignableTeam={assignableTeam} onStatusChange={changeStatus} onAssign={assignLead} onNoteAdded={noteAdded} />}
-                    </AnimatePresence>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3" data-testid="pagination">
-          <p className="text-sm text-mute">
-            Toplam <span className="font-bold text-ink" data-testid="pagination-total">{total}</span> talep
-          </p>
-          <div className="flex items-center gap-2">
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPage(1);
-              }}
-              className={selectCls}
-              data-testid="page-size-select"
-              aria-label="Sayfa başına kayıt"
-            >
-              <option value={25}>25 kayıt</option>
-              <option value={50}>50 kayıt</option>
-              <option value={100}>100 kayıt</option>
-            </select>
-            <button
-              type="button"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              data-testid="page-prev"
-              aria-label="Önceki sayfa"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:border-ink disabled:opacity-40"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <span className="px-2 text-sm font-bold text-ink" data-testid="page-info">
-              {page} / {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page >= totalPages}
-              data-testid="page-next"
-              aria-label="Sonraki sayfa"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:border-ink disabled:opacity-40"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
+            <div className="mt-6 overflow-hidden rounded-3xl border border-line bg-white" data-testid="leads-list">
+              {loading ? (
+                <div className="flex items-center justify-center py-20 text-mute">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                </div>
+              ) : leads.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center" data-testid="leads-empty">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-mist text-mute">
+                    <Inbox className="h-6 w-6" />
+                  </span>
+                  <p className="mt-4 font-bold text-ink">Talep bulunamadı</p>
+                  <p className="mt-1 text-sm text-mute">Filtreleri değiştirin veya yeni talepleri bekleyin.</p>
+                </div>
+              ) : (
+                <ul className="divide-y divide-line">
+                  {leads.map((lead) => {
+                    const st = STATUSES[lead.status] || STATUSES.new;
+                    const open = openId === lead.id;
+                    return (
+                      <li key={lead.id}>
+                        <button
+                          type="button"
+                          onClick={() => setOpenId(open ? null : lead.id)}
+                          data-testid={`lead-row-${lead.id}`}
+                          aria-expanded={open}
+                          className="grid w-full grid-cols-2 items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-mist md:grid-cols-[1.5fr_1fr_1fr_auto_auto]"
+                        >
+                          <div>
+                            <p className="font-bold text-ink">{lead.business_name}</p>
+                            <p className="text-sm text-mute">{lead.contact_name}</p>
+                          </div>
+                          <div className="hidden md:block">
+                            <span className="rounded-full border border-line bg-mist px-3 py-1 text-[11px] font-bold text-ink">
+                              {SOLUTION_LABELS[lead.solution] || "—"}
+                            </span>
+                            <p className="mt-1.5 text-xs text-mute">{typeLabel(lead)}</p>
+                          </div>
+                          <div className="hidden md:block">
+                            <p className="text-sm font-semibold text-mute">{fmtDate(lead.created_at)}</p>
+                            <p className="mt-1 text-xs font-semibold text-mute" data-testid={`lead-assignee-${lead.id}`}>
+                              {lead.assignee_name ? `Atanan: ${lead.assignee_name}` : "Atanmamış"}
+                            </p>
+                          </div>
+                          <span className={`justify-self-start rounded-full px-3 py-1.5 text-[11px] font-bold ${st.cls}`} data-testid={`lead-status-${lead.id}`}>
+                            {st.label}
+                          </span>
+                          <ChevronDown className={`h-4 w-4 justify-self-end text-mute transition-transform ${open ? "rotate-180" : ""}`} />
+                        </button>
+                        <AnimatePresence initial={false}>
+                          {open && <LeadDetail lead={lead} team={team} assignableTeam={assignableTeam} onStatusChange={changeStatus} onAssign={assignLead} onNoteAdded={noteAdded} />}
+                        </AnimatePresence>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3" data-testid="pagination">
+              <p className="text-sm text-mute">
+                Toplam <span className="font-bold text-ink" data-testid="pagination-total">{total}</span> talep
+              </p>
+              <div className="flex items-center gap-2">
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className={selectCls}
+                  data-testid="page-size-select"
+                  aria-label="Sayfa başına kayıt"
+                >
+                  <option value={25}>25 kayıt</option>
+                  <option value={50}>50 kayıt</option>
+                  <option value={100}>100 kayıt</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  data-testid="page-prev"
+                  aria-label="Önceki sayfa"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:border-ink disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <span className="px-2 text-sm font-bold text-ink" data-testid="page-info">
+                  {page} / {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages}
+                  data-testid="page-next"
+                  aria-label="Sonraki sayfa"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors hover:border-ink disabled:opacity-40"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -620,7 +655,7 @@ export default function AdminPage() {
 
   return (
     <>
-      <Seo title="Talep Paneli | Epersonel" siteName="Epersonel" />
+      <Seo title="Yönetim Paneli | Epersonel" siteName="Epersonel" />
       {auth === null ? (
         <div className="flex min-h-screen items-center justify-center bg-mist">
           <Loader2 className="h-6 w-6 animate-spin text-mute" />

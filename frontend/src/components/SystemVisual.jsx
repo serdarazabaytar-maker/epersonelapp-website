@@ -120,13 +120,17 @@ const Center = ({ center }) => {
   );
 };
 
-export const SystemVisual = ({ variant = "ep" }) => {
+export const SystemVisual = ({ variant = "ep", fill = false }) => {
   const cfg = VARIANTS[variant] || VARIANTS.ep;
   const reduce = useReducedMotion();
 
   return (
     <div
-      className="relative aspect-[4/4.3] overflow-hidden rounded-[2rem] border border-line bg-mist sm:aspect-[4/3.6] lg:aspect-[4/3.3]"
+      className={
+        fill
+          ? "relative h-full w-full overflow-hidden rounded-[1.4rem] border border-line bg-mist"
+          : "relative aspect-[4/4.3] overflow-hidden rounded-[2rem] border border-line bg-mist sm:aspect-[4/3.6] lg:aspect-[4/3.3]"
+      }
       data-testid={`system-visual-${variant}`}
     >
       <div

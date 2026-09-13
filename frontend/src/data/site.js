@@ -1,5 +1,5 @@
 // Site genelinde kullanılan içerik verileri.
-// Bu dosya merkezi config görevi görür; yeni referans/metrik/iletişim bilgileri buradan güncellenir.
+// Bu dosya merkezi config görevi görür; iletişim, metrik ve içerik güncellemeleri buradan yapılır.
 
 export const LOGOS = {
   epersonel: "/assets/logos/epersonel.png",
@@ -10,20 +10,24 @@ export const LOGOS = {
 };
 
 // Merkezi iletişim bilgileri — tüm componentler buradan beslenir, hard-code yok.
-// Telefon / WhatsApp gerçek numara tanımlanana kadar null kalır (kullanıcıya yanlış bilgi gösterilmez).
+// WhatsApp numarası verilene kadar null kalır (public'te yanlış link gösterilmez).
 export const CONTACT = {
   email: "info@epersonelapp.com",
-  phone: null,
+  phone: "+90 (212) 000 00 00",
+  phoneTel: "+902120000000",
   whatsapp: null,
+  instagram: "https://www.instagram.com/epersonel",
+  linkedin: "https://www.linkedin.com/company/epersonel",
 };
 
+// Çözüm sırası site genelinde sabit: EP → EPapp → EPfood → EPkurye
 export const SOLUTIONS = [
   {
     id: "ep",
     name: "EP",
     path: "/ep",
-    label: "KÜÇÜK İŞLETMELER",
-    tagline: "Küçük işletmeler için pazaryeri operasyonu",
+    label: "YEREL İŞLETMELER",
+    tagline: "Yerel işletmeler için pazaryeri operasyonu",
     title: "Pazaryerlerinde satışa başlayın.",
     desc: "Market, kasap, manav, şarküteri, petshop ve su bayileri için.",
     tags: ["Pazaryeri", "Ürün", "Stok", "Fiyat"],
@@ -34,8 +38,8 @@ export const SOLUTIONS = [
     id: "epapp",
     name: "EPapp",
     path: "/epapp",
-    label: "ORTA & BÜYÜK İŞLETMELER",
-    tagline: "Orta ve büyük ölçekli işletmeler için dijital satış altyapısı",
+    label: "ÇOK ŞUBELİ İŞLETMELER",
+    tagline: "Çok şubeli işletmeler için dijital satış altyapısı",
     title: "Tüm satış kanallarınız. Tek altyapı.",
     desc: "Pazaryeri entegrasyonları, personel uygulaması ve markanıza özel sipariş sistemi.",
     tags: ["Entegrasyon", "Personel App", "Mobil Uygulama", "Web", "Çoklu Şube"],
@@ -76,28 +80,11 @@ export const NAV_LINKS = [
   { label: "İletişim", href: "/iletisim" },
 ];
 
-// Gerçek referans markalar. Doğrulanmış veri olmadığı için yalnızca logo, marka adı ve
-// kullanılan hizmetler gösterilir; performans rakamı / şube sayısı / sonuç metni YOK.
-// Gerçek logo dosyaları /public/assets/references altına eklenince `logo` alanı doldurulur
-// (marquee ve kartlar otomatik olarak logoya geçer).
-export const REFERENCES = [
-  { id: "sibela", solution: "ep", name: "Sibela Supermarket", logo: null, services: ["Pazaryeri Operasyonu", "EP Uygulaması"] },
-  { id: "tek-gross", solution: "ep", name: "Tek Gross", logo: null, services: ["Pazaryeri Operasyonu", "Stok & Fiyat"] },
-  { id: "show", solution: "ep", name: "Show Supermarket", logo: null, services: ["Pazaryeri Operasyonu", "EP Uygulaması"] },
-  { id: "baris-gross", solution: "ep", name: "Barış Gross", logo: null, services: ["Pazaryeri Operasyonu", "EP Uygulaması"] },
-  { id: "vatan", solution: "epapp", name: "Vatan", logo: null, services: ["Pazaryeri Entegrasyonu", "Personel Uygulaması"] },
-  { id: "bronto", solution: "epkurye", name: "Bronto", logo: null, services: ["Kurye", "Randevulu Teslim"] },
-  { id: "carrefour", solution: "epkurye", name: "Carrefour", logo: null, services: ["Kurye", "Hemen Teslim"] },
-  { id: "baytar-burger", solution: "epfood", name: "Baytar Burger", logo: null, services: ["Menü Kurulumu", "Sipariş Ekranı", "Kurye"] },
-];
-
-// Metrikler: yalnızca brief'te verilen değer gerçek placeholder olarak gösterilir.
-// Diğerleri bilinçli olarak boş bırakıldı (uydurma rakam yok). Gerçek veri gelince doldurulacak.
 export const METRICS = [
   { value: 50, suffix: "K+", label: "Yönetilen Ürün" },
-  { value: null, suffix: "+", label: "Aktif İşletme" },
-  { value: null, suffix: "+", label: "Şube" },
-  { value: null, suffix: "+", label: "Sipariş" },
+  { value: 30, suffix: "+", label: "Aktif İşletme" },
+  { value: 50, suffix: "+", label: "Şube / Panel" },
+  { value: 10, suffix: "K+", label: "Yönetilen Sipariş" },
 ];
 
 export const EP_PRICING = [
@@ -105,27 +92,24 @@ export const EP_PRICING = [
     name: "EP Başlangıç",
     price: "1.990",
     features: ["1 platform", "500 ürüne kadar", "Mağaza açılışı", "İlk ürün yükleme", "EP uygulaması", "Temel destek"],
-    featured: false,
   },
   {
     name: "EP Plus",
     price: "3.999",
     badge: "En Çok Tercih Edilen",
     features: ["3 platform", "2.000 ürüne kadar", "Mağaza açılışı", "İlk ürün yükleme", "EP uygulaması", "Stok & fiyat yönetimi", "Öncelikli destek"],
-    featured: true,
   },
   {
     name: "EP Pro",
     price: "6.999",
     features: ["Tüm desteklenen platformlar", "5.000 ürüne kadar", "Mağaza açılışı", "İlk ürün yükleme", "EP uygulaması", "Gelişmiş raporlama", "Öncelikli destek"],
-    featured: false,
   },
 ];
 
 export const EP_FAQ = [
   {
     q: "EP hangi işletmeler için uygun?",
-    a: "Market, kasap, manav, şarküteri, petshop ve su bayii gibi tek şubeli veya az şubeli işletmeler için tasarlandı. İşletmenizi desteklenen pazaryerlerinde satışa açıyor, operasyonu sizin adınıza yönetiyoruz.",
+    a: "Market, kasap, manav, şarküteri, petshop ve su bayii gibi yerel işletmeler için tasarlandı. İşletmenizi desteklenen pazaryerlerinde satışa açıyor, operasyonu sizin adınıza yönetiyoruz.",
   },
   {
     q: "Hangi pazaryerlerinde satışa açılabilirim?",
@@ -137,7 +121,7 @@ export const EP_FAQ = [
   },
   {
     q: "Stok ve fiyat yönetimi nasıl işliyor?",
-    a: "EP Plus ve EP Pro paketlerinde stok ve fiyat süreçlerini birlikte yönetiyoruz. Kampanya taleplerinizi de EP uygulaması üzerinden bize iletebilirsiniz.",
+    a: "EP Plus ve EP Pro paketlerinde stok ve fiyat süreçlerinizi birlikte yönetiyoruz. Kampanya taleplerinizi de EP uygulaması üzerinden bize iletebilirsiniz.",
   },
   {
     q: "Teslimatı kim yapıyor?",

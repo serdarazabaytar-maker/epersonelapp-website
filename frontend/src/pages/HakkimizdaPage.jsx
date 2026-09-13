@@ -11,6 +11,21 @@ const MODEL = [
   { n: "04", title: "Takip ve Geliştirme", desc: "Sistem ve operasyon süreçlerini sürekli izler, iyileştirir ve geliştiririz." },
 ];
 
+const FOCUS = [
+  {
+    title: "Perakende",
+    desc: "Yerel işletmelerin pazaryeri operasyonunu kurar ve günlük işleyişi uygulamalarla sürdürülebilir kılarız.",
+  },
+  {
+    title: "Restoran",
+    desc: "Restoranların panel, menü, görsel ve sipariş altyapısını satışa hazır hale getiririz.",
+  },
+  {
+    title: "Teslimat",
+    desc: "Siparişten kapıya kadar olan son halkayı teknolojiyle yönetir, teslimatı sistemin parçası yaparız.",
+  },
+];
+
 export default function HakkimizdaPage() {
   const reduce = useReducedMotion();
   return (
@@ -42,12 +57,39 @@ export default function HakkimizdaPage() {
             ))}
           </h1>
           <Reveal delay={0.4}>
-            <p className="mt-7 max-w-2xl text-base leading-relaxed text-mute md:text-lg">
-              Epersonel; işletmelerin dijital satış kanallarını kuran, birbirine bağlayan, sipariş operasyonlarını
-              yöneten ve gerektiğinde teslimatı da üstlenen bir teknoloji + operasyon şirketidir. Yazılımı teslim edip
-              çekilmiyoruz; operasyonun içinde kalıyoruz.
-            </p>
+            <div className="mt-7 max-w-2xl space-y-5 text-base leading-relaxed text-mute md:text-lg">
+              <p>
+                Epersonel; işletmelerin dijital satış kanallarını kuran, birbirine bağlayan, sipariş operasyonlarını
+                yöneten ve gerektiğinde teslimatı da üstlenen bir teknoloji + operasyon şirketidir.
+              </p>
+              <p>
+                Perakende, restoran ve teslimat gibi birbirinden farklı ihtiyaçlara aynı sistem disipliniyle çözüm
+                üretiriz: pazaryeri entegrasyonları, stok ve fiyat akışları, personel ve yönetim uygulamaları, teslimat
+                koordinasyonu.
+              </p>
+              <p>
+                Tek seferlik yazılım teslim edip çekilen bir tedarikçi değil; operasyonun içinde kalan bir çözüm
+                ortağıyız. Sistem kurulduktan sonra da izler, iyileştirir ve işletmeyle birlikte geliştiririz.
+              </p>
+            </div>
           </Reveal>
+        </div>
+      </section>
+
+      <section className="border-t border-line py-24 md:py-28" data-testid="about-focus">
+        <div className="mx-auto max-w-7xl px-5 md:px-8">
+          <SectionHead eyebrow="ODAK ALANLARI" title="Üç farklı ihtiyaç, tek sistem disiplini." testId="about-focus-heading" />
+          <div className="mt-14 grid gap-5 md:grid-cols-3">
+            {FOCUS.map((f, i) => (
+              <Reveal key={f.title} delay={i * 0.08}>
+                <div className="group h-full rounded-[2rem] border border-line bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-ink" data-testid={`about-focus-${i}`}>
+                  <span className="block h-[3px] w-8 rounded-full bg-brand transition-all duration-300 group-hover:w-14" />
+                  <h3 className="mt-6 text-2xl font-bold tracking-tight text-ink">{f.title}</h3>
+                  <p className="mt-3 text-[15px] leading-relaxed text-mute">{f.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -74,11 +116,17 @@ export default function HakkimizdaPage() {
         <div className="mx-auto max-w-7xl px-5 md:px-8">
           <Reveal>
             <div className="flex flex-col items-start justify-between gap-8 rounded-[2rem] border border-line bg-white p-10 md:flex-row md:items-center md:p-14">
-              <h2 className="max-w-xl text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">
-                İşletmeniz için doğru modeli birlikte belirleyelim.
-              </h2>
+              <div>
+                <h2 className="max-w-xl text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">
+                  Müşterimiz olmanıza gerek yok, tanışalım.
+                </h2>
+                <p className="mt-4 max-w-lg text-base leading-relaxed text-mute">
+                  Bir satış görüşmesi değil; işletmenizi dinlediğimiz, ihtiyacınızı birlikte netleştirdiğimiz samimi bir
+                  tanışma.
+                </p>
+              </div>
               <CTAButton to="/iletisim" testId="about-cta-button">
-                Görüşme Planla
+                Tanışalım
               </CTAButton>
             </div>
           </Reveal>

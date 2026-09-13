@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Store, Bike, CheckCircle2 } from "lucide-react";
+import { Store, Bike, CheckCircle2, Home } from "lucide-react";
 
 // Kuş bakışı teslimat haritası mockup — kurye rotası animasyonlu.
 export const MapMock = ({ className = "" }) => (
@@ -62,6 +62,20 @@ export const MapMock = ({ className = "" }) => (
     >
       <Bike className="h-4 w-4 text-ink" />
     </motion.div>
+
+    {/* Müşteri / teslimat noktası — akışın son halkası (İşletme → Kurye → Müşteri) */}
+    <div
+      className="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1.5"
+      style={{ left: "90%", top: "86%" }}
+      data-testid="map-customer-pin"
+    >
+      <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink bg-white shadow-md">
+        <Home className="h-4 w-4 text-ink" />
+      </span>
+      <span className="whitespace-nowrap rounded-full border border-line bg-white px-2.5 py-1 text-[10px] font-bold text-ink shadow-sm">
+        Müşteri
+      </span>
+    </div>
 
     {/* Teslimat kartları */}
     <motion.div

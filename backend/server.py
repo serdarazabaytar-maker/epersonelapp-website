@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-from fastapi import FastAPI, APIRouter, Request, Response, HTTPException, Depends
+from fastapi import FastAPI, APIRouter, Request, Response, HTTPException, Depends, UploadFile, File
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
@@ -295,6 +295,8 @@ def _team_notification_html(doc: dict) -> str:
     rows = "".join([
         _row("İşletme Adı", doc["business_name"]),
         _row("Şube Sayısı", doc["branch_count"]),
+        _row("İl", doc.get("il")),
+        _row("İlçe", doc.get("ilce")),
         _row("Yetkili Kişi", doc["contact_name"]),
         _row("E-posta", doc["email"]),
         _row("Telefon", doc["phone"]),
@@ -327,6 +329,8 @@ class LeadCreate(BaseModel):
     contact_name: str = Field(min_length=3, max_length=140)
     email: EmailStr
     phone: str
+    il: str = Field(min_length=2, max_length=40)
+    ilce: str = Field(min_length=2, max_length=60)
     solution: Optional[str] = None
     meeting_type: Optional[str] = None
     delivery_type: Optional[str] = None
@@ -438,7 +442,7 @@ STATUS_LABELS_TR = {
 PAGE_SIZES = {25, 50, 100}
 
 
-def _lead_query(status=None, solution=None, form_type=None, branch_count=None, period=None, q=None, assignee=None) -> dict:
+def _lead_query(status=None, solution=None, form_type=None, branch_count=None, period=None, q=None, assignee=None, il=None) -> dict:
     query = {}
     conditions = []
     if status in LEAD_STATUSES:
@@ -449,6 +453,8 @@ def _lead_query(status=None, solution=None, form_type=None, branch_count=None, p
         query["form_type"] = form_type
     if branch_count in BRANCH_OPTIONS:
         query["branch_count"] = branch_count
+    if il:
+        query["il"] = il
     if period in PERIODS:
         threshold = (datetime.now(timezone.utc) - PERIODS[period]).isoformat()
         query["created_at"] = {"$gte": threshold}
@@ -481,11 +487,12 @@ async def list_leads(
     period: Optional[str] = None,
     q: Optional[str] = None,
     assignee: Optional[str] = None,
+    il: Optional[str] = None,
     page: int = 1,
     page_size: int = 25,
     user: dict = Depends(get_current_user),
 ):
-    query = _lead_query(status, solution, form_type, branch_count, period, q, assignee)
+    query = _lead_query(status, solution, form_type, branch_count, period, q, assignee, il)
     page = max(1, page)
     page_size = page_size if page_size in PAGE_SIZES else 25
     total = await db.leads.count_documents(query)
@@ -514,14 +521,16 @@ async def export_leads(
     branch_count: Optional[str] = None,
     period: Optional[str] = None,
     q: Optional[str] = None,
+    assignee: Optional[str] = None,
+    il: Optional[str] = None,
     user: dict = Depends(get_current_user),
 ):
-    query = _lead_query(status, solution, form_type, branch_count, period, q)
+    query = _lead_query(status, solution, form_type, branch_count, period, q, assignee, il)
     items = await db.leads.find(query, {"_id": 0, "notes": 0}).sort("created_at", -1).to_list(10000)
     buf = io.StringIO()
     writer = csv.writer(buf, delimiter=";")
     writer.writerow([
-        "İşletme Adı", "Şube Sayısı", "Yetkili Kişi", "Telefon", "E-posta",
+        "İşletme Adı", "Şube Sayısı", "İl", "İlçe", "Yetkili Kişi", "Telefon", "E-posta",
         "İlgilendiği Çözüm", "Talep Tipi", "Durum", "Mesaj / İhtiyaç",
         "Talebin Geldiği Sayfa", "Tarih", "Saat",
     ])
@@ -530,6 +539,8 @@ async def export_leads(
         writer.writerow([
             d.get("business_name", ""),
             d.get("branch_count", ""),
+            d.get("il", ""),
+            d.get("ilce", ""),
             d.get("contact_name", ""),
             d.get("phone", ""),
             d.get("email", ""),
@@ -593,6 +604,8 @@ def _assignment_notification_html(member_name: str, doc: dict) -> str:
     rows = "".join([
         _row("İşletme Adı", doc["business_name"]),
         _row("Şube Sayısı", doc["branch_count"]),
+        _row("İl", doc.get("il")),
+        _row("İlçe", doc.get("ilce")),
         _row("Yetkili Kişi", doc["contact_name"]),
         _row("Telefon", doc["phone"]),
         _row("E-posta", doc["email"]),
@@ -686,6 +699,201 @@ async def add_lead_note(lead_id: str, body: NoteCreate, user: dict = Depends(get
     return note
 
 
+# --- Object storage (referans logoları) ---
+STORAGE_BASE = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
+STORAGE_URL = STORAGE_BASE.rstrip("/") + "/objstore/api/v1/storage"
+EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
+APP_NAME = "epersonel"
+storage_key = None
+
+
+def init_storage(force: bool = False):
+    global storage_key
+    if storage_key and not force:
+        return storage_key
+    resp = httpx.post(f"{STORAGE_URL}/init", json={"emergent_key": EMERGENT_KEY}, timeout=30)
+    resp.raise_for_status()
+    storage_key = resp.json()["storage_key"]
+    return storage_key
+
+
+def put_object(path: str, data: bytes, content_type: str) -> dict:
+    key = init_storage()
+    resp = httpx.put(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key, "Content-Type": content_type},
+        data=data,
+        timeout=120,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+def get_object(path: str):
+    key = init_storage()
+    resp = httpx.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
+    resp.raise_for_status()
+    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
+
+
+# --- Referanslar (tek merkezi data; admin panelden yönetilir) ---
+REF_FIELDS = [
+    "name", "solutions", "services", "manager_name", "manager_title", "quote",
+    "show_marquee", "show_ep", "show_epapp", "show_epfood", "show_epkurye",
+    "show_references", "active", "order",
+]
+
+
+def _ref_out(doc: dict) -> dict:
+    return {
+        "id": doc["id"],
+        "name": doc["name"],
+        "solutions": doc.get("solutions", []),
+        "services": doc.get("services", []),
+        "manager_name": doc.get("manager_name"),
+        "manager_title": doc.get("manager_title"),
+        "quote": doc.get("quote"),
+        "show_marquee": doc.get("show_marquee", True),
+        "show_ep": doc.get("show_ep", False),
+        "show_epapp": doc.get("show_epapp", False),
+        "show_epfood": doc.get("show_epfood", False),
+        "show_epkurye": doc.get("show_epkurye", False),
+        "show_references": doc.get("show_references", True),
+        "active": doc.get("active", True),
+        "order": doc.get("order", 0),
+        "logo_url": f"/api/references/{doc['id']}/logo" if doc.get("logo_path") else None,
+    }
+
+
+class ReferenceUpsert(BaseModel):
+    name: str = Field(min_length=2, max_length=120)
+    solutions: list[str] = []
+    services: list[str] = []
+    manager_name: Optional[str] = Field(default=None, max_length=120)
+    manager_title: Optional[str] = Field(default=None, max_length=120)
+    quote: Optional[str] = Field(default=None, max_length=400)
+    show_marquee: bool = True
+    show_ep: bool = False
+    show_epapp: bool = False
+    show_epfood: bool = False
+    show_epkurye: bool = False
+    show_references: bool = True
+    active: bool = True
+    order: int = 0
+
+    @field_validator("solutions")
+    @classmethod
+    def check_solutions(cls, v):
+        return [s for s in v if s in SOLUTIONS]
+
+    @field_validator("services")
+    @classmethod
+    def check_services(cls, v):
+        return [s.strip() for s in v if s.strip()][:8]
+
+
+@api_router.get("/references")
+async def public_references():
+    items = await db.references.find({"active": True}).sort("order", 1).to_list(200)
+    return {"items": [_ref_out(d) for d in items]}
+
+
+@api_router.get("/references/{ref_id}/logo")
+async def reference_logo(ref_id: str):
+    doc = await db.references.find_one({"id": ref_id})
+    if not doc or not doc.get("logo_path"):
+        raise HTTPException(status_code=404, detail="Logo bulunamadı")
+    try:
+        data, ctype = get_object(doc["logo_path"])
+    except Exception:
+        raise HTTPException(status_code=404, detail="Logo bulunamadı")
+    return Response(content=data, media_type=ctype, headers={"Cache-Control": "public, max-age=86400"})
+
+
+@api_router.get("/admin/references")
+async def admin_references(user: dict = Depends(get_current_user)):
+    items = await db.references.find({}).sort("order", 1).to_list(500)
+    return {"items": [_ref_out(d) for d in items]}
+
+
+@api_router.post("/admin/references", status_code=201)
+async def create_reference(body: ReferenceUpsert, user: dict = Depends(get_current_user)):
+    doc = body.model_dump()
+    doc["id"] = str(uuid.uuid4())
+    doc["logo_path"] = None
+    doc["created_at"] = datetime.now(timezone.utc).isoformat()
+    await db.references.insert_one(dict(doc))
+    return _ref_out(doc)
+
+
+@api_router.patch("/admin/references/{ref_id}")
+async def update_reference(ref_id: str, body: ReferenceUpsert, user: dict = Depends(get_current_user)):
+    result = await db.references.update_one({"id": ref_id}, {"$set": body.model_dump()})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Referans bulunamadı")
+    doc = await db.references.find_one({"id": ref_id})
+    return _ref_out(doc)
+
+
+ALLOWED_LOGO_TYPES = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/svg+xml": "svg"}
+
+
+@api_router.post("/admin/references/{ref_id}/logo")
+async def upload_reference_logo(ref_id: str, file: UploadFile = File(...), user: dict = Depends(get_current_user)):
+    doc = await db.references.find_one({"id": ref_id})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Referans bulunamadı")
+    ext = ALLOWED_LOGO_TYPES.get(file.content_type or "")
+    if not ext:
+        raise HTTPException(status_code=400, detail="Yalnızca PNG, JPG, WebP veya SVG yükleyin")
+    data = await file.read()
+    if len(data) > 3 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Dosya 3 MB sınırını aşıyor")
+    path = f"{APP_NAME}/references/{ref_id}/{uuid.uuid4()}.{ext}"
+    result = put_object(path, data, file.content_type)
+    await db.references.update_one({"id": ref_id}, {"$set": {"logo_path": result["path"]}})
+    return {"logo_url": f"/api/references/{ref_id}/logo"}
+
+
+SEED_REFERENCES = [
+    {"name": "Sibela Supermarket", "solutions": ["ep"], "services": ["Pazaryeri Operasyonu", "EP Uygulaması"], "order": 1, "show_ep": True},
+    {"name": "Tek Gross", "solutions": ["ep"], "services": ["Pazaryeri Operasyonu", "Stok & Fiyat"], "order": 2, "show_ep": True},
+    {"name": "Show Supermarket", "solutions": ["ep"], "services": ["Pazaryeri Operasyonu", "EP Uygulaması"], "order": 3, "show_ep": True},
+    {"name": "Barış Gross", "solutions": ["ep"], "services": ["Pazaryeri Operasyonu", "EP Uygulaması"], "order": 4, "show_ep": True},
+    {"name": "Vatan", "solutions": ["epapp"], "services": ["Pazaryeri Entegrasyonu", "Personel Uygulaması"], "order": 5, "show_epapp": True},
+    {"name": "Baytar Burger", "solutions": ["epfood"], "services": ["Menü Kurulumu", "Sipariş Ekranı", "Kurye"], "order": 6, "show_epfood": True},
+    {"name": "Bronto", "solutions": ["epkurye"], "services": ["Kurye", "Randevulu Teslim"], "order": 7, "show_epkurye": True},
+    {"name": "Carrefour", "solutions": ["epkurye"], "services": ["Kurye", "Hemen Teslim"], "order": 8, "show_epkurye": True},
+]
+
+
+async def seed_references():
+    if await db.references.count_documents({}) > 0:
+        return
+    now = datetime.now(timezone.utc).isoformat()
+    docs = []
+    for s in SEED_REFERENCES:
+        doc = {
+            "id": str(uuid.uuid4()),
+            "logo_path": None,
+            "manager_name": None,
+            "manager_title": None,
+            "quote": None,
+            "show_marquee": True,
+            "show_ep": False,
+            "show_epapp": False,
+            "show_epfood": False,
+            "show_epkurye": False,
+            "show_references": True,
+            "active": True,
+            "created_at": now,
+            **s,
+        }
+        docs.append(doc)
+    await db.references.insert_many(docs)
+    logger.info("Referans seed tamamlandı: %d kayıt", len(docs))
+
+
 app.include_router(api_router)
 
 app.add_middleware(
@@ -706,8 +914,16 @@ logging.basicConfig(
 async def startup():
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
+    await db.references.create_index("order")
     await seed_admin()
     await seed_team()
+    await seed_references()
+    if EMERGENT_KEY:
+        try:
+            init_storage()
+            logger.info("Storage initialized")
+        except Exception as e:
+            logger.error("Storage init failed: %s", e)
 
 
 async def seed_team():
