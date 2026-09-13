@@ -85,6 +85,10 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 
 ## Backlog (öncelikli)
 - P0: Gerçek referans logo dosyaları (/public/assets/references → data'da logo alanı)
+
+## Güncellemeler (13 Eylül 2026 — tur 9)
+- Favicon sistemi tamamen yenilendi: kullanıcının yüklediği siyah "e" ikonu (beyaz yuvarlatılmış kare zemin) ana asset alındı, olduğu gibi kullanıldı (crop/recolor/redraw YOK). Yüklenen birebir dosyalar: favicon-16x16, favicon-32x32, apple-touch-icon (180), android-chrome-192, android-chrome-512. favicon-48x48 master'dan Lanczos ile üretildi. favicon.ico manuel ICO container ile 16+32+48 içerecek şekilde oluşturuldu (PNG-in-ICO). Eski yeşil/turuncu favicon dosyaları aynı isimlerle ezildi, projede başka favicon kalıntısı/referansı yok
+- index.html favicon metadata'sı güncellendi: favicon.ico (sizes="any") + 16/32/48/192/512 PNG + apple-touch-icon + manifest. site.webmanifest android-chrome ikonlarını kullanıyor (zaten doğru yapıdaydı). Not: public/index.html değişiklikleri webpack-dev-server tarafından bellekten sunulduğu için frontend restart gerekli
 - P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)
 - P0: Gerçek metrikler (Aktif İşletme / Şube / Sipariş)
 - P1: SEO landing sayfaları (kullanıcı kararıyla ertelendi): /pazaryeri-entegrasyonu, /trendyol-entegrasyonu, /yemeksepeti-entegrasyonu, /getir-entegrasyonu, /restoran-siparis-entegrasyonu, /kurye-hizmeti — mimari hazır (Seo + SectionHead + FeatureRow pattern)
