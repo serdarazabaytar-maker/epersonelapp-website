@@ -135,6 +135,13 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 
 ## Güncellemeler (14 Eylül 2026 — tur 16)
 - EPapp "Personel Uygulaması" eOrder görseli kullanıcı isteğiyle ~%12 küçültüldü: max-w-[520px] → max-w-[455px] (render 520x650 → 455x569); yalnızca CSS, görsel içeriği aynı; desktop/mobil taşma yok
+
+## Güncellemeler (14 Eylül 2026 — tur 17): EPapp Admin Panel gerçek görsel
+- EPapp "Admin Panel" bölümü (FeatureRow 06, reverse): soldaki interaktif mockup (AdminPanel bileşeni + ADMIN_TABS + DashboardMock sekmeleri) kaldırıldı, yerine kullanıcının yüklediği GERÇEK eOrder admin panel görseli (masaüstü + laptop + ürün/stok/kullanıcı kartları, 1122x1402 RGBA transparan) hash doğrulamalı birebir kopya /assets/eorder-admin.png — içeriğe sıfır müdahale
+
+## Güncellemeler (14 Eylül 2026 — tur 18)
+- EPapp "Admin Panel" eOrder görseli kullanıcı isteğiyle ~%14 küçültüldü: max-w-[540px] → max-w-[465px] (render 540x675 → 465x581); yalnızca CSS, görsel içeriği aynı; desktop/mobil taşma yok
+- CSS-only yerleşim: w-full max-w-[540px] h-auto object-contain; sağdaki başlık/açıklama korundu; mobilde metin altında responsive (375px'te taşma yok). Kullanılmayan AdminPanel/ADMIN_TABS kodu ve useState importu temizlendi
 - Doğrulama: desktop 532x355 render (tam kompozisyon görünür), mobil 375px'te 255x170 taşmasız; alt metin panelvan/kurye/scooter içerecek şekilde güncellendi
 - Temizlik: MapMock.jsx silindi; SystemVisual sadece ep/epfood varyantlarına indirildi; DashboardMock yalnızca EPapp alt bölümlerinde
 - LogoBand marquee zaten gereksinimleri karşılıyordu (70sn loop, hover-pause, reduced-motion) — will-change eklendi

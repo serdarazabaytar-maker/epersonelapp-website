@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import Seo from "@/components/Seo";
@@ -87,40 +86,6 @@ const Hero = () => (
     </div>
   </section>
 );
-
-const ADMIN_TABS = [
-  { key: "siparisler", label: "Sipariş" },
-  { key: "personel", label: "Personel" },
-  { key: "urunler", label: "Ürün" },
-  { key: "subeler", label: "Mağaza" },
-];
-
-const AdminPanel = () => {
-  const [tab, setTab] = useState("siparisler");
-  return (
-    <div>
-      <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Admin panel bölümleri">
-        {ADMIN_TABS.map((t) => (
-          <button
-            key={t.key}
-            role="tab"
-            aria-selected={tab === t.key}
-            data-testid={`admin-tab-${t.key}`}
-            onClick={() => setTab(t.key)}
-            className={`rounded-full px-4 py-2 text-[13px] font-bold transition-colors ${
-              tab === t.key ? "bg-ink text-white" : "border border-line bg-white text-mute hover:text-ink"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-      <div className="mt-4">
-        <DashboardMock tab={tab} compact />
-      </div>
-    </div>
-  );
-};
 
 // Markaya özel mobil + web kanalı: telefon mockup + web mockup + floating UI kartları.
 const BrandChannelVisual = () => (
@@ -359,7 +324,15 @@ const Features = () => (
         reverse
         testId="epapp-feature-admin"
       >
-        <AdminPanel />
+        <div className="flex justify-center" data-testid="epapp-admin-visual">
+          <img
+            src="/assets/eorder-admin.png"
+            alt="eOrder admin paneli — sipariş, ürün, stok ve kullanıcı yönetim ekranları"
+            className="h-auto w-full max-w-[465px] object-contain"
+            loading="lazy"
+            data-testid="epapp-admin-image"
+          />
+        </div>
       </FeatureRow>
 
       <FeatureRow
