@@ -171,7 +171,7 @@ export const DashboardMock = ({ tab = "siparisler", compact = false }) => {
             </div>
           ))}
         </div>
-        <div className="mt-4 overflow-hidden rounded-xl border border-line">
+        <div className="mt-4 overflow-x-auto rounded-xl border border-line">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-line bg-mist">

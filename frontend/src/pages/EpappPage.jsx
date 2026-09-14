@@ -43,14 +43,14 @@ const Bullets = ({ items }) => (
 const FeatureRow = ({ num, title, desc, bullets, chips, children, reverse = false, testId }) => (
   <Reveal>
     <div className="grid items-center gap-12 py-14 md:py-20 lg:grid-cols-2 lg:gap-20" data-testid={testId}>
-      <div className={reverse ? "lg:order-2" : ""}>
+      <div className={`min-w-0 ${reverse ? "lg:order-2" : ""}`}>
         <span className="text-sm font-extrabold tracking-widest text-mute">{num}</span>
         <h3 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">{title}</h3>
         <p className="mt-4 max-w-lg text-base leading-relaxed text-mute md:text-lg">{desc}</p>
         {bullets && <Bullets items={bullets} />}
         {chips && <Chips items={chips} />}
       </div>
-      <div className={reverse ? "lg:order-1" : ""}>{children}</div>
+      <div className={`min-w-0 ${reverse ? "lg:order-1" : ""}`}>{children}</div>
     </div>
   </Reveal>
 );
@@ -341,8 +341,14 @@ const Features = () => (
         chips={["Sipariş hazırlama", "Sipariş içeriği", "Personel performansı", "Fiş işlemleri", "Tek ekran"]}
         testId="epapp-feature-personel"
       >
-        <div className="flex justify-center">
-          <PhoneMock variant="personel" />
+        <div className="flex justify-center" data-testid="epapp-personel-visual">
+          <img
+            src="/assets/eorder-personel.png"
+            alt="eOrder personel uygulaması — sipariş listesi, ana menü ve hızlı menü ekranları"
+            className="h-auto w-full max-w-[455px] object-contain"
+            loading="lazy"
+            data-testid="epapp-personel-image"
+          />
         </div>
       </FeatureRow>
 

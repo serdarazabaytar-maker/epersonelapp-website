@@ -224,7 +224,7 @@ const Pricing = () => {
 };
 
 const CrossSell = () => (
-  <section className="bg-coal py-24 text-white md:py-32" data-testid="ep-cross-sell">
+  <section className="relative overflow-hidden bg-coal py-24 text-white md:py-32" data-testid="ep-cross-sell">
     <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 md:px-8 lg:grid-cols-[1fr_auto]">
       <Reveal>
         <img src={LOGOS.epgo} alt="EPgo logosu" className="h-8 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
@@ -239,9 +239,9 @@ const CrossSell = () => (
         </p>
       </Reveal>
       <Reveal delay={0.15} className="w-full lg:w-auto">
-        <div className="relative flex h-48 items-end justify-center pb-1 lg:h-56 lg:w-[360px]" data-testid="ep-cross-sell-visual">
+        <div className="relative flex h-52 items-end justify-center pb-1 lg:h-[272px] lg:w-[440px]" data-testid="ep-cross-sell-visual">
           <div
-            className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-52 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl sm:w-80 lg:w-96"
             aria-hidden="true"
           />
           <img

@@ -23,13 +23,13 @@ const Chips = ({ items }) => (
 const FeatureRow = ({ num, title, desc, chips, children, reverse = false, testId }) => (
   <Reveal>
     <div className="grid items-center gap-12 py-14 md:py-20 lg:grid-cols-2 lg:gap-20" data-testid={testId}>
-      <div className={reverse ? "lg:order-2" : ""}>
+      <div className={`min-w-0 ${reverse ? "lg:order-2" : ""}`}>
         <span className="text-sm font-extrabold tracking-widest text-mute">{num}</span>
         <h3 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">{title}</h3>
         <p className="mt-4 max-w-lg text-base leading-relaxed text-mute md:text-lg">{desc}</p>
         {chips && <Chips items={chips} />}
       </div>
-      <div className={reverse ? "lg:order-1" : ""}>{children}</div>
+      <div className={`min-w-0 ${reverse ? "lg:order-1" : ""}`}>{children}</div>
     </div>
   </Reveal>
 );
@@ -230,7 +230,7 @@ const Features = () => (
       </FeatureRow>
 
       <Reveal>
-        <div className="grid items-center gap-8 rounded-[2rem] bg-ink p-10 text-white md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epfood-epgo-band">
+        <div className="grid items-center gap-8 overflow-hidden rounded-[2rem] bg-ink p-10 text-white md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epfood-epgo-band">
           <div>
             <img src={LOGOS.epgo} alt="EPgo logosu" className="h-7 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
             <h3 className="mt-5 text-3xl font-bold tracking-tight md:text-4xl">Mutfaktan kapıya kadar.</h3>
@@ -238,9 +238,9 @@ const Features = () => (
               Restoran siparişlerinizi EPgo ile teslim edin; 30–45 dakika hemen teslim ve randevulu teslim seçenekleriyle.
             </p>
           </div>
-          <div className="relative flex h-48 w-full items-end justify-center pb-1 lg:h-56 lg:w-[360px]" data-testid="epfood-epgo-visual">
+          <div className="relative flex h-52 w-full items-end justify-center pb-1 lg:h-[272px] lg:w-[440px]" data-testid="epfood-epgo-visual">
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl"
+              className="pointer-events-none absolute left-1/2 top-1/2 h-52 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl sm:w-80 lg:w-96"
               aria-hidden="true"
             />
             <img

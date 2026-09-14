@@ -127,6 +127,14 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Uygulandığı yerler: /ep cross-sell bandı (bg-coal, yeşil CTA) ve /epfood EPgo bandı (bg-ink; CTA mevcut turuncu accent sistemini koruyor). EpfoodPage'den kullanılmayan ArrowDown importu temizlendi
 - Mobil: görsel metnin altına geçiyor, 375px'te taşma yok
 - Not: Kullanıcı bloğu "EPgo sayfasındaki" diye tarif etti ancak "EPgo'yu Keşfet" butonu /ep ve /epfood bantlarında bulunuyor; her ikisine uygulandı
+
+## Güncellemeler (14 Eylül 2026 — tur 15): eOrder görseli + CTA görsel büyütme + mobil taşma fixi
+- EPapp "Personel Uygulaması" (FeatureRow 05): sağdaki PhoneMock kaldırıldı, yerine kullanıcının yüklediği GERÇEK eOrder personel uygulaması görseli (3 telefon ekranı, 1122x1402 RGBA transparan) hash doğrulamalı birebir kopya /assets/eorder-personel.png — içeriğe sıfır müdahale; CSS-only: w-full max-w-[520px] h-auto object-contain, mobilde metin altında responsive. Sol başlık/açıklama/chipler korundu
+- Scooter görseli güncellendi: kullanıcının son yüklediği sade versiyon (612x408) birebir kopyayla epgo-scooter.png üzerine yazıldı; CTA bantlarında görsel ~%30 büyütüldü (container lg 360x224 → 440x272, render 408x272), buton katmanı (z-10) korundu
+- Mobil yatay taşma düzeltmesi: FeatureRow grid kolonlarına min-w-0 (EpfoodPage + EpappPage), DashboardMock tablo sarmalayıcısı overflow-x-auto (küçük ekranda kart içi kaydırma), glow dekorları mobilde küçültüldü (w-64 sm:w-80 lg:w-96) + bant/section'lara overflow-hidden. Doğrulama: /ep, /epfood, /epapp 375px'te scrollWidth=375
+
+## Güncellemeler (14 Eylül 2026 — tur 16)
+- EPapp "Personel Uygulaması" eOrder görseli kullanıcı isteğiyle ~%12 küçültüldü: max-w-[520px] → max-w-[455px] (render 520x650 → 455x569); yalnızca CSS, görsel içeriği aynı; desktop/mobil taşma yok
 - Doğrulama: desktop 532x355 render (tam kompozisyon görünür), mobil 375px'te 255x170 taşmasız; alt metin panelvan/kurye/scooter içerecek şekilde güncellendi
 - Temizlik: MapMock.jsx silindi; SystemVisual sadece ep/epfood varyantlarına indirildi; DashboardMock yalnızca EPapp alt bölümlerinde
 - LogoBand marquee zaten gereksinimleri karşılıyordu (70sn loop, hover-pause, reduced-motion) — will-change eklendi
