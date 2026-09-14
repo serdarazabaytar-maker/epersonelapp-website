@@ -76,7 +76,7 @@ export const Footer = () => (
               {SOLUTIONS.map((s) => (
                 <li key={s.id}>
                   <Link to={s.path} data-testid={`footer-solution-${s.id}`} className="text-[15px] font-semibold text-ink transition-colors hover:text-mute">
-                    {s.name}
+                    {s.name.toUpperCase()}
                   </Link>
                 </li>
               ))}

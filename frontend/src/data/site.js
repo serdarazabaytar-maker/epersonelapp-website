@@ -5,7 +5,7 @@ export const LOGOS = {
   epersonel: "/assets/logos/epersonel.png",
   ep: "/assets/logos/ep.png",
   epapp: "/assets/logos/epapp.png",
-  epkurye: "/assets/logos/epkurye.png",
+  epgo: "/assets/logos/epgo.png",
   epfood: "/assets/logos/epfood.png",
 };
 
@@ -20,7 +20,7 @@ export const CONTACT = {
   linkedin: "https://www.linkedin.com/company/epersonel",
 };
 
-// Çözüm sırası site genelinde sabit: EP → EPapp → EPfood → EPkurye
+// Çözüm sırası site genelinde sabit: EP → EPapp → EPfood → EPgo
 export const SOLUTIONS = [
   {
     id: "ep",
@@ -59,16 +59,16 @@ export const SOLUTIONS = [
     logo: LOGOS.epfood,
   },
   {
-    id: "epkurye",
-    name: "EPkurye",
-    path: "/epkurye",
+    id: "epgo",
+    name: "EPgo",
+    path: "/epgo",
     label: "TESLİMAT OPERASYONU",
     tagline: "Teslimat ve kurye operasyonu",
     title: "Teslimatı bize bırakın.",
     desc: "Hemen teslim, randevulu teslim, moto kurye ve frigolu panelvan çözümleri.",
     tags: ["30–45 dk", "3,5 km", "Randevulu", "Moto Kurye", "Frigolu"],
-    cta: "EPkurye'yi Keşfet",
-    logo: LOGOS.epkurye,
+    cta: "EPgo'yu Keşfet",
+    logo: LOGOS.epgo,
   },
 ];
 
@@ -125,7 +125,7 @@ export const EP_FAQ = [
   },
   {
     q: "Teslimatı kim yapıyor?",
-    a: "Dilerseniz teslimat operasyonunuzu EPkurye üstlenir. 30–45 dakika hemen teslim, randevulu teslim ve moto kurye seçenekleriyle siparişten kapıya kadar tüm süreci yönetebiliriz.",
+    a: "Dilerseniz teslimat operasyonunuzu EPgo üstlenir. 30–45 dakika hemen teslim, randevulu teslim ve moto kurye seçenekleriyle siparişten kapıya kadar tüm süreci yönetebiliriz.",
   },
 ];
 

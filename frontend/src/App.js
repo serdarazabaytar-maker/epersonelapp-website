@@ -7,7 +7,7 @@ import { Footer } from "@/components/Footer";
 import HomePage from "@/pages/HomePage";
 import EpPage from "@/pages/EpPage";
 import EpappPage from "@/pages/EpappPage";
-import EpkuryePage from "@/pages/EpkuryePage";
+import EpgoPage from "@/pages/EpgoPage";
 import EpfoodPage from "@/pages/EpfoodPage";
 import ReferanslarPage from "@/pages/ReferanslarPage";
 import HakkimizdaPage from "@/pages/HakkimizdaPage";
@@ -73,7 +73,8 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/ep" element={<EpPage />} />
           <Route path="/epapp" element={<EpappPage />} />
-          <Route path="/epkurye" element={<EpkuryePage />} />
+          <Route path="/epgo" element={<EpgoPage />} />
+          <Route path="/epkurye" element={<Navigate to="/epgo" replace />} />
           <Route path="/epfood" element={<EpfoodPage />} />
           <Route path="/referanslar" element={<ReferanslarPage />} />
           <Route path="/hakkimizda" element={<HakkimizdaPage />} />

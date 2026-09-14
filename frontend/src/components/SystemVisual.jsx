@@ -45,7 +45,7 @@ const VARIANTS = {
       { label: "Kurye", sub: "Entegre", x: 85, y: 79 },
     ],
   },
-  epkurye: {
+  epgo: {
     center: "map",
     hub: { x: 50, y: 50 },
     cards: [

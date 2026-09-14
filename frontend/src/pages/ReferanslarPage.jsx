@@ -63,7 +63,7 @@ export default function ReferanslarPage() {
       <Seo
         title="Referanslar | Epersonel"
         siteName="Epersonel"
-        description="EP, EPapp, EPfood ve EPkurye çözümlerine güvenen işletmeler."
+        description="EP, EPapp, EPfood ve EPgo çözümlerine güvenen işletmeler."
       />
       <section className="pb-24 pt-36 md:pt-44" data-testid="references-page">
         <div className="mx-auto max-w-7xl px-5 md:px-8">

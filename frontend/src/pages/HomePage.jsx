@@ -36,8 +36,8 @@ const HERO_TABS = [
     visual: "phone-epfood",
   },
   {
-    id: "epkurye",
-    name: "EPkurye",
+    id: "epgo",
+    name: "EPgo",
     title: "Siparişten kapıya kadar teslimatı yönetin.",
     desc: "30–45 dakika hemen teslim, randevulu teslim, moto kurye ve frigolu panelvan çözümleri.",
     visual: "map",
@@ -412,7 +412,7 @@ export default function HomePage() {
           brand: [
             { "@type": "Brand", name: "EP" },
             { "@type": "Brand", name: "EPapp" },
-            { "@type": "Brand", name: "EPkurye" },
+            { "@type": "Brand", name: "EPgo" },
             { "@type": "Brand", name: "EPfood" },
           ],
         }}

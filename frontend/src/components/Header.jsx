@@ -4,8 +4,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, Menu, X, ArrowRight, ArrowUpRight } from "lucide-react";
 import { LOGOS, NAV_LINKS, SOLUTIONS } from "@/data/site";
 
-// Mega menü ve mobil çözümler listesi görsel sırası: EP, EPapp, EPfood, EPkurye
-const MEGA_ITEMS = ["ep", "epapp", "epfood", "epkurye"].map((id) => SOLUTIONS.find((s) => s.id === id));
+// Mega menü ve mobil çözümler listesi görsel sırası: EP, EPapp, EPfood, EPgo
+const MEGA_ITEMS = ["ep", "epapp", "epfood", "epgo"].map((id) => SOLUTIONS.find((s) => s.id === id));
 
 const MegaMenu = ({ onNavigate }) => (
   <div className="grid grid-cols-2 gap-2" data-testid="mega-menu">
@@ -26,14 +26,14 @@ const MegaMenu = ({ onNavigate }) => (
       </Link>
     ))}
     <p className="col-span-2 mt-1 border-t border-line px-5 pt-4 text-xs leading-relaxed text-mute">
-      EPkurye, diğer tüm çözümlerin teslimat katmanı olarak da kullanılabilir.
+      EPgo, diğer tüm çözümlerin teslimat katmanı olarak da kullanılabilir.
     </p>
   </div>
 );
 
 // "Çözümler" tetikleyicisi: Çözümler yazısı ↔ 4 çözüm logosu arasında otomatik döner.
 // Hover/focus'ta rotasyon durur ve "Çözümler" yazısına döner; çıkışta ~650ms sonra devam eder.
-const ROT_STATES = ["text", "ep", "epapp", "epfood", "epkurye"];
+const ROT_STATES = ["text", "ep", "epapp", "epfood", "epgo"];
 
 const SolutionsTrigger = ({ rotating, rotIdx, reduce, megaOpen, onFocus, onBlur }) => {
   const state = ROT_STATES[rotIdx];

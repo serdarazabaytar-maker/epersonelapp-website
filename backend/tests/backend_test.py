@@ -180,7 +180,7 @@ class TestReferences:
             "show_ep": False,
             "show_epapp": False,
             "show_epfood": False,
-            "show_epkurye": False,
+            "show_epgo": False,
             "show_references": True,
         }
         r = admin_session.post(f"{API}/admin/references", json=payload)
@@ -202,7 +202,7 @@ class TestReferences:
             "show_ep": False,
             "show_epapp": False,
             "show_epfood": False,
-            "show_epkurye": False,
+            "show_epgo": False,
             "show_references": True,
         }
         r = admin_session.patch(f"{API}/admin/references/{TestReferences.ref_id}", json=payload)

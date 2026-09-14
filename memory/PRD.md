@@ -90,6 +90,16 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Favicon sistemi tamamen yenilendi: kullanıcının yüklediği siyah "e" ikonu (beyaz yuvarlatılmış kare zemin) ana asset alındı, olduğu gibi kullanıldı (crop/recolor/redraw YOK). Yüklenen birebir dosyalar: favicon-16x16, favicon-32x32, apple-touch-icon (180), android-chrome-192, android-chrome-512. favicon-48x48 master'dan Lanczos ile üretildi. favicon.ico manuel ICO container ile 16+32+48 içerecek şekilde oluşturuldu (PNG-in-ICO). Eski yeşil/turuncu favicon dosyaları aynı isimlerle ezildi, projede başka favicon kalıntısı/referansı yok
 - index.html favicon metadata'sı güncellendi: favicon.ico (sizes="any") + 16/32/48/192/512 PNG + apple-touch-icon + manifest. site.webmanifest android-chrome ikonlarını kullanıyor (zaten doğru yapıdaydı). Not: public/index.html değişiklikleri webpack-dev-server tarafından bellekten sunulduğu için frontend restart gerekli
 - P0: Gerçek telefon / WhatsApp numaraları (site.js CONTACT)
+
+## Güncellemeler (13 Eylül 2026 — tur 10): EPkurye → EPgo marka dönüşümü
+- EPkurye markası site genelinde EPgo oldu (tüm varyasyonlar temizlendi: EPKURYE/ePKURYE/epkurye/"EP Kurye"); "kurye" kelimesi genel hizmet adı olarak bilinçli korunuyor
+- URL: /epkurye → /epgo (eski adres React Navigate ile /epgo'ya redirect ediyor); EpkuryePage.jsx → EpgoPage.jsx (tüm testid'ler epgo-*)
+- Yeni EPgo logosu (yeşil "e" + siyah "GO", kullanıcı asseti): yalnızca tamamen transparan kenar boşlukları temizlendi (500x500 → 426x125, tasarım/renk/oran aynı), /assets/logos/epgo.png; eski epkurye.png silindi. Kullanım: header rotator, mega menu, mobil menu, ana sayfa hero/bento, EPgo sayfası, EP/EPapp/EPfood cross-sell bantları, EcosystemFlow
+- Sabit çözüm sırası her yerde: EP → EPapp → EPfood → EPgo (header, mega/mobil menü, hero tabları, bento, form dropdown, footer, admin)
+- Footer Çözümler bölümü TAM BÜYÜK HARF: EP / EPAPP / EPFOOD / EPGO (s.name.toUpperCase(); diğer alanlarda EPgo standardı)
+- Backend: solution id "epgo", show_epkurye → show_epgo (REF_FIELDS/_ref_out/ReferenceUpsert/seed), "EPgo Teslimat Teklifi" etiketi, SOLUTION_LABELS. DB migrasyonu: 8 referansta alan rename + Bronto/Carrefour solutions=["epgo"], lead normalize (0 kayıt vardı)
+- SEO: /epgo title/OG/JSON-LD/canonical, sitemap.xml ve llms.txt güncellendi
+- Doğrulama (testing agent, iteration_2): backend 18/18 pytest, tüm sayfalarda eski marka izi yok, redirect/logo/footer/form/admin akışları tamamı geçti. Test verileri temizlendi (leads: 0, referanslar: 8 gerçek)
 - P0: Gerçek metrikler (Aktif İşletme / Şube / Sipariş)
 - P1: SEO landing sayfaları (kullanıcı kararıyla ertelendi): /pazaryeri-entegrasyonu, /trendyol-entegrasyonu, /yemeksepeti-entegrasyonu, /getir-entegrasyonu, /restoran-siparis-entegrasyonu, /kurye-hizmeti — mimari hazır (Seo + SectionHead + FeatureRow pattern)
 - P1: Admin "gelen talepler" görüntüleme sayfası

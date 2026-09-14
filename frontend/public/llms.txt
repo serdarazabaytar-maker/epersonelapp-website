@@ -2,11 +2,11 @@
 
 > İşletmelerin dijital satış kanallarını kuran, birbirine bağlayan, sipariş operasyonlarını yöneten ve gerektiğinde teslimatı da üstlenen teknoloji + operasyon şirketi.
 
-## Çözümler (sıra sabit: EP, EPapp, EPfood, EPkurye)
+## Çözümler (sıra sabit: EP, EPapp, EPfood, EPgo)
 - EP (/ep): Yerel işletmeler için pazaryeri operasyonu — market, kasap, manav, şarküteri, petshop, su bayii
 - EPapp (/epapp): Çok şubeli işletmeler için dijital satış altyapısı — pazaryeri entegrasyonları, personel uygulaması, markaya özel mobil & web sipariş
 - EPfood (/epfood): Restoran ve yeme-içme işletmeleri için dijital satış — panel kurulumu, menü, opsiyonlar, sipariş yönetimi
-- EPkurye (/epkurye): Teslimat ve kurye operasyonu — 30–45 dk hemen teslim, randevulu teslim, moto kurye, frigolu panelvan
+- EPgo (/epgo): Teslimat ve kurye operasyonu — 30–45 dk hemen teslim, randevulu teslim, moto kurye, frigolu panelvan
 
 ## Sayfalar
-/, /ep, /epapp, /epkurye, /epfood, /referanslar, /hakkimizda, /iletisim
+/, /ep, /epapp, /epfood, /epgo, /referanslar, /hakkimizda, /iletisim

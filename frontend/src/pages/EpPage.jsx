@@ -217,20 +217,20 @@ const CrossSell = () => (
   <section className="bg-coal py-24 text-white md:py-32" data-testid="ep-cross-sell">
     <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 md:px-8 lg:grid-cols-[1fr_auto]">
       <Reveal>
-        <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-8 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
+        <img src={LOGOS.epgo} alt="EPgo logosu" className="h-8 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
         <h2 className="mt-6 max-w-xl text-4xl font-bold leading-[1.06] tracking-tight sm:text-5xl">
           Satışı açtık.
           <br />
           Teslimatı da yapalım.
         </h2>
         <p className="mt-5 max-w-lg text-base leading-relaxed text-white/60 md:text-lg">
-          EP müşterileri, EPkurye ile 30–45 dakika hemen teslim ve randevulu teslim hizmeti alabilir. Siparişten kapıya
+          EP müşterileri, EPgo ile 30–45 dakika hemen teslim ve randevulu teslim hizmeti alabilir. Siparişten kapıya
           kadar tüm süreç tek ekipte.
         </p>
       </Reveal>
       <Reveal delay={0.15}>
-        <CTAButton to="/epkurye" testId="ep-cross-sell-cta">
-          EPkurye'yi Keşfet
+        <CTAButton to="/epgo" testId="ep-cross-sell-cta">
+          EPgo'yu Keşfet
         </CTAButton>
       </Reveal>
     </div>

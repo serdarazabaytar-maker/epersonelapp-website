@@ -40,11 +40,11 @@ const TYPE_LABELS = {
   gorusme: "Görüşme Talebi",
   teklif: "Teklif Talebi",
   iletisim: "İletişim Formu",
-  teslimat: "EPkurye Teslimat Teklifi",
+  teslimat: "EPgo Teslimat Teklifi",
   basvuru: "EP Başvuru",
 };
 
-const SOLUTION_LABELS = { ep: "EP", epapp: "EPapp", epfood: "EPfood", epkurye: "EPkurye" };
+const SOLUTION_LABELS = { ep: "EP", epapp: "EPapp", epfood: "EPfood", epgo: "EPgo" };
 
 const typeLabel = (lead) => {
   if (lead.form_type === "teklif" && lead.source_page === "/epfood") return "EPfood Teklif Talebi";

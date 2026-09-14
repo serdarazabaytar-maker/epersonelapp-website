@@ -8,7 +8,7 @@ const SOLUTION_OPTIONS = [
   { id: "ep", name: "EP" },
   { id: "epapp", name: "EPapp" },
   { id: "epfood", name: "EPfood" },
-  { id: "epkurye", name: "EPkurye" },
+  { id: "epgo", name: "EPgo" },
 ];
 
 const VISIBILITY_OPTIONS = [
@@ -16,7 +16,7 @@ const VISIBILITY_OPTIONS = [
   { key: "show_ep", label: "EP sayfası" },
   { key: "show_epapp", label: "EPapp sayfası" },
   { key: "show_epfood", label: "EPfood sayfası" },
-  { key: "show_epkurye", label: "EPkurye sayfası" },
+  { key: "show_epgo", label: "EPgo sayfası" },
   { key: "show_references", label: "Referanslar sayfası" },
 ];
 
@@ -31,7 +31,7 @@ const EMPTY_FORM = {
   show_ep: false,
   show_epapp: false,
   show_epfood: false,
-  show_epkurye: false,
+  show_epgo: false,
   show_references: true,
   active: true,
   order: 0,

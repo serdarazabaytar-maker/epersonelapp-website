@@ -366,16 +366,16 @@ const Features = () => (
       </FeatureRow>
 
       <Reveal>
-        <div className="grid items-center gap-8 rounded-[2rem] border border-line bg-mist p-10 md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epapp-kurye-band">
+        <div className="grid items-center gap-8 rounded-[2rem] border border-line bg-mist p-10 md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epapp-epgo-band">
           <div>
-            <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-7 w-auto object-contain" loading="lazy" />
-            <h3 className="mt-5 text-3xl font-bold tracking-tight text-ink md:text-4xl">Siparişler EPkurye'ye yönlendirilebilir.</h3>
+            <img src={LOGOS.epgo} alt="EPgo logosu" className="h-7 w-auto object-contain" loading="lazy" />
+            <h3 className="mt-5 text-3xl font-bold tracking-tight text-ink md:text-4xl">Siparişler EPgo'ya yönlendirilebilir.</h3>
             <p className="mt-3 max-w-lg text-base text-mute">
-              Dilediğiniz kanaldan gelen siparişlerin teslimatını EPkurye operasyonuna devredin.
+              Dilediğiniz kanaldan gelen siparişlerin teslimatını EPgo operasyonuna devredin.
             </p>
           </div>
-          <CTAButton to="/epkurye" variant="dark" testId="epapp-kurye-cta">
-            EPkurye'yi Keşfet
+          <CTAButton to="/epgo" variant="dark" testId="epapp-epgo-cta">
+            EPgo'yu Keşfet
           </CTAButton>
         </div>
       </Reveal>

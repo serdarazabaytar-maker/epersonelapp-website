@@ -34,8 +34,8 @@ api_router = APIRouter(prefix="/api")
 logger = logging.getLogger(__name__)
 
 BRANCH_OPTIONS = {"1 Şube", "2–5 Şube", "6–20 Şube", "21–50 Şube", "51–100 Şube", "100+ Şube"}
-SOLUTIONS = {"ep", "epapp", "epkurye", "epfood"}
-SOLUTION_LABELS = {"ep": "EP", "epapp": "EPapp", "epkurye": "EPkurye", "epfood": "EPfood"}
+SOLUTIONS = {"ep", "epapp", "epgo", "epfood"}
+SOLUTION_LABELS = {"ep": "EP", "epapp": "EPapp", "epgo": "EPgo", "epfood": "EPfood"}
 FORM_TYPES = {"gorusme", "teklif", "iletisim", "teslimat", "basvuru"}
 LEAD_STATUSES = {"new", "contacted", "meeting_planned", "offer_sent", "won", "lost"}
 
@@ -428,7 +428,7 @@ TYPE_LABELS_TR = {
     "gorusme": "Görüşme Talebi",
     "teklif": "Teklif Talebi",
     "iletisim": "İletişim Formu",
-    "teslimat": "EPkurye Teslimat Teklifi",
+    "teslimat": "EPgo Teslimat Teklifi",
     "basvuru": "EP Başvuru",
 }
 STATUS_LABELS_TR = {
@@ -739,7 +739,7 @@ def get_object(path: str):
 # --- Referanslar (tek merkezi data; admin panelden yönetilir) ---
 REF_FIELDS = [
     "name", "solutions", "services", "manager_name", "manager_title", "quote",
-    "show_marquee", "show_ep", "show_epapp", "show_epfood", "show_epkurye",
+    "show_marquee", "show_ep", "show_epapp", "show_epfood", "show_epgo",
     "show_references", "active", "order",
 ]
 
@@ -757,7 +757,7 @@ def _ref_out(doc: dict) -> dict:
         "show_ep": doc.get("show_ep", False),
         "show_epapp": doc.get("show_epapp", False),
         "show_epfood": doc.get("show_epfood", False),
-        "show_epkurye": doc.get("show_epkurye", False),
+        "show_epgo": doc.get("show_epgo", False),
         "show_references": doc.get("show_references", True),
         "active": doc.get("active", True),
         "order": doc.get("order", 0),
@@ -776,7 +776,7 @@ class ReferenceUpsert(BaseModel):
     show_ep: bool = False
     show_epapp: bool = False
     show_epfood: bool = False
-    show_epkurye: bool = False
+    show_epgo: bool = False
     show_references: bool = True
     active: bool = True
     order: int = 0
@@ -862,8 +862,8 @@ SEED_REFERENCES = [
     {"name": "Barış Gross", "solutions": ["ep"], "services": ["Pazaryeri Operasyonu", "EP Uygulaması"], "order": 4, "show_ep": True},
     {"name": "Vatan", "solutions": ["epapp"], "services": ["Pazaryeri Entegrasyonu", "Personel Uygulaması"], "order": 5, "show_epapp": True},
     {"name": "Baytar Burger", "solutions": ["epfood"], "services": ["Menü Kurulumu", "Sipariş Ekranı", "Kurye"], "order": 6, "show_epfood": True},
-    {"name": "Bronto", "solutions": ["epkurye"], "services": ["Kurye", "Randevulu Teslim"], "order": 7, "show_epkurye": True},
-    {"name": "Carrefour", "solutions": ["epkurye"], "services": ["Kurye", "Hemen Teslim"], "order": 8, "show_epkurye": True},
+    {"name": "Bronto", "solutions": ["epgo"], "services": ["Kurye", "Randevulu Teslim"], "order": 7, "show_epgo": True},
+    {"name": "Carrefour", "solutions": ["epgo"], "services": ["Kurye", "Hemen Teslim"], "order": 8, "show_epgo": True},
 ]
 
 
@@ -883,7 +883,7 @@ async def seed_references():
             "show_ep": False,
             "show_epapp": False,
             "show_epfood": False,
-            "show_epkurye": False,
+            "show_epgo": False,
             "show_references": True,
             "active": True,
             "created_at": now,

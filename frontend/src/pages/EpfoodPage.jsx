@@ -231,18 +231,18 @@ const Features = () => (
       </FeatureRow>
 
       <Reveal>
-        <div className="grid items-center gap-8 rounded-[2rem] bg-ink p-10 text-white md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epfood-kurye-band">
+        <div className="grid items-center gap-8 rounded-[2rem] bg-ink p-10 text-white md:p-14 lg:grid-cols-[1fr_auto]" data-testid="epfood-epgo-band">
           <div>
-            <img src={LOGOS.epkurye} alt="EPkurye logosu" className="h-7 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
+            <img src={LOGOS.epgo} alt="EPgo logosu" className="h-7 w-auto rounded bg-white object-contain px-2 py-1" loading="lazy" />
             <h3 className="mt-5 text-3xl font-bold tracking-tight md:text-4xl">Mutfaktan kapıya kadar.</h3>
             <p className="mt-3 max-w-lg text-base text-white/60">
-              Restoran siparişlerinizi EPkurye ile teslim edin; 30–45 dakika hemen teslim ve randevulu teslim seçenekleriyle.
+              Restoran siparişlerinizi EPgo ile teslim edin; 30–45 dakika hemen teslim ve randevulu teslim seçenekleriyle.
             </p>
           </div>
           <div className="flex flex-col items-start gap-3">
             <ArrowDown className="h-5 w-5 rotate-[-135deg] text-white/40" aria-hidden="true" />
-            <CTAButton to="/epkurye" testId="epfood-kurye-cta">
-              EPkurye'yi Keşfet
+            <CTAButton to="/epgo" testId="epfood-epgo-cta">
+              EPgo'yu Keşfet
             </CTAButton>
           </div>
         </div>
