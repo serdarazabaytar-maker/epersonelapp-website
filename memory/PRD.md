@@ -151,6 +151,9 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 ## Güncellemeler (14 Eylül 2026 — tur 21): EPapp marka kanalı gerçek görsel
 - EPapp "Markaya Özel Mobil & Web" koyu bölümü (BrandChannel): sağdaki BrandChannelVisual mockup'ı (web mockup + köşe telefonu + iOS/Android/Web çipleri) kaldırıldı, yerine kullanıcının yüklediği GERÇEK birleşik görsel (web sipariş sitesi + mobil ana sayfa + ürün listeleme + ödeme ekranı, 1448x1086 RGBA transparan) hash doğrulamalı birebir kopya /assets/epapp-brand-channel.png — içeriğe sıfır müdahale, kart/stroke eklemeden doğrudan koyu zeminde
 - CSS-only yerleşim: w-full h-auto object-contain (desktop 568x426, mobil 335x251 metin/CTA altında); sol içerik (eyebrow/başlık/açıklama/12 chip/Teklif Talep Et) korundu
+
+## Güncellemeler (14 Eylül 2026 — tur 22)
+- EPapp "Markaya Özel Mobil & Web" birleşik görseli kullanıcı isteğiyle %20 büyütüldü: lg:scale-[1.2] (render 568x426 → 682x511); metinle çakışma yok (400px+ boşluk), desktop/mobil taşma yok, mobil boyut aynı (335x251)
 - Temizlik: BrandChannelVisual silindi; PhoneMock'un personel varyantı (PersonelScreen) artık hiçbir yerde kullanılmadığı için kaldırıldı; kullanılmayan importlar (PhoneMock EpappPage'den, Clock3/Package PhoneMock'tan) temizlendi
 - CSS-only yerleşim: w-full h-auto object-contain (desktop 568x320, mobil 335x189 metin altında); sol başlık/açıklama korundu; DashboardMock bileşeni diğer bölümlerde (stok/fiyat) kullanılmaya devam ediyor
 - CSS-only yerleşim: w-full max-w-[540px] h-auto object-contain; sağdaki başlık/açıklama korundu; mobilde metin altında responsive (375px'te taşma yok). Kullanılmayan AdminPanel/ADMIN_TABS kodu ve useState importu temizlendi

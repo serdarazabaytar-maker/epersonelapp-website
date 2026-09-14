@@ -131,7 +131,7 @@ const BrandChannel = () => (
           <img
             src="/assets/epapp-brand-channel.png"
             alt="Markaya özel sipariş kanalları — web sipariş sitesi, mobil ana sayfa, mobil ürün listeleme ve mobil ödeme ekranları"
-            className="h-auto w-full object-contain"
+            className="h-auto w-full object-contain lg:scale-[1.2]"
             loading="lazy"
             data-testid="epapp-brand-image"
           />
