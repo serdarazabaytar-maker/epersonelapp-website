@@ -5,7 +5,6 @@ import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
 import { CTAButton } from "@/components/CTAButton";
 import { DashboardMock } from "@/components/DashboardMock";
-import { PhoneMock } from "@/components/PhoneMock";
 import { EpappFlow } from "@/components/EpappFlow";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
@@ -87,72 +86,6 @@ const Hero = () => (
   </section>
 );
 
-// Markaya özel mobil + web kanalı: telefon mockup + web mockup + floating UI kartları.
-const BrandChannelVisual = () => (
-  <div className="relative rounded-[2rem] border border-white/10 bg-white/5 p-6 md:p-8" data-testid="brand-channel-visual">
-    <div className="relative overflow-hidden rounded-2xl bg-white text-ink shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
-      <div className="flex items-center gap-2 border-b border-line bg-mist px-4 py-3">
-        <span className="h-2.5 w-2.5 rounded-full bg-line" />
-        <span className="h-2.5 w-2.5 rounded-full bg-line" />
-        <span className="h-2.5 w-2.5 rounded-full bg-brand" />
-        <span className="ml-3 rounded-md border border-line bg-white px-3 py-1 text-[11px] font-semibold text-mute">
-          siparis.markaniz.com
-        </span>
-      </div>
-      <div className="p-5">
-        <div className="flex items-center justify-between">
-          <span className="rounded-lg bg-ink px-3 py-1.5 text-xs font-extrabold text-white">Markanız</span>
-          <span className="rounded-full bg-mist px-3 py-1 text-[11px] font-bold text-ink">Sepet · 2 ürün</span>
-        </div>
-        <div className="mt-4 space-y-2.5">
-          {[
-            ["Izgara Köfte Menü", "₺249,90"],
-            ["Tavuk Şinitzel", "₺219,90"],
-            ["Mercimek Çorbası", "₺79,90"],
-          ].map(([n, pr], i) => (
-            <motion.div
-              key={n}
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 + i * 0.1 }}
-              className="flex items-center gap-3 rounded-xl border border-line bg-white p-3"
-            >
-              <div className="h-10 w-10 shrink-0 rounded-lg bg-mist" />
-              <p className="flex-1 truncate text-[13px] font-bold">{n}</p>
-              <p className="text-[13px] font-extrabold">{pr}</p>
-            </motion.div>
-          ))}
-        </div>
-        <div className="mt-4 flex items-center justify-between rounded-xl bg-ink px-4 py-3 text-white">
-          <span className="text-xs font-bold">Online ödeme ile tamamla</span>
-          <span className="rounded-full bg-brand px-3 py-1 text-[11px] font-extrabold text-ink">Sipariş Ver</span>
-        </div>
-      </div>
-    </div>
-    <div className="absolute -bottom-6 -right-2 z-10 hidden origin-bottom-right scale-[0.42] sm:block md:-right-4" aria-hidden="true">
-      <PhoneMock variant="personel" />
-    </div>
-    {[
-      { label: "iOS", x: "-4%", y: "12%" },
-      { label: "Android", x: "88%", y: "6%" },
-      { label: "Web", x: "92%", y: "45%" },
-    ].map((p, i) => (
-      <motion.span
-        key={p.label}
-        initial={{ opacity: 0, scale: 0.9 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.4 + i * 0.12 }}
-        className="absolute z-20 rounded-full border border-white/15 bg-white px-4 py-2 text-xs font-extrabold text-ink shadow-xl"
-        style={{ left: p.x, top: p.y }}
-      >
-        {p.label}
-      </motion.span>
-    ))}
-  </div>
-);
-
 const BrandChannel = () => (
   <section className="grain coal-grid relative overflow-hidden bg-coal py-24 text-white md:py-32" data-testid="epapp-brand-channel">
     <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2 lg:gap-20">
@@ -194,7 +127,15 @@ const BrandChannel = () => (
         </div>
       </Reveal>
       <Reveal delay={0.15}>
-        <BrandChannelVisual />
+        <div className="flex justify-center" data-testid="epapp-brand-visual">
+          <img
+            src="/assets/epapp-brand-channel.png"
+            alt="Markaya özel sipariş kanalları — web sipariş sitesi, mobil ana sayfa, mobil ürün listeleme ve mobil ödeme ekranları"
+            className="h-auto w-full object-contain"
+            loading="lazy"
+            data-testid="epapp-brand-image"
+          />
+        </div>
       </Reveal>
     </div>
   </section>

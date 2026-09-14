@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Barcode, Search, Plus, Minus, ChevronRight, Clock3, Package } from "lucide-react";
+import { Barcode, Search, Plus, Minus, ChevronRight } from "lucide-react";
 
 // Telefon mockup — gerçek uygulama ekran görüntüleri hazır olduğunda
 // ekran içerikleri görsellerle değiştirilecek şekilde tasarlandı.
@@ -45,53 +45,6 @@ const EpScreen = () => (
           {t}
         </span>
       ))}
-    </div>
-  </div>
-);
-
-const PersonelScreen = () => (
-  <div className="flex h-full flex-col bg-mist">
-    <div className="bg-ink px-5 pb-5 pt-4 text-white">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Personel Uygulaması</p>
-      <p className="mt-1 text-base font-bold">Tek Ekran — Tüm Siparişler</p>
-    </div>
-    <div className="flex-1 space-y-2.5 overflow-hidden p-4">
-      {[
-        ["#10482", "Trendyol", "Hazırlanıyor", "08:12"],
-        ["#10481", "Yemeksepeti", "Kuryede", "12:40"],
-        ["#10479", "Kendi Uygulaması", "Yeni", "00:32"],
-        ["#10478", "Getir", "Hazırlanıyor", "04:55"],
-      ].map(([id, channel, status, time], i) => (
-        <motion.div
-          key={id}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 + i * 0.12 }}
-          className="rounded-xl border border-line bg-white p-3"
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-[13px] font-extrabold text-ink">{id}</p>
-            <span
-              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                status === "Yeni" ? "bg-brand text-ink" : status === "Kuryede" ? "bg-mist text-mute" : "bg-ink text-white"
-              }`}
-            >
-              {status}
-            </span>
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-mute">
-            <span className="flex items-center gap-1">
-              <Package className="h-3 w-3" /> {channel}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock3 className="h-3 w-3" /> {time}
-            </span>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-    <div className="border-t border-line bg-white px-5 py-3 text-center text-[10px] font-bold text-mute">
-      4 kanal · tek uygulama
     </div>
   </div>
 );
@@ -159,7 +112,7 @@ const EpfoodScreen = () => (
   </div>
 );
 
-const SCREENS = { ep: EpScreen, personel: PersonelScreen, epfood: EpfoodScreen };
+const SCREENS = { ep: EpScreen, epfood: EpfoodScreen };
 
 export const PhoneMock = ({ variant = "ep", className = "" }) => {
   const Screen = SCREENS[variant] || EpScreen;
