@@ -1,4 +1,5 @@
 import { Clock3, CalendarClock, Bike, Snowflake, ArrowDown } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
@@ -105,22 +106,42 @@ const Services = () => (
                 </CTAButton>
               </div>
             </div>
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">Kontrollü teslimat</p>
-              <ul className="mt-5 space-y-4">
-                {["Soğuk zincir takibi", "İşletmeye özel araç", "Planlanmış rotalar", "Randevulu dağıtım"].map((f) => (
-                  <li key={f} className="flex items-center gap-3 text-[15px] font-semibold text-white/85">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand" /> {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <CourierVisual />
           </div>
         </article>
       </Reveal>
     </div>
   </section>
 );
+
+// Frigolu bandının ana görseli — EPgo kuryesi (transparan cutout, koyu zeminde doğrudan oturur).
+const CourierVisual = () => {
+  const reduce = useReducedMotion();
+  return (
+    <div className="relative flex items-end justify-center lg:self-end" data-testid="epgo-frigolu-visual">
+      <div
+        className="pointer-events-none absolute bottom-4 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-brand/20 blur-3xl"
+        aria-hidden="true"
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <motion.img
+          src="/assets/epgo-kurye.webp"
+          alt="EPgo kuryesi — beyaz scooter, EPgo logolu teslimat çantası ve mont, elinde market poşeti"
+          className="relative z-10 h-80 w-auto object-contain drop-shadow-[0_28px_48px_rgba(0,0,0,0.5)] sm:h-96 lg:h-[430px]"
+          animate={reduce ? undefined : { y: [0, -8, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          data-testid="epgo-courier-image"
+          loading="lazy"
+        />
+      </motion.div>
+    </div>
+  );
+};
 
 const AnyChannel = () => (
   <section className="border-y border-line bg-mist py-24 md:py-32" data-testid="epgo-any-channel">

@@ -109,6 +109,13 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - EP pricing seçili state: çift katmanlı yeşil glow + üst blur halo + -translate-y-2 + koyu badge (yeşil pulse noktalı); pasif kartlara hover lift
 - EPapp hero: yeni `EpappFlow.jsx` — 3 eksen akışı (Pazaryerleri → EPapp Sipariş Merkezi hub (dönen sipariş ticker'ı) → Personel App + Admin Panel + Web & Mobil)
 - EPgo hero: yeni `EpgoMap.jsx` — tek sade sahne: merkez Mağaza + 3,5 km kapsama çemberi + 2 müşteri pini + moto kurye (A) + araçlı kurye (B) + "30–45 dakika hemen teslim / Frigolu teslim / Randevulu teslim" etiketleri
+
+## Güncellemeler (14 Eylül 2026 — tur 12): EPgo kurye görseli
+- Kullanıcının yüklediği kurye görseli (beyaz scooter + EPgo logolu çanta/mont + kasklı kurye + market poşeti) EPgo sayfasındaki koyu "İşletmeye Özel Frigolu Panelvan" CTA bandının sağ kolonuna ana görsel olarak yerleştirildi
+- Görsel aslında transparan zeminli RGBA çıktı (önizlemede beyaz görünüyordu) → koyu zemine doğrudan oturdu; WebP q90 (39KB, alfa korunmuş) olarak /assets/epgo-kurye.webp
+- Zayıf görünen "Kontrollü teslimat" liste paneli kaldırıldı; yerine: alt hizalı büyük görsel (lg: 430px) + arkada brand yeşili radial glow + drop-shadow derinliği + yumuşak float animasyonu (reduced-motion güvenli) + giriş reveal'ı
+- Mobil: görsel 320px'e küçülüyor, metin/CTA altında ortalanıyor, yatay taşma yok
+- Doğrulama: desktop + mobil (375px) ekran görüntüleriyle kompozisyon, kontrast ve responsive davranış onaylandı
 - Temizlik: MapMock.jsx silindi; SystemVisual sadece ep/epfood varyantlarına indirildi; DashboardMock yalnızca EPapp alt bölümlerinde
 - LogoBand marquee zaten gereksinimleri karşılıyordu (70sn loop, hover-pause, reduced-motion) — will-change eklendi
 - Doğrulama (testing agent, iteration_3): frontend %100 — tüm yeni bileşenler, metrikler, footer büyük harf, WhatsApp yokluğu, pricing state, mobil 375px taşmasız, konsol temiz. Advisory notlar: pricing testid Türkçe slug (pricing-ep-başlangıç), metrikler scroll-into-view ile sayar (beklenen davranış)
