@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ArrowDown } from "lucide-react";
 import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
@@ -239,9 +238,19 @@ const Features = () => (
               Restoran siparişlerinizi EPgo ile teslim edin; 30–45 dakika hemen teslim ve randevulu teslim seçenekleriyle.
             </p>
           </div>
-          <div className="flex flex-col items-start gap-3">
-            <ArrowDown className="h-5 w-5 rotate-[-135deg] text-white/40" aria-hidden="true" />
-            <CTAButton to="/epgo" testId="epfood-epgo-cta">
+          <div className="relative flex h-48 w-full items-end justify-center pb-1 lg:h-56 lg:w-[360px]" data-testid="epfood-epgo-visual">
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl"
+              aria-hidden="true"
+            />
+            <img
+              src="/assets/epgo-scooter.png"
+              alt="EPgo kuryesi — EPgo logolu teslimat çantasıyla beyaz scooter"
+              className="absolute inset-0 z-0 m-auto h-full w-full object-contain"
+              loading="lazy"
+              data-testid="epfood-epgo-image"
+            />
+            <CTAButton to="/epgo" testId="epfood-epgo-cta" className="relative z-10">
               EPgo'yu Keşfet
             </CTAButton>
           </div>

@@ -120,6 +120,13 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 ## Güncellemeler (14 Eylül 2026 — tur 13): EPgo final kurye görseli
 - Kullanıcının yüklediği FINAL PNG (panelvan + kurye + scooter + yeşil yay, 612x408 RGBA transparan zemin) hash doğrulamalı birebir kopyayla /assets/epgo-kurye.png olarak yerleştirildi — dosyaya hiçbir işlem yapılmadı (dönüştürme/sıkıştırma/crop/renk/filtre YOK); önceki webp silindi
 - Yerleşim yalnızca CSS: w-full, max-w-[540px], h-auto, object-contain, responsive; arkada CSS dekoru olarak geniş yeşil glow (görsel içeriğine dokunmuyor), drop-shadow kaldırıldı
+
+## Güncellemeler (14 Eylül 2026 — tur 14): Scooterlı EPgo görseli, CTA bantları
+- Kullanıcının yüklediği scooterlı EPgo görseli (666x375 RGBA transparan) hash doğrulamalı birebir kopyayla /assets/epgo-scooter.png olarak eklendi — içeriğe sıfır müdahale
+- Yerleşim: koyu EPgo tanıtım bantlarının sağ alanına katmanlı kompozisyon — (1) bant zemini + hafif yeşil CSS glow, (2) scooter görseli (object-contain, absolute, z-0), (3) "EPgo'yu Keşfet" CTA'sı en önde (relative z-10, altta hizalı); buton metni/yeri/variant'ı değişmedi, elementFromPoint ile tıklanabilirliği doğrulandı
+- Uygulandığı yerler: /ep cross-sell bandı (bg-coal, yeşil CTA) ve /epfood EPgo bandı (bg-ink; CTA mevcut turuncu accent sistemini koruyor). EpfoodPage'den kullanılmayan ArrowDown importu temizlendi
+- Mobil: görsel metnin altına geçiyor, 375px'te taşma yok
+- Not: Kullanıcı bloğu "EPgo sayfasındaki" diye tarif etti ancak "EPgo'yu Keşfet" butonu /ep ve /epfood bantlarında bulunuyor; her ikisine uygulandı
 - Doğrulama: desktop 532x355 render (tam kompozisyon görünür), mobil 375px'te 255x170 taşmasız; alt metin panelvan/kurye/scooter içerecek şekilde güncellendi
 - Temizlik: MapMock.jsx silindi; SystemVisual sadece ep/epfood varyantlarına indirildi; DashboardMock yalnızca EPapp alt bölümlerinde
 - LogoBand marquee zaten gereksinimleri karşılıyordu (70sn loop, hover-pause, reduced-motion) — will-change eklendi

@@ -238,10 +238,23 @@ const CrossSell = () => (
           kadar tüm süreç tek ekipte.
         </p>
       </Reveal>
-      <Reveal delay={0.15}>
-        <CTAButton to="/epgo" testId="ep-cross-sell-cta">
-          EPgo'yu Keşfet
-        </CTAButton>
+      <Reveal delay={0.15} className="w-full lg:w-auto">
+        <div className="relative flex h-48 items-end justify-center pb-1 lg:h-56 lg:w-[360px]" data-testid="ep-cross-sell-visual">
+          <div
+            className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-3xl"
+            aria-hidden="true"
+          />
+          <img
+            src="/assets/epgo-scooter.png"
+            alt="EPgo kuryesi — EPgo logolu teslimat çantasıyla beyaz scooter"
+            className="absolute inset-0 z-0 m-auto h-full w-full object-contain"
+            loading="lazy"
+            data-testid="ep-cross-sell-image"
+          />
+          <CTAButton to="/epgo" testId="ep-cross-sell-cta" className="relative z-10">
+            EPgo'yu Keşfet
+          </CTAButton>
+        </div>
       </Reveal>
     </div>
   </section>
