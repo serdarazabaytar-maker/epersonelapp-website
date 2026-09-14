@@ -144,6 +144,9 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 
 ## Güncellemeler (14 Eylül 2026 — tur 19): EPapp çoklu şube bölümü gerçek dashboard
 - EPapp "Bir şubeden yüzlerce şubeye." (FeatureRow 07): sağdaki DashboardMock(subeler) mockup'ı kaldırıldı, yerine kullanıcının yüklediği GERÇEK eOrder dashboard görseli (browser frame, sipariş kartları + son işlemler tablosu + QR, 666x375 RGBA transparan) hash doğrulamalı birebir kopya /assets/eorder-dashboard.png — içeriğe sıfır müdahale
+
+## Güncellemeler (14 Eylül 2026 — tur 20)
+- EPapp "Bir şubeden yüzlerce şubeye." dashboard görseli kullanıcı isteğiyle ~%12 büyütüldü: img'e lg:scale-[1.12] (layout'u bozmadan saf görsel büyütme; render 568x320 → 636x358); metin kolonuyla çakışma yok (46px boşluk), desktop/mobil taşma yok, mobil boyut aynı (335x189)
 - CSS-only yerleşim: w-full h-auto object-contain (desktop 568x320, mobil 335x189 metin altında); sol başlık/açıklama korundu; DashboardMock bileşeni diğer bölümlerde (stok/fiyat) kullanılmaya devam ediyor
 - CSS-only yerleşim: w-full max-w-[540px] h-auto object-contain; sağdaki başlık/açıklama korundu; mobilde metin altında responsive (375px'te taşma yok). Kullanılmayan AdminPanel/ADMIN_TABS kodu ve useState importu temizlendi
 - Doğrulama: desktop 532x355 render (tam kompozisyon görünür), mobil 375px'te 255x170 taşmasız; alt metin panelvan/kurye/scooter içerecek şekilde güncellendi

@@ -345,7 +345,7 @@ const Features = () => (
           <img
             src="/assets/eorder-dashboard.png"
             alt="eOrder merkezi yönetim paneli — toplam sipariş, mağaza ve kullanıcı takibi ile son işlemler tablosu"
-            className="h-auto w-full object-contain"
+            className="h-auto w-full object-contain lg:scale-[1.12]"
             loading="lazy"
             data-testid="epapp-branches-image"
           />
