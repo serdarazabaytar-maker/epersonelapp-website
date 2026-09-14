@@ -341,7 +341,15 @@ const Features = () => (
         desc="Çoklu şube yapısı merkezi yönetim ekranından izlenir; her şubenin performansı anlık takip edilir."
         testId="epapp-feature-branches"
       >
-        <DashboardMock tab="subeler" compact />
+        <div className="flex justify-center" data-testid="epapp-branches-visual">
+          <img
+            src="/assets/eorder-dashboard.png"
+            alt="eOrder merkezi yönetim paneli — toplam sipariş, mağaza ve kullanıcı takibi ile son işlemler tablosu"
+            className="h-auto w-full object-contain"
+            loading="lazy"
+            data-testid="epapp-branches-image"
+          />
+        </div>
       </FeatureRow>
 
       <Reveal>
