@@ -120,7 +120,7 @@ const CourierVisual = () => {
   return (
     <div className="relative flex items-end justify-center lg:self-end" data-testid="epgo-frigolu-visual">
       <div
-        className="pointer-events-none absolute bottom-4 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-brand/20 blur-3xl"
+        className="pointer-events-none absolute bottom-4 left-1/2 h-64 w-full max-w-[420px] -translate-x-1/2 rounded-full bg-brand/20 blur-3xl"
         aria-hidden="true"
       />
       <motion.div
@@ -130,9 +130,9 @@ const CourierVisual = () => {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       >
         <motion.img
-          src="/assets/epgo-kurye.webp"
-          alt="EPgo kuryesi — beyaz scooter, EPgo logolu teslimat çantası ve mont, elinde market poşeti"
-          className="relative z-10 h-80 w-auto object-contain drop-shadow-[0_28px_48px_rgba(0,0,0,0.5)] sm:h-96 lg:h-[430px]"
+          src="/assets/epgo-kurye.png"
+          alt="EPgo teslimat ekibi — EPgo logolu frigolu panelvan, kasklı kurye, beyaz scooter ve market poşeti"
+          className="relative z-10 h-auto w-full max-w-[540px] object-contain"
           animate={reduce ? undefined : { y: [0, -8, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           data-testid="epgo-courier-image"

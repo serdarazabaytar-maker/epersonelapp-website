@@ -116,6 +116,11 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Zayıf görünen "Kontrollü teslimat" liste paneli kaldırıldı; yerine: alt hizalı büyük görsel (lg: 430px) + arkada brand yeşili radial glow + drop-shadow derinliği + yumuşak float animasyonu (reduced-motion güvenli) + giriş reveal'ı
 - Mobil: görsel 320px'e küçülüyor, metin/CTA altında ortalanıyor, yatay taşma yok
 - Doğrulama: desktop + mobil (375px) ekran görüntüleriyle kompozisyon, kontrast ve responsive davranış onaylandı
+
+## Güncellemeler (14 Eylül 2026 — tur 13): EPgo final kurye görseli
+- Kullanıcının yüklediği FINAL PNG (panelvan + kurye + scooter + yeşil yay, 612x408 RGBA transparan zemin) hash doğrulamalı birebir kopyayla /assets/epgo-kurye.png olarak yerleştirildi — dosyaya hiçbir işlem yapılmadı (dönüştürme/sıkıştırma/crop/renk/filtre YOK); önceki webp silindi
+- Yerleşim yalnızca CSS: w-full, max-w-[540px], h-auto, object-contain, responsive; arkada CSS dekoru olarak geniş yeşil glow (görsel içeriğine dokunmuyor), drop-shadow kaldırıldı
+- Doğrulama: desktop 532x355 render (tam kompozisyon görünür), mobil 375px'te 255x170 taşmasız; alt metin panelvan/kurye/scooter içerecek şekilde güncellendi
 - Temizlik: MapMock.jsx silindi; SystemVisual sadece ep/epfood varyantlarına indirildi; DashboardMock yalnızca EPapp alt bölümlerinde
 - LogoBand marquee zaten gereksinimleri karşılıyordu (70sn loop, hover-pause, reduced-motion) — will-change eklendi
 - Doğrulama (testing agent, iteration_3): frontend %100 — tüm yeni bileşenler, metrikler, footer büyük harf, WhatsApp yokluğu, pricing state, mobil 375px taşmasız, konsol temiz. Advisory notlar: pricing testid Türkçe slug (pricing-ep-başlangıç), metrikler scroll-into-view ile sayar (beklenen davranış)
