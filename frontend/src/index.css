@@ -77,6 +77,7 @@ html.lenis body {
 .marquee-track {
     display: flex;
     width: max-content;
+    will-change: transform;
     animation: marquee 70s linear infinite;
 }
 .marquee-track:hover {

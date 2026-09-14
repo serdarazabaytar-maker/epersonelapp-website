@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Linkedin, Instagram, Phone, Mail } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
+import { InstagramIcon, LinkedinIcon } from "./SocialIcons";
 import { LOGOS, SOLUTIONS, CONTACT } from "@/data/site";
 import { Reveal } from "./Reveal";
 import { CTAButton } from "./CTAButton";
@@ -17,8 +18,8 @@ const LEGAL_LINKS = [
 ];
 
 const SOCIALS = [
-  { icon: Linkedin, href: CONTACT.linkedin, label: "LinkedIn", testId: "footer-social-linkedin" },
-  { icon: Instagram, href: CONTACT.instagram, label: "Instagram", testId: "footer-social-instagram" },
+  { icon: LinkedinIcon, href: CONTACT.linkedin, label: "LinkedIn", testId: "footer-social-linkedin" },
+  { icon: InstagramIcon, href: CONTACT.instagram, label: "Instagram", testId: "footer-social-instagram" },
 ];
 
 export const Footer = () => (
@@ -114,7 +115,7 @@ export const Footer = () => (
                   rel="noreferrer"
                   aria-label={s.label}
                   data-testid={s.testId}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ink"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-all duration-300 hover:-translate-y-1 hover:border-ink hover:bg-ink hover:text-white"
                 >
                   <s.icon className="h-4 w-4" />
                 </a>

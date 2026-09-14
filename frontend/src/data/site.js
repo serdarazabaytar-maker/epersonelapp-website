@@ -10,12 +10,10 @@ export const LOGOS = {
 };
 
 // Merkezi iletişim bilgileri — tüm componentler buradan beslenir, hard-code yok.
-// WhatsApp numarası verilene kadar null kalır (public'te yanlış link gösterilmez).
 export const CONTACT = {
   email: "info@epersonelapp.com",
   phone: "+90 (212) 000 00 00",
   phoneTel: "+902120000000",
-  whatsapp: null,
   instagram: "https://www.instagram.com/epersonel",
   linkedin: "https://www.linkedin.com/company/epersonel",
 };
@@ -81,10 +79,10 @@ export const NAV_LINKS = [
 ];
 
 export const METRICS = [
-  { value: 50, suffix: "K+", label: "Yönetilen Ürün" },
-  { value: 30, suffix: "+", label: "Aktif İşletme" },
-  { value: 50, suffix: "+", label: "Şube / Panel" },
-  { value: 10, suffix: "K+", label: "Yönetilen Sipariş" },
+  { value: 100, suffix: "K+", label: "Yönetilen Ürün" },
+  { value: 70, suffix: "+", label: "Firma Epersonel'de" },
+  { value: 150, suffix: "+", label: "Şube / Panel" },
+  { value: 15, suffix: "K+", label: "Yönetilen Sipariş" },
 ];
 
 export const EP_PRICING = [

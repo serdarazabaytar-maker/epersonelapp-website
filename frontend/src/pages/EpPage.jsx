@@ -159,20 +159,30 @@ const Pricing = () => {
                 <article
                   onMouseEnter={() => setActive(p.name)}
                   data-testid={`pricing-${p.name.toLowerCase().replace(/\s+/g, "-")}`}
-                  className={`relative flex h-full flex-col rounded-[2rem] p-8 transition-all duration-300 md:p-10 ${
+                  className={`relative flex h-full flex-col rounded-[2rem] p-8 transition-all duration-500 md:p-10 ${
                     isActive
-                      ? "-translate-y-1.5 border-2 border-brand bg-white shadow-[0_24px_70px_rgba(var(--brand-rgb),0.28)]"
-                      : "border border-line bg-white"
+                      ? "-translate-y-2 border-2 border-brand bg-white shadow-[0_28px_80px_-20px_rgba(var(--brand-rgb),0.45),0_12px_32px_-12px_rgba(16,17,16,0.14)]"
+                      : "border border-line bg-white hover:-translate-y-1 hover:border-ink/30 hover:shadow-[0_16px_40px_rgba(16,17,16,0.08)]"
                   }`}
                 >
                   {isActive && (
-                    <div
-                      className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-b from-brand/[0.08] to-transparent"
-                      aria-hidden="true"
-                    />
+                    <>
+                      <div
+                        className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-b from-brand/[0.09] via-transparent to-transparent"
+                        aria-hidden="true"
+                      />
+                      <div
+                        className="pointer-events-none absolute inset-x-10 -top-6 h-12 rounded-full bg-brand/30 blur-2xl"
+                        aria-hidden="true"
+                      />
+                    </>
                   )}
                   {p.badge && (
-                    <span className="absolute -top-3.5 left-8 z-10 rounded-full bg-brand px-4 py-1.5 text-xs font-bold text-ink">
+                    <span className="absolute -top-3.5 left-8 z-10 flex items-center gap-1.5 rounded-full bg-ink px-4 py-1.5 text-xs font-bold text-white shadow-[0_8px_20px_rgba(16,17,16,0.25)]">
+                      <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+                        <span className="absolute h-full w-full animate-ping rounded-full bg-brand" />
+                        <span className="h-full w-full rounded-full bg-brand" />
+                      </span>
                       {p.badge}
                     </span>
                   )}

@@ -7,8 +7,8 @@ import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
 import { CTAButton } from "@/components/CTAButton";
 import { LogoBand } from "@/components/LogoBand";
-import { DashboardMock } from "@/components/DashboardMock";
-import { SystemVisual } from "@/components/SystemVisual";
+import { HeroSystem } from "@/components/HeroSystem";
+import { StepsShowcase } from "@/components/StepsShowcase";
 import { EcosystemFlow } from "@/components/EcosystemFlow";
 import { CaseCards } from "@/components/CaseCards";
 import { SOLUTIONS, METRICS } from "@/data/site";
@@ -172,11 +172,11 @@ const Hero = () => {
               >
                 <h2 className="text-xl font-bold tracking-tight text-ink md:text-2xl">{tab.title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-mute">{tab.desc}</p>
-                <div className="mt-5 h-[340px] sm:h-[380px]">
-                  <SystemVisual variant={tab.id} fill />
-                </div>
               </motion.div>
             </AnimatePresence>
+            <div className="mt-5 h-[340px] sm:h-[380px]">
+              <HeroSystem variant={tab.id} />
+            </div>
           </div>
         </motion.div>
       </div>
@@ -229,57 +229,6 @@ const Solutions = () => (
     </div>
   </section>
 );
-
-const SHOWCASE_TABS = [
-  { key: "siparisler", label: "Siparişler" },
-  { key: "urunler", label: "Ürünler" },
-  { key: "stok", label: "Stok" },
-  { key: "fiyat", label: "Fiyat" },
-  { key: "personel", label: "Personel" },
-  { key: "subeler", label: "Şubeler" },
-];
-
-const ProductShowcase = () => {
-  const [tab, setTab] = useState("siparisler");
-  return (
-    <section id="urun" className="scroll-mt-24 bg-mist py-24 md:py-32" data-testid="showcase-section">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <SectionHead
-          eyebrow="ÜRÜNÜ GÖRÜN"
-          title={
-            <>
-              Sadece anlatmıyoruz.
-              <br />
-              Operasyonu gerçekten yönetiyoruz.
-            </>
-          }
-          testId="showcase-heading"
-        />
-        <Reveal delay={0.1}>
-          <div className="mt-12 flex flex-wrap gap-1.5" role="tablist" aria-label="Panel bölümleri">
-            {SHOWCASE_TABS.map((t) => (
-              <button
-                key={t.key}
-                role="tab"
-                aria-selected={tab === t.key}
-                data-testid={`showcase-tab-${t.key}`}
-                onClick={() => setTab(t.key)}
-                className={`rounded-full px-5 py-2.5 text-sm font-bold transition-colors duration-300 ${
-                  tab === t.key ? "bg-ink text-white" : "border border-line bg-white text-mute hover:text-ink"
-                }`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </Reveal>
-        <Reveal delay={0.15} className="mt-6">
-          <DashboardMock tab={tab} />
-        </Reveal>
-      </div>
-    </section>
-  );
-};
 
 const Counter = ({ to, suffix }) => {
   const ref = useRef(null);
@@ -421,7 +370,7 @@ export default function HomePage() {
       <LogoBand />
       <Solutions />
       <EcosystemFlow />
-      <ProductShowcase />
+      <StepsShowcase />
       <Metrics />
       <Why />
       <Cases />

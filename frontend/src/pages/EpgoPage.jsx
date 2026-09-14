@@ -3,7 +3,7 @@ import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
 import { CTAButton } from "@/components/CTAButton";
-import { SystemVisual } from "@/components/SystemVisual";
+import { EpgoMap } from "@/components/EpgoMap";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
 import { LOGOS } from "@/data/site";
@@ -53,7 +53,7 @@ const Hero = () => (
         </div>
       </Reveal>
       <Reveal delay={0.15}>
-        <SystemVisual variant="epgo" />
+        <EpgoMap />
       </Reveal>
     </div>
   </section>

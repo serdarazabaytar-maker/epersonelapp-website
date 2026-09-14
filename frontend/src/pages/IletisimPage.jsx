@@ -1,11 +1,11 @@
-import { Phone, Mail, MessageCircle, ArrowUpRight } from "lucide-react";
+import { Phone, Mail, ArrowUpRight } from "lucide-react";
 import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { LeadForm } from "@/components/LeadForm";
+import { InstagramIcon, LinkedinIcon } from "@/components/SocialIcons";
 import { CONTACT } from "@/data/site";
 
 // İletişim kartları merkezi CONTACT config'inden beslenir (src/data/site.js).
-// WhatsApp numarası tanımlanana kadar kart tıklanamaz "Yakında" olarak görünür.
 const ContactCard = ({ icon: Icon, title, value, href, testId }) => {
   const inner = (
     <>
@@ -43,18 +43,25 @@ export default function IletisimPage() {
       testId: "contact-card-telefon",
     },
     {
-      icon: MessageCircle,
-      title: "WhatsApp",
-      value: CONTACT.whatsapp,
-      href: CONTACT.whatsapp ? `https://wa.me/${String(CONTACT.whatsapp).replace(/\D/g, "")}` : null,
-      testId: "contact-card-whatsapp",
-    },
-    {
       icon: Mail,
       title: "E-posta",
       value: CONTACT.email,
       href: CONTACT.email ? `mailto:${CONTACT.email}` : null,
       testId: "contact-card-eposta",
+    },
+    {
+      icon: InstagramIcon,
+      title: "Instagram",
+      value: "@epersonel",
+      href: CONTACT.instagram,
+      testId: "contact-card-instagram",
+    },
+    {
+      icon: LinkedinIcon,
+      title: "LinkedIn",
+      value: "Epersonel",
+      href: CONTACT.linkedin,
+      testId: "contact-card-linkedin",
     },
   ];
 

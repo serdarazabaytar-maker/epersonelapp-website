@@ -99,6 +99,19 @@ Epersonel (teknoloji + operasyon şirketi) için sıfırdan, production kalitesi
 - Footer Çözümler bölümü TAM BÜYÜK HARF: EP / EPAPP / EPFOOD / EPGO (s.name.toUpperCase(); diğer alanlarda EPgo standardı)
 - Backend: solution id "epgo", show_epkurye → show_epgo (REF_FIELDS/_ref_out/ReferenceUpsert/seed), "EPgo Teslimat Teklifi" etiketi, SOLUTION_LABELS. DB migrasyonu: 8 referansta alan rename + Bronto/Carrefour solutions=["epgo"], lead normalize (0 kayıt vardı)
 - SEO: /epgo title/OG/JSON-LD/canonical, sitemap.xml ve llms.txt güncellendi
+
+## Güncellemeler (14 Eylül 2026 — tur 11): Büyük UI sadeleştirme revizyonları
+- Ana sayfa hero: 4 ayrı karmaşık sahne yerine TEK birleşik sistem sahnesi (yeni `HeroSystem.jsx`) — sabit merkez hub (epersonel logosu + "Tek Sistem · Canlı" pulse), 5 sabit slotta modül kartları; tab değişiminde sahne remount olmaz, modüller yerinde crossfade olur (EP: Ürün/Stok/Pazaryeri/Fiyat/Barkod, EPapp: Pazaryeri/Personel App/Web & Mobil/Admin Panel, EPfood: Menü/Opsiyon/Sipariş/Ürün Görseli/Restoran, EPgo: Rota/Kurye/Teslimat/Müşteri/Kapsama)
+- Orta bölüm: eski "ÜRÜNÜ GÖRÜN" DashboardMock showcase kaldırıldı → yeni `StepsShowcase.jsx` "4 adımda işletmenizi e-ticarete taşıyın." (01 Entegre et → 02 Sipariş al → 03 Hazırla → 04 Teslim et; 5.2sn otomatik rotasyon + manuel seçim 16sn pause; her adımda mini sistem mockup'ı; akış metni şeridi)
+- Metrikler güncellendi: 100K+ Yönetilen Ürün, 70+ Firma Epersonel'de, 150+ Şube/Panel, 15K+ Yönetilen Sipariş
+- Sosyal ikonlar: yeni özel SVG set (`SocialIcons.jsx`, yumuşak köşeli stroke ikonlar) — footer + iletişim sayfasında; hover: lift + ink bg
+- WhatsApp iletişimden tamamen kaldırıldı (kart + CONTACT.whatsapp alanı); iletişimde Telefon/E-posta/Instagram/LinkedIn kartları. Admin lead aksiyonundaki WhatsApp butonu bilinçli duruyor
+- EP pricing seçili state: çift katmanlı yeşil glow + üst blur halo + -translate-y-2 + koyu badge (yeşil pulse noktalı); pasif kartlara hover lift
+- EPapp hero: yeni `EpappFlow.jsx` — 3 eksen akışı (Pazaryerleri → EPapp Sipariş Merkezi hub (dönen sipariş ticker'ı) → Personel App + Admin Panel + Web & Mobil)
+- EPgo hero: yeni `EpgoMap.jsx` — tek sade sahne: merkez Mağaza + 3,5 km kapsama çemberi + 2 müşteri pini + moto kurye (A) + araçlı kurye (B) + "30–45 dakika hemen teslim / Frigolu teslim / Randevulu teslim" etiketleri
+- Temizlik: MapMock.jsx silindi; SystemVisual sadece ep/epfood varyantlarına indirildi; DashboardMock yalnızca EPapp alt bölümlerinde
+- LogoBand marquee zaten gereksinimleri karşılıyordu (70sn loop, hover-pause, reduced-motion) — will-change eklendi
+- Doğrulama (testing agent, iteration_3): frontend %100 — tüm yeni bileşenler, metrikler, footer büyük harf, WhatsApp yokluğu, pricing state, mobil 375px taşmasız, konsol temiz. Advisory notlar: pricing testid Türkçe slug (pricing-ep-başlangıç), metrikler scroll-into-view ile sayar (beklenen davranış)
 - Doğrulama (testing agent, iteration_2): backend 18/18 pytest, tüm sayfalarda eski marka izi yok, redirect/logo/footer/form/admin akışları tamamı geçti. Test verileri temizlendi (leads: 0, referanslar: 8 gerçek)
 - P0: Gerçek metrikler (Aktif İşletme / Şube / Sipariş)
 - P1: SEO landing sayfaları (kullanıcı kararıyla ertelendi): /pazaryeri-entegrasyonu, /trendyol-entegrasyonu, /yemeksepeti-entegrasyonu, /getir-entegrasyonu, /restoran-siparis-entegrasyonu, /kurye-hizmeti — mimari hazır (Seo + SectionHead + FeatureRow pattern)
