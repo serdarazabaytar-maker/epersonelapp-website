@@ -9,6 +9,7 @@ import { CTAButton } from "@/components/CTAButton";
 import { LogoBand } from "@/components/LogoBand";
 import { HeroSystem } from "@/components/HeroSystem";
 import { StepsShowcase } from "@/components/StepsShowcase";
+import { useCms, useCmsMerged } from "@/content/ContentContext";
 import { EcosystemFlow } from "@/components/EcosystemFlow";
 import { CaseCards } from "@/components/CaseCards";
 import { SOLUTIONS, METRICS } from "@/data/site";
@@ -44,7 +45,23 @@ const HERO_TABS = [
   },
 ];
 
+const HOME_HERO_DEFAULTS = {
+  eyebrow: "Epersonel Dijital Satış Çözümleri",
+  line1: "İşletmenize uygun",
+  line2: "dijital satış",
+  line3: "altyapısı.",
+  desc: "Pazaryerlerinden kendi sipariş kanalınıza, sipariş yönetiminden teslimata kadar işletmenizin ihtiyacına uygun teknoloji ve operasyon çözümleri.",
+  cta1Text: "Çözümleri Keşfet",
+  cta1Link: "#cozumler",
+  cta2Text: "Görüşme Planla",
+  cta2Link: "/iletisim",
+};
+
+// CTA linki "#" ile başlıyorsa sayfa içi anchor, değilse route linki
+const ctaLinkProps = (link) => (link || "").startsWith("#") ? { href: link } : { to: link || "/" };
+
 const Hero = () => {
+  const { hero } = useCmsMerged("home", { hero: HOME_HERO_DEFAULTS });
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const resumeTimer = useRef(null);
@@ -83,12 +100,12 @@ const Hero = () => {
             data-testid="hero-eyebrow"
           >
             <span className="inline-block h-2 w-2 rounded-[3px] bg-brand" aria-hidden="true" />
-            Epersonel Dijital Satış Çözümleri
+            {hero.eyebrow}
           </motion.p>
 
           <h1 className="mt-6 text-[42px] font-bold leading-[1.04] tracking-tight text-ink sm:text-6xl lg:text-7xl" data-testid="hero-title">
-            {["İşletmenize uygun", "dijital satış", "altyapısı."].map((line, i) => (
-              <span key={line} className="block overflow-hidden pb-1">
+            {[hero.line1, hero.line2, hero.line3].map((line, i) => (
+              <span key={`${line}-${i}`} className="block overflow-hidden pb-1">
                 <motion.span
                   className="block"
                   initial={reduce ? false : { y: "110%" }}
@@ -108,8 +125,7 @@ const Hero = () => {
             className="mt-6 max-w-lg text-base leading-relaxed text-mute md:text-lg"
             data-testid="hero-subtitle"
           >
-            Pazaryerlerinden kendi sipariş kanalınıza, sipariş yönetiminden teslimata kadar işletmenizin ihtiyacına
-            uygun teknoloji ve operasyon çözümleri.
+            {hero.desc}
           </motion.p>
 
           <motion.div
@@ -118,11 +134,11 @@ const Hero = () => {
             transition={{ duration: 0.7, delay: 0.7 }}
             className="mt-9 flex flex-wrap gap-3"
           >
-            <CTAButton href="#cozumler" testId="hero-cta-explore">
-              Çözümleri Keşfet
+            <CTAButton {...ctaLinkProps(hero.cta1Link)} testId="hero-cta-explore">
+              {hero.cta1Text}
             </CTAButton>
-            <CTAButton to="/iletisim" variant="ghost" testId="hero-cta-meeting">
-              Görüşme Planla
+            <CTAButton {...ctaLinkProps(hero.cta2Link)} variant="ghost" testId="hero-cta-meeting">
+              {hero.cta2Text}
             </CTAButton>
           </motion.div>
         </div>
@@ -184,7 +200,14 @@ const Hero = () => {
   );
 };
 
-const Solutions = () => (
+const Solutions = () => {
+  const cmsSol = useCms("home")?.solutions;
+  const solutions = SOLUTIONS.map((s) => {
+    const o = (cmsSol || []).find((c) => c.id === s.id) || {};
+    return { ...s, name: o.name || s.name, desc: o.desc || s.desc, cta: o.cta || s.cta, logo: o.logo || s.logo, path: o.link || s.path, visible: o.visible !== false };
+  }).filter((s) => s.visible);
+
+  return (
   <section id="cozumler" className="scroll-mt-24 py-24 md:py-32" data-testid="solutions-section">
     <div className="mx-auto max-w-7xl px-5 md:px-8">
       <SectionHead
@@ -194,7 +217,7 @@ const Solutions = () => (
         testId="solutions-heading"
       />
       <div className="mt-14 grid gap-5 md:grid-cols-2">
-        {SOLUTIONS.map((s, i) => (
+        {solutions.map((s, i) => (
           <Reveal key={s.id} delay={(i % 2) * 0.1}>
             <Link
               to={s.path}
@@ -228,7 +251,8 @@ const Solutions = () => (
       </div>
     </div>
   </section>
-);
+  );
+};
 
 const Counter = ({ to, suffix }) => {
   const ref = useRef(null);
@@ -247,22 +271,39 @@ const Counter = ({ to, suffix }) => {
   );
 };
 
-const Metrics = () => (
+// "100K+" → { to: 100, suffix: "K+" } (sayaç animasyonu için)
+const parseMetric = (v) => {
+  const m = /^(\d+)(.*)$/.exec(v || "");
+  return m ? { to: Number(m[1]), suffix: m[2] } : null;
+};
+
+const Metrics = () => {
+  const cmsMetrics = useCms("home")?.metrics;
+  const metrics = (cmsMetrics && cmsMetrics.length
+    ? cmsMetrics
+    : METRICS.map((m) => ({ value: `${m.value}${m.suffix}`, label: m.label, active: true }))
+  ).filter((m) => m.active !== false);
+
+  return (
   <section className="border-b border-line py-20 md:py-28" data-testid="metrics-section">
     <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-12 px-5 md:grid-cols-4 md:px-8">
-      {METRICS.map((m, i) => (
-        <Reveal key={m.label} delay={i * 0.08}>
-          <div data-testid={`metric-${i}`}>
-            <p className="text-5xl font-extrabold tracking-tight text-ink md:text-6xl">
-              {m.value === null ? <span className="text-line">—</span> : <Counter to={m.value} suffix={m.suffix} />}
-            </p>
-            <p className="mt-3 text-sm font-semibold text-mute">{m.label}</p>
-          </div>
-        </Reveal>
-      ))}
+      {metrics.map((m, i) => {
+        const parsed = parseMetric(m.value);
+        return (
+          <Reveal key={`${m.label}-${i}`} delay={i * 0.08}>
+            <div data-testid={`metric-${i}`}>
+              <p className="text-5xl font-extrabold tracking-tight text-ink md:text-6xl">
+                {parsed ? <Counter to={parsed.to} suffix={parsed.suffix} /> : <span>{m.value || "—"}</span>}
+              </p>
+              <p className="mt-3 text-sm font-semibold text-mute">{m.label}</p>
+            </div>
+          </Reveal>
+        );
+      })}
     </div>
   </section>
-);
+  );
+};
 
 const WHY = [
   { n: "01", title: "Tek Noktadan Yönetim", desc: "Satış, sipariş ve teslimat süreçlerini tek merkezden yönetin." },
@@ -314,7 +355,19 @@ const Cases = () => (
   </section>
 );
 
-const BigCTA = () => (
+const FINAL_CTA_DEFAULTS = {
+  eyebrow: "Nereden başlayacağınızdan emin değil misiniz?",
+  title: "İhtiyacınızı anlatın, doğru çözümü birlikte bulalım.",
+  desc: "İşletmenizin yapısını dinliyor, satış kanallarınızı ve operasyonunuzu analiz ediyor, size en uygun teknoloji + operasyon modelini birlikte belirliyoruz.",
+  cta1Text: "Görüşme Planla",
+  cta1Link: "/iletisim",
+  cta2Text: "Bize Ulaşın",
+  cta2Link: "/iletisim",
+};
+
+const BigCTA = () => {
+  const { finalCta } = useCmsMerged("home", { finalCta: FINAL_CTA_DEFAULTS });
+  return (
   <section className="py-24 md:py-36" data-testid="home-final-cta">
     <div className="mx-auto max-w-7xl px-5 md:px-8">
       <Reveal>
@@ -322,33 +375,33 @@ const BigCTA = () => (
           <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-brand/15 blur-3xl" aria-hidden="true" />
           <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
             <span className="inline-block h-2 w-2 rounded-[3px] bg-brand" aria-hidden="true" />
-            Nereden başlayacağınızdan emin değil misiniz?
+            {finalCta.eyebrow}
           </p>
           <h2 className="mt-6 max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-            İhtiyacınızı anlatın, doğru çözümü birlikte bulalım.
+            {finalCta.title}
           </h2>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-mute md:text-lg">
-            İşletmenizin yapısını dinliyor, satış kanallarınızı ve operasyonunuzu analiz ediyor, size en uygun
-            teknoloji + operasyon modelini birlikte belirliyoruz.
+            {finalCta.desc}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <CTAButton to="/iletisim" testId="home-cta-meeting">
-              Görüşme Planla
+            <CTAButton {...ctaLinkProps(finalCta.cta1Link)} testId="home-cta-meeting">
+              {finalCta.cta1Text}
             </CTAButton>
-            <CTAButton to="/iletisim" variant="dark" testId="home-cta-contact">
-              Bize Ulaşın
+            <CTAButton {...ctaLinkProps(finalCta.cta2Link)} variant="dark" testId="home-cta-contact">
+              {finalCta.cta2Text}
             </CTAButton>
           </div>
         </div>
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
 export default function HomePage() {
   return (
     <>
-      <Seo
+      <Seo page="home"
         title="Epersonel — Dijital Satış ve Operasyon Çözümleri"
         siteName="Epersonel"
         description="Pazaryerlerinden kendi sipariş kanalınıza, sipariş yönetiminden teslimata kadar işletmenizin ihtiyacına uygun teknoloji ve operasyon çözümleri."

@@ -8,6 +8,7 @@ import HomePage from "@/pages/HomePage";
 import EpPage from "@/pages/EpPage";
 import EpappPage from "@/pages/EpappPage";
 import EpgoPage from "@/pages/EpgoPage";
+import { ContentProvider } from "@/content/ContentContext";
 import EpfoodPage from "@/pages/EpfoodPage";
 import ReferanslarPage from "@/pages/ReferanslarPage";
 import HakkimizdaPage from "@/pages/HakkimizdaPage";
@@ -68,6 +69,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollManager />
+      <ContentProvider>
       <Chrome>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -86,6 +88,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Chrome>
+      </ContentProvider>
     </BrowserRouter>
   );
 }

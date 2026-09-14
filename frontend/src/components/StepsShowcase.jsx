@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Check, Barcode, Lock, Bike, Store, Home } from "lucide-react";
 import { SectionHead } from "./SectionHead";
 import { Reveal } from "./Reveal";
+import { useCmsMerged } from "@/content/ContentContext";
 
 // "4 adımda işletmenizi e-ticarete taşıyın" — tek akışın 4 adımı.
 // Otomatik döner + manuel seçim; sahne kabuğu sabit, içerik yumuşakça değişir.
@@ -182,6 +183,17 @@ const VisualDeliver = () => (
 const VISUALS = { entegrasyon: VisualIntegrate, siparis: VisualShop, hazirla: VisualOps, teslim: VisualDeliver };
 
 export const StepsShowcase = () => {
+  const cms = useCmsMerged("steps", {
+    eyebrow: "NASIL ÇALIŞIR",
+    title: "4 adımda işletmenizi e-ticarete taşıyın.",
+    desc: "Pazaryeri entegrasyonundan markanıza özel sipariş kanalına, personel operasyonundan teslimata kadar tüm süreci tek sistemde yönetin.",
+    flow: "Entegre et → Sipariş al → Hazırla → Teslim et",
+  });
+  // CMS adımları (varsa) varsayılanların üzerine index bazlı bindirilir; görsel animasyonlar sabit kalır
+  const steps = (cms.items && cms.items.length ? cms.items : STEPS)
+    .filter((s) => s.visible !== false)
+    .map((s, i) => ({ ...STEPS[i % STEPS.length], ...s, key: STEPS[i % STEPS.length].key, num: String(i + 1).padStart(2, "0") }));
+
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const resumeTimer = useRef(null);
@@ -189,9 +201,9 @@ export const StepsShowcase = () => {
 
   useEffect(() => {
     if (paused || reduce) return undefined;
-    const t = setInterval(() => setActive((a) => (a + 1) % STEPS.length), 5200);
+    const t = setInterval(() => setActive((a) => (a + 1) % steps.length), 5200);
     return () => clearInterval(t);
-  }, [paused, reduce]);
+  }, [paused, reduce, steps.length]);
 
   const select = (i) => {
     setActive(i);
@@ -200,28 +212,27 @@ export const StepsShowcase = () => {
     resumeTimer.current = setTimeout(() => setPaused(false), 16000);
   };
 
-  const step = STEPS[active];
-  const Visual = VISUALS[step.key];
+  const step = steps[Math.min(active, steps.length - 1)];
+  const Visual = VISUALS[step.key] || Object.values(VISUALS)[0];
 
   return (
     <section id="adimlar" className="scroll-mt-24 bg-mist py-24 md:py-32" data-testid="steps-section">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <SectionHead
-          eyebrow="NASIL ÇALIŞIR"
-          title="4 adımda işletmenizi e-ticarete taşıyın."
-          desc="Pazaryeri entegrasyonundan markanıza özel sipariş kanalına, personel operasyonundan teslimata kadar tüm süreci tek sistemde yönetin."
+          eyebrow={cms.eyebrow}
+          title={cms.title}
+          desc={cms.desc}
           testId="steps-heading"
         />
         <Reveal delay={0.05}>
           <p className="mt-5 text-sm font-bold tracking-wide text-ink" data-testid="steps-flow">
-            Entegre et <span className="text-mute">→</span> Sipariş al <span className="text-mute">→</span> Hazırla{" "}
-            <span className="text-mute">→</span> Teslim et
+            {cms.flow}
           </p>
         </Reveal>
 
         <Reveal delay={0.1}>
           <div className="mt-10 flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Adımlar">
-            {STEPS.map((s, i) => (
+            {steps.map((s, i) => (
               <button
                 key={s.key}
                 role="tab"

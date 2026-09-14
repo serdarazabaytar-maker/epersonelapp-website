@@ -9,6 +9,7 @@ import { EpappFlow } from "@/components/EpappFlow";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
 import { LOGOS } from "@/data/site";
+import { useCms, useCmsMerged, ctaLinkProps } from "@/content/ContentContext";
 
 const Chips = ({ items, dark = false }) => (
   <div className="mt-6 flex flex-wrap gap-2">
@@ -38,7 +39,9 @@ const Bullets = ({ items }) => (
   </ul>
 );
 
-const FeatureRow = ({ num, title, desc, bullets, chips, children, reverse = false, testId }) => (
+const FeatureRow = ({ num, title, desc, bullets, chips, children, reverse = false, testId, hidden = false }) => {
+  if (hidden) return null;
+  return (
   <Reveal>
     <div className="grid items-center gap-12 py-14 md:py-20 lg:grid-cols-2 lg:gap-20" data-testid={testId}>
       <div className={`min-w-0 ${reverse ? "lg:order-2" : ""}`}>
@@ -51,31 +54,44 @@ const FeatureRow = ({ num, title, desc, bullets, chips, children, reverse = fals
       <div className={`min-w-0 ${reverse ? "lg:order-1" : ""}`}>{children}</div>
     </div>
   </Reveal>
-);
+  );
+};
 
-const Hero = () => (
+const EPAPP_HERO_DEFAULTS = {
+  eyebrow: "Çok Şubeli İşletmeler",
+  title1: "Tüm dijital satış kanallarınız.",
+  title2: "Tek altyapı.",
+  desc: "Pazaryeri entegrasyonları, personel sipariş uygulaması, merkezi yönetim paneli ve markanıza özel mobil & web sipariş sistemi.",
+  cta1Text: "Görüşme Planla",
+  cta1Link: "/iletisim",
+  cta2Text: "Teklif Talep Et",
+  cta2Link: "#teklif",
+};
+
+const Hero = () => {
+  const { hero } = useCmsMerged("page_epapp", { hero: EPAPP_HERO_DEFAULTS });
+  return (
   <section className="relative overflow-hidden bg-mist pb-20 pt-36 md:pt-44" data-testid="epapp-hero">
     <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2">
       <Reveal>
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
           <img src={LOGOS.epapp} alt="EPapp logosu" className="h-5 w-auto object-contain" />
-          Çok Şubeli İşletmeler
+          {hero.eyebrow}
         </p>
         <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="epapp-hero-title">
-          Tüm dijital satış kanallarınız.
+          {hero.title1}
           <br />
-          <span className="text-mute">Tek altyapı.</span>
+          <span className="text-mute">{hero.title2}</span>
         </h1>
         <p className="mt-6 max-w-xl text-base leading-relaxed text-mute md:text-lg">
-          Pazaryeri entegrasyonları, personel sipariş uygulaması, merkezi yönetim paneli ve markanıza özel mobil & web
-          sipariş sistemi.
+          {hero.desc}
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
-          <CTAButton to="/iletisim" testId="epapp-hero-meeting">
-            Görüşme Planla
+          <CTAButton {...ctaLinkProps(hero.cta1Link)} testId="epapp-hero-meeting">
+            {hero.cta1Text}
           </CTAButton>
-          <CTAButton href="#teklif" variant="dark" testId="epapp-hero-quote">
-            Teklif Talep Et
+          <CTAButton {...ctaLinkProps(hero.cta2Link)} variant="dark" testId="epapp-hero-quote">
+            {hero.cta2Text}
           </CTAButton>
         </div>
       </Reveal>
@@ -84,9 +100,14 @@ const Hero = () => (
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
-const BrandChannel = () => (
+const BrandChannel = () => {
+  const cmsAreas = useCms("page_epapp")?.areas || [];
+  const area = cmsAreas.find((a) => a.key === "marka") || {};
+  if (area.visible === false) return null;
+  return (
   <section className="grain coal-grid relative overflow-hidden bg-coal py-24 text-white md:py-32" data-testid="epapp-brand-channel">
     <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2 lg:gap-20">
       <Reveal>
@@ -94,14 +115,18 @@ const BrandChannel = () => (
           <span className="inline-block h-2 w-2 rounded-[3px] bg-brand" aria-hidden="true" />
           Markaya Özel Mobil & Web
         </p>
-        <h2 className="mt-6 text-4xl font-bold leading-[1.06] tracking-tight sm:text-5xl">
-          Pazaryerlerinde satış yapın.
-          <br />
-          <span className="text-white/50">Kendi sipariş kanalınızı da büyütün.</span>
-        </h2>
+        {area.title ? (
+          <h2 className="mt-6 text-4xl font-bold leading-[1.06] tracking-tight sm:text-5xl">{area.title}</h2>
+        ) : (
+          <h2 className="mt-6 text-4xl font-bold leading-[1.06] tracking-tight sm:text-5xl">
+            Pazaryerlerinde satış yapın.
+            <br />
+            <span className="text-white/50">Kendi sipariş kanalınızı da büyütün.</span>
+          </h2>
+        )}
         <p className="mt-6 max-w-lg text-base leading-relaxed text-white/60 md:text-lg">
-          Markanıza özel iOS ve Android uygulaması ile web sipariş kanalını kuruyoruz. Tüm siparişler EPapp merkezi
-          yönetimine akar; müşteri verisi sizde kalır.
+          {area.desc ||
+            "Markanıza özel iOS ve Android uygulaması ile web sipariş kanalını kuruyoruz. Tüm siparişler EPapp merkezi yönetimine akar; müşteri verisi sizde kalır."}
         </p>
         <Chips
           dark
@@ -129,7 +154,7 @@ const BrandChannel = () => (
       <Reveal delay={0.15}>
         <div className="flex justify-center" data-testid="epapp-brand-visual">
           <img
-            src="/assets/epapp-brand-channel.png"
+            src={area.image || "/assets/epapp-brand-channel.png"}
             alt="Markaya özel sipariş kanalları — web sipariş sitesi, mobil ana sayfa, mobil ürün listeleme ve mobil ödeme ekranları"
             className="h-auto w-full object-contain lg:scale-[1.2]"
             loading="lazy"
@@ -139,15 +164,20 @@ const BrandChannel = () => (
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
-const Features = () => (
+const Features = () => {
+  const cmsAreas = useCms("page_epapp")?.areas || [];
+  const ao = (k) => cmsAreas.find((a) => a.key === k) || {};
+  return (
   <section className="py-12 md:py-16" data-testid="epapp-features">
     <div className="mx-auto max-w-7xl divide-y divide-line px-5 md:px-8">
       <FeatureRow
         num="01"
-        title="Pazaryeri Entegrasyonları"
-        desc="Desteklenen tüm pazaryerleri tek altyapıya bağlanır; sipariş, ürün ve stok akışı merkezileşir."
+        title={ao("entegrasyon").title || "Pazaryeri Entegrasyonları"}
+        desc={ao("entegrasyon").desc || "Desteklenen tüm pazaryerleri tek altyapıya bağlanır; sipariş, ürün ve stok akışı merkezileşir."}
+        hidden={ao("entegrasyon").visible === false}
         chips={["Trendyol", "Yemeksepeti", "Getir", "Pazarama", "ve desteklenen diğer kanallar"]}
         testId="epapp-feature-integrations"
       >
@@ -242,14 +272,15 @@ const Features = () => (
 
       <FeatureRow
         num="05"
-        title="Personel Uygulaması"
-        desc="Personeliniz 5 panel değil, tek uygulama kullansın. Trendyol, Yemeksepeti, Getir ve kendi uygulamanızdan gelen siparişler tek ekranda."
+        title={ao("personel").title || "Personel Uygulaması"}
+        desc={ao("personel").desc || "Personeliniz 5 panel değil, tek uygulama kullansın. Trendyol, Yemeksepeti, Getir ve kendi uygulamanızdan gelen siparişler tek ekranda."}
+        hidden={ao("personel").visible === false}
         chips={["Sipariş hazırlama", "Sipariş içeriği", "Personel performansı", "Fiş işlemleri", "Tek ekran"]}
         testId="epapp-feature-personel"
       >
         <div className="flex justify-center" data-testid="epapp-personel-visual">
           <img
-            src="/assets/eorder-personel.png"
+            src={ao("personel").image || "/assets/eorder-personel.png"}
             alt="eOrder personel uygulaması — sipariş listesi, ana menü ve hızlı menü ekranları"
             className="h-auto w-full max-w-[455px] object-contain"
             loading="lazy"
@@ -260,14 +291,15 @@ const Features = () => (
 
       <FeatureRow
         num="06"
-        title="Admin Panel"
-        desc="Sipariş, ciro, personel, geciken sipariş, ürün ve mağaza yönetimi. Tüm raporlar tek panelde."
+        title={ao("admin").title || "Admin Panel"}
+        desc={ao("admin").desc || "Sipariş, ciro, personel, geciken sipariş, ürün ve mağaza yönetimi. Tüm raporlar tek panelde."}
+        hidden={ao("admin").visible === false}
         reverse
         testId="epapp-feature-admin"
       >
         <div className="flex justify-center" data-testid="epapp-admin-visual">
           <img
-            src="/assets/eorder-admin.png"
+            src={ao("admin").image || "/assets/eorder-admin.png"}
             alt="eOrder admin paneli — sipariş, ürün, stok ve kullanıcı yönetim ekranları"
             className="h-auto w-full max-w-[465px] object-contain"
             loading="lazy"
@@ -278,13 +310,14 @@ const Features = () => (
 
       <FeatureRow
         num="07"
-        title="Bir şubeden yüzlerce şubeye."
-        desc="Çoklu şube yapısı merkezi yönetim ekranından izlenir; her şubenin performansı anlık takip edilir."
+        title={ao("subeler").title || "Bir şubeden yüzlerce şubeye."}
+        desc={ao("subeler").desc || "Çoklu şube yapısı merkezi yönetim ekranından izlenir; her şubenin performansı anlık takip edilir."}
+        hidden={ao("subeler").visible === false}
         testId="epapp-feature-branches"
       >
         <div className="flex justify-center" data-testid="epapp-branches-visual">
           <img
-            src="/assets/eorder-dashboard.png"
+            src={ao("subeler").image || "/assets/eorder-dashboard.png"}
             alt="eOrder merkezi yönetim paneli — toplam sipariş, mağaza ve kullanıcı takibi ile son işlemler tablosu"
             className="h-auto w-full object-contain lg:scale-[1.12]"
             loading="lazy"
@@ -309,7 +342,8 @@ const Features = () => (
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
 const References = () => (
   <section className="py-24 md:py-32" data-testid="epapp-references">
@@ -341,7 +375,7 @@ const Quote = () => (
 export default function EpappPage() {
   return (
     <>
-      <Seo
+      <Seo page="epapp"
         title="EPapp — Çok Şubeli İşletmeler İçin Dijital Satış Altyapısı | Epersonel"
         siteName="Epersonel"
         description="Pazaryeri entegrasyonları, personel sipariş uygulaması, merkezi yönetim paneli ve markanıza özel mobil & web sipariş sistemi."

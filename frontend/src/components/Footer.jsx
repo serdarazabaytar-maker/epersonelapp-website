@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail } from "lucide-react";
 import { InstagramIcon, LinkedinIcon } from "./SocialIcons";
+import { useCmsMerged } from "@/content/ContentContext";
 import { LOGOS, SOLUTIONS, CONTACT } from "@/data/site";
 import { Reveal } from "./Reveal";
 import { CTAButton } from "./CTAButton";
@@ -22,7 +23,17 @@ const SOCIALS = [
   { icon: InstagramIcon, href: CONTACT.instagram, label: "Instagram", testId: "footer-social-instagram" },
 ];
 
-export const Footer = () => (
+export const Footer = () => {
+  const contact = useCmsMerged("contact", CONTACT);
+  const footer = useCmsMerged("footer", {
+    desc: "Dijital satış kanallarını kuran, sipariş operasyonunu yöneten ve teslimatı üstlenen teknoloji + operasyon şirketi.",
+    copyright: "© 2026 Epersonel. Tüm hakları saklıdır.",
+  });
+  const socials = [
+    { icon: LinkedinIcon, href: contact.linkedin, label: "LinkedIn", testId: "footer-social-linkedin" },
+    { icon: InstagramIcon, href: contact.instagram, label: "Instagram", testId: "footer-social-instagram" },
+  ];
+  return (
   <footer data-testid="site-footer">
     <div className="bg-coal text-white">
       <div className="mx-auto max-w-7xl px-5 py-24 md:px-8 md:py-32">
@@ -52,22 +63,22 @@ export const Footer = () => (
               <img src={LOGOS.epersonel} alt="Epersonel" className="h-7 w-auto object-contain" loading="lazy" />
             </Link>
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-mute">
-              Dijital satış kanallarını kuran, sipariş operasyonunu yöneten ve teslimatı üstlenen teknoloji + operasyon şirketi.
+              {footer.desc}
             </p>
             <div className="mt-6 space-y-2.5">
               <a
-                href={`tel:${CONTACT.phoneTel}`}
+                href={`tel:${contact.phoneTel}`}
                 data-testid="footer-phone"
                 className="flex items-center gap-2.5 text-sm font-semibold text-ink transition-colors hover:text-mute"
               >
-                <Phone className="h-4 w-4 text-mute" /> {CONTACT.phone}
+                <Phone className="h-4 w-4 text-mute" /> {contact.phone}
               </a>
               <a
-                href={`mailto:${CONTACT.email}`}
+                href={`mailto:${contact.email}`}
                 data-testid="footer-email"
                 className="flex items-center gap-2.5 text-sm font-semibold text-ink transition-colors hover:text-mute"
               >
-                <Mail className="h-4 w-4 text-mute" /> {CONTACT.email}
+                <Mail className="h-4 w-4 text-mute" /> {contact.email}
               </a>
             </div>
           </div>
@@ -107,7 +118,7 @@ export const Footer = () => (
               ))}
             </ul>
             <div className="mt-8 flex gap-2">
-              {SOCIALS.map((s) => (
+              {socials.map((s) => (
                 <a
                   key={s.label}
                   href={s.href}
@@ -124,10 +135,11 @@ export const Footer = () => (
           </nav>
         </div>
         <div className="mt-14 flex flex-col items-start justify-between gap-3 border-t border-line pt-8 text-sm text-mute md:flex-row md:items-center">
-          <p>© 2026 Epersonel. Tüm hakları saklıdır.</p>
+          <p>{footer.copyright}</p>
           <p>Teknoloji + Operasyon</p>
         </div>
       </div>
     </div>
   </footer>
-);
+  );
+};

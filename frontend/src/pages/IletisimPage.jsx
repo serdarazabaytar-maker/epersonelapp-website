@@ -3,6 +3,7 @@ import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { LeadForm } from "@/components/LeadForm";
 import { InstagramIcon, LinkedinIcon } from "@/components/SocialIcons";
+import { useCmsMerged } from "@/content/ContentContext";
 import { CONTACT } from "@/data/site";
 
 // İletişim kartları merkezi CONTACT config'inden beslenir (src/data/site.js).
@@ -34,40 +35,45 @@ const ContactCard = ({ icon: Icon, title, value, href, testId }) => {
 };
 
 export default function IletisimPage() {
+  const contact = useCmsMerged("contact", {
+    ...CONTACT,
+    title: "İşletmenizi konuşalım.",
+    desc: "Online veya yüz yüze — ihtiyacınızı anlatın, size uygun çözümü birlikte belirleyelim.",
+  });
   const cards = [
     {
       icon: Phone,
       title: "Telefon",
-      value: CONTACT.phone,
-      href: CONTACT.phoneTel ? `tel:${CONTACT.phoneTel}` : null,
+      value: contact.phone,
+      href: contact.phoneTel ? `tel:${contact.phoneTel}` : null,
       testId: "contact-card-telefon",
     },
     {
       icon: Mail,
       title: "E-posta",
-      value: CONTACT.email,
-      href: CONTACT.email ? `mailto:${CONTACT.email}` : null,
+      value: contact.email,
+      href: contact.email ? `mailto:${contact.email}` : null,
       testId: "contact-card-eposta",
     },
     {
       icon: InstagramIcon,
       title: "Instagram",
       value: "@epersonel",
-      href: CONTACT.instagram,
+      href: contact.instagram,
       testId: "contact-card-instagram",
     },
     {
       icon: LinkedinIcon,
       title: "LinkedIn",
       value: "Epersonel",
-      href: CONTACT.linkedin,
+      href: contact.linkedin,
       testId: "contact-card-linkedin",
     },
   ];
 
   return (
     <>
-      <Seo
+      <Seo page="iletisim"
         title="İletişim | Epersonel"
         siteName="Epersonel"
         description="İşletmenizi konuşalım. Online veya yüz yüze görüşme planlayın; size uygun teknoloji ve operasyon modelini birlikte oluşturalım."
@@ -81,10 +87,10 @@ export default function IletisimPage() {
                 İletişim
               </p>
               <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="contact-title">
-                İşletmenizi konuşalım.
+                {contact.title}
               </h1>
               <p className="mt-6 max-w-md text-base leading-relaxed text-mute md:text-lg">
-                Online veya yüz yüze — ihtiyacınızı anlatın, size uygun çözümü birlikte belirleyelim.
+                {contact.desc}
               </p>
             </Reveal>
             <div className="mt-12 space-y-3">
@@ -100,6 +106,8 @@ export default function IletisimPage() {
               formType="iletisim"
               buttonLabel="Görüşme Talep Et"
               showMeetingType
+              title={contact.formTitle}
+              description={contact.formDesc}
               testId="contact-lead-form"
             />
           </Reveal>

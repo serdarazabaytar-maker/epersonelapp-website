@@ -896,6 +896,11 @@ async def seed_references():
 
 app.include_router(api_router)
 
+# --- CMS (site içerik yönetimi) modülü ---
+import content_api
+content_api.init(db=db, auth_dep=get_current_user, put_object=put_object, get_object=get_object)
+app.include_router(content_api.router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -918,6 +923,7 @@ async def startup():
     await seed_admin()
     await seed_team()
     await seed_references()
+    await content_api.seed_content()
     if EMERGENT_KEY:
         try:
             init_storage()

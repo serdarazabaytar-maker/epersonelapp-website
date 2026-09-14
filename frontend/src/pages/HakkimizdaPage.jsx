@@ -3,6 +3,7 @@ import Seo from "@/components/Seo";
 import { Reveal } from "@/components/Reveal";
 import { SectionHead } from "@/components/SectionHead";
 import { CTAButton } from "@/components/CTAButton";
+import { useCmsMerged } from "@/content/ContentContext";
 
 const MODEL = [
   { n: "01", title: "Analiz ve Planlama", desc: "İşletmenizin yapısını, kanallarını ve hedeflerini analiz eder; size uygun modeli birlikte planlarız." },
@@ -28,9 +29,21 @@ const FOCUS = [
 
 export default function HakkimizdaPage() {
   const reduce = useReducedMotion();
+  const about = useCmsMerged("about", {
+    line1: "Teknoloji kuruyoruz.",
+    line2: "Operasyonu birlikte yürütüyoruz.",
+    p1: "Epersonel; işletmelerin dijital satış kanallarını kuran, birbirine bağlayan, sipariş operasyonlarını yöneten ve gerektiğinde teslimatı da üstlenen bir teknoloji + operasyon şirketidir.",
+    p2: "Perakende, restoran ve teslimat gibi birbirinden farklı ihtiyaçlara aynı sistem disipliniyle çözüm üretiriz: pazaryeri entegrasyonları, stok ve fiyat akışları, personel ve yönetim uygulamaları, teslimat koordinasyonu.",
+    p3: "Tek seferlik yazılım teslim edip çekilen bir tedarikçi değil; operasyonun içinde kalan bir çözüm ortağıyız. Sistem kurulduktan sonra da izler, iyileştirir ve işletmeyle birlikte geliştiririz.",
+    ctaTitle: "Müşterimiz olmanıza gerek yok, tanışalım.",
+    ctaDesc: "Bir satış görüşmesi değil; işletmenizi dinlediğimiz, ihtiyacınızı birlikte netleştirdiğimiz samimi bir tanışma.",
+    ctaText: "Tanışalım",
+    ctaLink: "/iletisim",
+  });
+  const model = about.model && about.model.length ? about.model : MODEL;
   return (
     <>
-      <Seo
+      <Seo page="hakkimizda"
         title="Hakkımızda | Epersonel"
         siteName="Epersonel"
         description="Teknoloji kuruyoruz, operasyonu birlikte yürütüyoruz. Epersonel çalışma modeli: analiz, kurulum, eğitim ve sürekli geliştirme."
@@ -43,8 +56,8 @@ export default function HakkimizdaPage() {
             Hakkımızda
           </p>
           <h1 className="mt-6 max-w-4xl text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="about-title">
-            {["Teknoloji kuruyoruz.", "Operasyonu birlikte yürütüyoruz."].map((line, i) => (
-              <span key={line} className="block overflow-hidden pb-1">
+            {[about.line1, about.line2].map((line, i) => (
+              <span key={`${line}-${i}`} className="block overflow-hidden pb-1">
                 <motion.span
                   className="block"
                   initial={reduce ? false : { y: "110%" }}
@@ -58,19 +71,9 @@ export default function HakkimizdaPage() {
           </h1>
           <Reveal delay={0.4}>
             <div className="mt-7 max-w-2xl space-y-5 text-base leading-relaxed text-mute md:text-lg">
-              <p>
-                Epersonel; işletmelerin dijital satış kanallarını kuran, birbirine bağlayan, sipariş operasyonlarını
-                yöneten ve gerektiğinde teslimatı da üstlenen bir teknoloji + operasyon şirketidir.
-              </p>
-              <p>
-                Perakende, restoran ve teslimat gibi birbirinden farklı ihtiyaçlara aynı sistem disipliniyle çözüm
-                üretiriz: pazaryeri entegrasyonları, stok ve fiyat akışları, personel ve yönetim uygulamaları, teslimat
-                koordinasyonu.
-              </p>
-              <p>
-                Tek seferlik yazılım teslim edip çekilen bir tedarikçi değil; operasyonun içinde kalan bir çözüm
-                ortağıyız. Sistem kurulduktan sonra da izler, iyileştirir ve işletmeyle birlikte geliştiririz.
-              </p>
+              <p>{about.p1}</p>
+              <p>{about.p2}</p>
+              <p>{about.p3}</p>
             </div>
           </Reveal>
         </div>
@@ -97,7 +100,7 @@ export default function HakkimizdaPage() {
         <div className="mx-auto max-w-7xl px-5 md:px-8">
           <SectionHead eyebrow="ÇALIŞMA MODELİ" title="Nasıl çalışıyoruz?" testId="about-model-heading" />
           <div className="mt-16 grid gap-x-10 gap-y-14 md:grid-cols-2">
-            {MODEL.map((m, i) => (
+            {model.map((m, i) => (
               <Reveal key={m.n} delay={(i % 2) * 0.1}>
                 <div className="border-t-2 border-ink pt-8" data-testid={`about-step-${i}`}>
                   <span className="text-6xl font-extrabold tracking-tight text-transparent md:text-7xl" style={{ WebkitTextStroke: "1.5px #101110" }}>
@@ -118,15 +121,14 @@ export default function HakkimizdaPage() {
             <div className="flex flex-col items-start justify-between gap-8 rounded-[2rem] border border-line bg-white p-10 md:flex-row md:items-center md:p-14">
               <div>
                 <h2 className="max-w-xl text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl">
-                  Müşterimiz olmanıza gerek yok, tanışalım.
+                  {about.ctaTitle}
                 </h2>
                 <p className="mt-4 max-w-lg text-base leading-relaxed text-mute">
-                  Bir satış görüşmesi değil; işletmenizi dinlediğimiz, ihtiyacınızı birlikte netleştirdiğimiz samimi bir
-                  tanışma.
+                  {about.ctaDesc}
                 </p>
               </div>
-              <CTAButton to="/iletisim" testId="about-cta-button">
-                Tanışalım
+              <CTAButton to={about.ctaLink || "/iletisim"} testId="about-cta-button">
+                {about.ctaText}
               </CTAButton>
             </div>
           </Reveal>

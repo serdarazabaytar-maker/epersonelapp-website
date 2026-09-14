@@ -60,7 +60,7 @@ export default function ReferanslarPage() {
 
   return (
     <>
-      <Seo
+      <Seo page="referanslar"
         title="Referanslar | Epersonel"
         siteName="Epersonel"
         description="EP, EPapp, EPfood ve EPgo çözümlerine güvenen işletmeler."

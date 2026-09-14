@@ -20,7 +20,9 @@ const Chips = ({ items }) => (
   </div>
 );
 
-const FeatureRow = ({ num, title, desc, chips, children, reverse = false, testId }) => (
+const FeatureRow = ({ num, title, desc, chips, children, reverse = false, testId, hidden = false }) => {
+  if (hidden) return null;
+  return (
   <Reveal>
     <div className="grid items-center gap-12 py-14 md:py-20 lg:grid-cols-2 lg:gap-20" data-testid={testId}>
       <div className={`min-w-0 ${reverse ? "lg:order-2" : ""}`}>
@@ -32,7 +34,8 @@ const FeatureRow = ({ num, title, desc, chips, children, reverse = false, testId
       <div className={`min-w-0 ${reverse ? "lg:order-1" : ""}`}>{children}</div>
     </div>
   </Reveal>
-);
+  );
+};
 
 // Öncesi / Sonrası — gerçek ürün fotoğrafları geldiğinde görseller değiştirilecek.
 const BeforeAfter = () => {
@@ -93,27 +96,48 @@ const BeforeAfter = () => {
   );
 };
 
-const Hero = () => (
+import { useCms, useCmsMerged, ctaLinkProps } from "@/content/ContentContext";
+
+const EPFOOD_HERO_DEFAULTS = {
+  eyebrow: "Restoran & Yeme-İçme",
+  title1: "Restoranınızı dijital siparişe hazırlayın.",
+  title2: "",
+  desc: "Panel kurulumu, menü yapısı, ürün seçenekleri, görseller, sipariş yönetimi ve teslimat çözümleri.",
+  cta1Text: "Restoranınız İçin Teklif Al",
+  cta1Link: "#teklif",
+  cta2Text: "Görüşme Planla",
+  cta2Link: "/iletisim",
+};
+
+const Hero = () => {
+  const { hero } = useCmsMerged("page_epfood", { hero: EPFOOD_HERO_DEFAULTS });
+  return (
   <section className="relative overflow-hidden pb-20 pt-36 md:pt-44" data-testid="epfood-hero">
     <div className="pointer-events-none absolute -right-40 -top-40 h-[420px] w-[420px] rounded-full bg-food/10 blur-3xl" aria-hidden="true" />
     <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2">
       <Reveal>
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
           <img src={LOGOS.epfood} alt="EPfood logosu" className="h-5 w-auto object-contain" />
-          Restoran & Yeme-İçme
+          {hero.eyebrow}
         </p>
         <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="epfood-hero-title">
-          Restoranınızı dijital siparişe hazırlayın.
+          {hero.title1}
+          {hero.title2 ? (
+            <>
+              <br />
+              <span className="text-mute">{hero.title2}</span>
+            </>
+          ) : null}
         </h1>
         <p className="mt-6 max-w-lg text-base leading-relaxed text-mute md:text-lg">
-          Panel kurulumu, menü yapısı, ürün seçenekleri, görseller, sipariş yönetimi ve teslimat çözümleri.
+          {hero.desc}
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
-          <CTAButton href="#teklif" testId="epfood-hero-quote">
-            Restoranınız İçin Teklif Al
+          <CTAButton {...ctaLinkProps(hero.cta1Link)} testId="epfood-hero-quote">
+            {hero.cta1Text}
           </CTAButton>
-          <CTAButton to="/iletisim" variant="ghost" testId="epfood-hero-meeting">
-            Görüşme Planla
+          <CTAButton {...ctaLinkProps(hero.cta2Link)} variant="ghost" testId="epfood-hero-meeting">
+            {hero.cta2Text}
           </CTAButton>
         </div>
       </Reveal>
@@ -122,15 +146,20 @@ const Hero = () => (
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
-const Features = () => (
+const Features = () => {
+  const cmsAreas = useCms("page_epfood")?.areas || [];
+  const ao = (k) => cmsAreas.find((a) => a.key === k) || {};
+  return (
   <section className="py-12 md:py-16" data-testid="epfood-features">
     <div className="mx-auto max-w-7xl divide-y divide-line px-5 md:px-8">
       <FeatureRow
         num="01"
-        title="Panel Kurulumu"
-        desc="Restoranınızı desteklenen yemek platformlarında satışa hazır hale getiriyoruz: mağaza açılışı, komisyon ve operasyon ayarları."
+        title={ao("panel").title || "Panel Kurulumu"}
+        desc={ao("panel").desc || "Restoranınızı desteklenen yemek platformlarında satışa hazır hale getiriyoruz: mağaza açılışı, komisyon ve operasyon ayarları."}
+        hidden={ao("panel").visible === false}
         chips={["Trendyol Yemek", "Yemeksepeti", "GetirYemek", "ve diğer desteklenen platformlar"]}
         testId="epfood-feature-panel"
       >
@@ -156,8 +185,9 @@ const Features = () => (
 
       <FeatureRow
         num="02"
-        title="Menü Çalışması"
-        desc="Kategoriler, ürünler, menüler ve combo yapıları satışa dönük şekilde kurgulanır."
+        title={ao("menu").title || "Menü Çalışması"}
+        desc={ao("menu").desc || "Kategoriler, ürünler, menüler ve combo yapıları satışa dönük şekilde kurgulanır."}
+        hidden={ao("menu").visible === false}
         chips={["Kategoriler", "Ürünler", "Menüler", "Combo", "Fiyatlar"]}
         reverse
         testId="epfood-feature-menu"
@@ -169,8 +199,9 @@ const Features = () => (
 
       <FeatureRow
         num="03"
-        title="Opsiyon & Ekstralar"
-        desc="Her ürün için pişirme tercihi, ekstra malzeme ve ücretli eklentiler tanımlanır; müşteri seçimi siparişe net yansır."
+        title={ao("opsiyon").title || "Opsiyon & Ekstralar"}
+        desc={ao("opsiyon").desc || "Her ürün için pişirme tercihi, ekstra malzeme ve ücretli eklentiler tanımlanır; müşteri seçimi siparişe net yansır."}
+        hidden={ao("opsiyon").visible === false}
         testId="epfood-feature-options"
       >
         <div className="rounded-3xl border border-line bg-white p-8 shadow-[0_24px_60px_rgba(16,17,16,0.08)]">
@@ -212,8 +243,9 @@ const Features = () => (
 
       <FeatureRow
         num="04"
-        title="Ürün Görselleri"
-        desc="Ürünlerinizi yalnızca yüklemiyoruz. Satışa hazırlıyoruz."
+        title={ao("gorsel").title || "Ürün Görselleri"}
+        desc={ao("gorsel").desc || "Ürünlerinizi yalnızca yüklemiyoruz. Satışa hazırlıyoruz."}
+        hidden={ao("gorsel").visible === false}
         reverse
         testId="epfood-feature-visuals"
       >
@@ -222,8 +254,9 @@ const Features = () => (
 
       <FeatureRow
         num="05"
-        title="4 tablet yerine tek ekran."
-        desc="Trendyol Yemek, Yemeksepeti, GetirYemek ve diğer desteklenen platformlardan gelen tüm siparişler tek EPfood sipariş ekranında birleşir."
+        title={ao("tekekran").title || "4 tablet yerine tek ekran."}
+        desc={ao("tekekran").desc || "Trendyol Yemek, Yemeksepeti, GetirYemek ve diğer desteklenen platformlardan gelen tüm siparişler tek EPfood sipariş ekranında birleşir."}
+        hidden={ao("tekekran").visible === false}
         testId="epfood-feature-orders"
       >
         <DashboardMock tab="siparisler" compact />
@@ -258,7 +291,8 @@ const Features = () => (
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
 const References = () => (
   <section className="bg-mist py-24 md:py-32" data-testid="epfood-references">
@@ -294,7 +328,7 @@ const Quote = () => (
 export default function EpfoodPage() {
   return (
     <div data-accent="food">
-      <Seo
+      <Seo page="epfood"
         title="EPfood — Restoranlar İçin Dijital Satış | Epersonel"
         siteName="Epersonel"
         description="Panel kurulumu, menü yapısı, ürün seçenekleri, görseller, sipariş yönetimi ve teslimat çözümleri."

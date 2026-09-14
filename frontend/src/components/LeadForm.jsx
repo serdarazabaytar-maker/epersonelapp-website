@@ -64,6 +64,8 @@ export const LeadForm = ({
   showMeetingType = false,
   showDelivery = false,
   testId = "lead-form",
+  title = "",
+  description = "",
 }) => {
   const [submitted, setSubmitted] = useState(false);
   const location = useLocation();
@@ -129,6 +131,12 @@ export const LeadForm = ({
       data-testid={testId}
       noValidate
     >
+      {(title || description) && (
+        <div className="mb-6" data-testid={`${testId}-header`}>
+          {title && <h3 className="text-xl font-bold tracking-tight text-ink md:text-2xl">{title}</h3>}
+          {description && <p className="mt-1.5 text-sm leading-relaxed text-mute">{description}</p>}
+        </div>
+      )}
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="İşletme Adı" error={errors.businessName?.message}>
           <input

@@ -8,6 +8,18 @@ import { EpgoMap } from "@/components/EpgoMap";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
 import { LOGOS } from "@/data/site";
+import { useCms, useCmsMerged, ctaLinkProps } from "@/content/ContentContext";
+
+const EPGO_HERO_DEFAULTS = {
+  eyebrow: "Teslimat Operasyonu",
+  title1: "Sipariş hazır.",
+  title2: "Gerisini EPgo'ya bırakın.",
+  desc: "Hemen teslim, randevulu teslim, moto kurye ve işletmeye özel frigolu panelvan çözümleri.",
+  cta1Text: "Teslimat Teklifi Al",
+  cta1Link: "#teklif",
+  cta2Text: "Operasyonu Görüşelim",
+  cta2Link: "/iletisim",
+};
 
 const SERVICES = [
   {
@@ -27,29 +39,31 @@ const SERVICES = [
   },
 ];
 
-const Hero = () => (
+const Hero = () => {
+  const { hero } = useCmsMerged("page_epgo", { hero: EPGO_HERO_DEFAULTS });
+  return (
   <section className="relative overflow-hidden pb-20 pt-36 md:pt-44" data-testid="epgo-hero">
     <div className="pointer-events-none absolute -right-40 -top-40 h-[420px] w-[420px] rounded-full bg-brand/10 blur-3xl" aria-hidden="true" />
     <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2">
       <Reveal className="max-w-3xl">
         <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
           <img src={LOGOS.epgo} alt="EPgo logosu" className="h-5 w-auto object-contain" />
-          Teslimat Operasyonu
+          {hero.eyebrow}
         </p>
         <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="epgo-hero-title">
-          Sipariş hazır.
+          {hero.title1}
           <br />
-          <span className="text-mute">Gerisini EPgo'ya bırakın.</span>
+          <span className="text-mute">{hero.title2}</span>
         </h1>
         <p className="mt-6 max-w-xl text-base leading-relaxed text-mute md:text-lg">
-          Hemen teslim, randevulu teslim, moto kurye ve işletmeye özel frigolu panelvan çözümleri.
+          {hero.desc}
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
-          <CTAButton href="#teklif" testId="epgo-hero-quote">
-            Teslimat Teklifi Al
+          <CTAButton {...ctaLinkProps(hero.cta1Link)} testId="epgo-hero-quote">
+            {hero.cta1Text}
           </CTAButton>
-          <CTAButton to="/iletisim" variant="ghost" testId="epgo-hero-meeting">
-            Operasyonu Görüşelim
+          <CTAButton {...ctaLinkProps(hero.cta2Link)} variant="ghost" testId="epgo-hero-meeting">
+            {hero.cta2Text}
           </CTAButton>
         </div>
       </Reveal>
@@ -58,9 +72,20 @@ const Hero = () => (
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
-const Services = () => (
+const EPGO_AREA_KEYS = ["hemen", "randevulu", "moto"];
+
+const Services = () => {
+  const cmsAreas = useCms("page_epgo")?.areas || [];
+  const ao = (k) => cmsAreas.find((a) => a.key === k) || {};
+  const services = SERVICES.map((s, i) => {
+    const o = ao(EPGO_AREA_KEYS[i]);
+    return { ...s, title: o.title || s.title, desc: o.desc || s.desc, visible: o.visible !== false };
+  }).filter((s) => s.visible);
+  const frigolu = ao("frigolu");
+  return (
   <section className="py-24 md:py-32" data-testid="epgo-services">
     <div className="mx-auto max-w-7xl px-5 md:px-8">
       <SectionHead
@@ -69,7 +94,7 @@ const Services = () => (
         testId="epgo-services-heading"
       />
       <div className="mt-14 grid gap-5 md:grid-cols-3">
-        {SERVICES.map((s, i) => (
+        {services.map((s, i) => (
           <Reveal key={s.title} delay={i * 0.08} className="h-full">
             <article className="group h-full rounded-[2rem] border border-line bg-white p-8 transition-all duration-300 hover:-translate-y-1.5 hover:border-ink hover:shadow-[0_24px_70px_rgba(16,17,16,0.1)]">
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink text-white transition-colors duration-300 group-hover:bg-brand group-hover:text-ink">
@@ -82,6 +107,7 @@ const Services = () => (
         ))}
       </div>
 
+      {frigolu.visible !== false && (
       <Reveal delay={0.1}>
         <article
           className="mt-5 overflow-hidden rounded-[2rem] bg-ink p-10 text-white md:p-14"
@@ -94,28 +120,30 @@ const Services = () => (
                 Premium Hizmet
               </span>
               <h3 className="mt-6 text-3xl font-bold leading-tight tracking-tight md:text-4xl">
-                İşletmeye Özel Frigolu Panelvan
+                {frigolu.title || "İşletmeye Özel Frigolu Panelvan"}
               </h3>
               <p className="mt-4 max-w-lg text-base leading-relaxed text-white/60 md:text-lg">
-                Motorla hızlı teslim. Frigolu araçla kontrollü teslim. Soğuk zincir gerektiren ürünleriniz için size
-                özel araç ve rota planlaması.
+                {frigolu.desc ||
+                  "Motorla hızlı teslim. Frigolu araçla kontrollü teslim. Soğuk zincir gerektiren ürünleriniz için size özel araç ve rota planlaması."}
               </p>
               <div className="mt-8">
                 <CTAButton href="#teklif" testId="epgo-frigolu-cta">
-                  Teslimat Teklifi Al
+                  {frigolu.cta || "Teslimat Teklifi Al"}
                 </CTAButton>
               </div>
             </div>
-            <CourierVisual />
+            <CourierVisual src={frigolu.image} />
           </div>
         </article>
       </Reveal>
+      )}
     </div>
   </section>
-);
+  );
+};
 
 // Frigolu bandının ana görseli — EPgo kuryesi (transparan cutout, koyu zeminde doğrudan oturur).
-const CourierVisual = () => {
+const CourierVisual = ({ src }) => {
   const reduce = useReducedMotion();
   return (
     <div className="relative flex items-end justify-center lg:self-end" data-testid="epgo-frigolu-visual">
@@ -130,7 +158,7 @@ const CourierVisual = () => {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       >
         <motion.img
-          src="/assets/epgo-kurye.png"
+          src={src || "/assets/epgo-kurye.png"}
           alt="EPgo teslimat ekibi — EPgo logolu frigolu panelvan, kasklı kurye, beyaz scooter ve market poşeti"
           className="relative z-10 h-auto w-full max-w-[540px] object-contain"
           animate={reduce ? undefined : { y: [0, -8, 0] }}
@@ -213,7 +241,7 @@ const Quote = () => (
 export default function EpgoPage() {
   return (
     <>
-      <Seo
+      <Seo page="epgo"
         title="EPgo — Teslimat ve Kurye Operasyonu | Epersonel"
         siteName="Epersonel"
         description="30–45 dakika hemen teslim, randevulu teslim, moto kurye ve işletmeye özel frigolu panelvan çözümleri."

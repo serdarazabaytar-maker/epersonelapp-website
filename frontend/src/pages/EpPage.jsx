@@ -10,6 +10,7 @@ import { FAQ } from "@/components/FAQ";
 import { CaseCards } from "@/components/CaseCards";
 import { LeadForm } from "@/components/LeadForm";
 import { EP_PRICING, EP_FAQ, LOGOS } from "@/data/site";
+import { useCms, useCmsMerged, ctaLinkProps } from "@/content/ContentContext";
 
 const SECTORS = [
   { label: "Market", icon: ShoppingBasket },
@@ -33,7 +34,20 @@ const FLOW = [
 
 const APP_FEATURES = ["Barkod okut", "Ürün bul", "Fiyat gir / değiştir", "Stok yönet", "Kampanya talebi ilet", "Ürün listesini görüntüle"];
 
-const Hero = () => (
+const EP_HERO_DEFAULTS = {
+  eyebrow: "Yerel İşletmeler İçin",
+  title1: "Pazaryerlerinde satışa başlayın.",
+  title2: "Operasyonu bize bırakın.",
+  desc: "İşletmenizi desteklenen pazaryerlerinde satışa açıyor, ürünlerinizi hazırlıyor, stok ve fiyat süreçlerinizi yönetiyor ve size kendi EP uygulamanızı sunuyoruz.",
+  cta1Text: "Hemen Başla",
+  cta1Link: "#basvuru",
+  cta2Text: "Görüşme Planla",
+  cta2Link: "/iletisim",
+};
+
+const Hero = () => {
+  const { hero, platforms } = useCmsMerged("page_ep", { hero: EP_HERO_DEFAULTS, platforms: PLATFORMS });
+  return (
   <section className="relative overflow-hidden pb-20 pt-36 md:pt-44" data-testid="ep-hero">
     <div className="pointer-events-none absolute -right-40 -top-40 h-[420px] w-[420px] rounded-full bg-brand/10 blur-3xl" aria-hidden="true" />
     <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 md:px-8 lg:grid-cols-2">
@@ -41,27 +55,26 @@ const Hero = () => (
         <Reveal>
           <p className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.22em] text-mute">
             <img src={LOGOS.ep} alt="EP logosu" className="h-5 w-auto object-contain" />
-            Yerel İşletmeler İçin
+            {hero.eyebrow}
           </p>
           <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-testid="ep-hero-title">
-            Pazaryerlerinde satışa başlayın.
+            {hero.title1}
             <br />
-            <span className="text-mute">Operasyonu bize bırakın.</span>
+            <span className="text-mute">{hero.title2}</span>
           </h1>
           <p className="mt-6 max-w-lg text-base leading-relaxed text-mute md:text-lg">
-            İşletmenizi desteklenen pazaryerlerinde satışa açıyor, ürünlerinizi hazırlıyor, stok ve fiyat süreçlerinizi
-            yönetiyor ve size kendi EP uygulamanızı sunuyoruz.
+            {hero.desc}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
-            <CTAButton href="#basvuru" testId="ep-hero-start">
-              Hemen Başla
+            <CTAButton {...ctaLinkProps(hero.cta1Link)} testId="ep-hero-start">
+              {hero.cta1Text}
             </CTAButton>
-            <CTAButton to="/iletisim" variant="ghost" testId="ep-hero-meeting">
-              Görüşme Planla
+            <CTAButton {...ctaLinkProps(hero.cta2Link)} variant="ghost" testId="ep-hero-meeting">
+              {hero.cta2Text}
             </CTAButton>
           </div>
           <div className="mt-10 flex flex-wrap gap-2" data-testid="ep-platforms">
-            {PLATFORMS.map((p) => (
+            {platforms.map((p) => (
               <span key={p} className="rounded-full border border-line bg-white px-4 py-2 text-[13px] font-semibold text-ink">
                 {p}
               </span>
@@ -74,12 +87,20 @@ const Hero = () => (
       </Reveal>
     </div>
   </section>
-);
+  );
+};
 
-const Sectors = () => (
+const SECTOR_ICONS = { Market: ShoppingBasket, Kasap: Beef, Manav: Apple, "Şarküteri": Sandwich, Petshop: PawPrint, "Su Bayii": Droplets };
+
+const Sectors = () => {
+  const cmsSectors = useCms("page_ep")?.sectors;
+  const sectors = cmsSectors && cmsSectors.length
+    ? cmsSectors.filter((s) => s.active !== false).map((s) => ({ label: s.name, icon: SECTOR_ICONS[s.name] || ShoppingBasket }))
+    : SECTORS;
+  return (
   <section className="border-y border-line bg-mist py-14" data-testid="ep-sectors">
     <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-3 px-5 md:px-8">
-      {SECTORS.map((s, i) => (
+      {sectors.map((s, i) => (
         <Reveal key={s.label} delay={i * 0.05}>
           <span className="flex items-center gap-2.5 rounded-full border border-line bg-white px-5 py-3 text-[15px] font-bold text-ink transition-colors hover:border-ink">
             <s.icon className="h-4 w-4 text-ink" strokeWidth={2.2} aria-hidden="true" />
@@ -89,7 +110,8 @@ const Sectors = () => (
       ))}
     </div>
   </section>
-);
+  );
+};
 
 const Flow = () => (
   <section className="py-24 md:py-32" data-testid="ep-flow">
@@ -140,8 +162,13 @@ const AppSection = () => (
 
 // İnteraktif pricing: varsayılan aktif EP Plus; hover'da aktiflik karta geçer, çıkınca Plus'a döner.
 // Aktif kart: beyaz/açık yeşil yüzey + yeşil border/glow (tam siyah yok).
+// İnteraktif pricing: varsayılan aktif = önerilen paket (CMS'ten yönetilir); hover'da aktiflik karta geçer, çıkınca önerilene döner.
 const Pricing = () => {
-  const [active, setActive] = useState("EP Plus");
+  const cmsPackages = useCms("page_ep")?.packages;
+  const packages = (cmsPackages && cmsPackages.length ? cmsPackages : EP_PRICING.map((p) => ({ ...p, active: true }))).filter((p) => p.active !== false);
+  const recommended = packages.find((p) => p.recommended)?.name || packages[0]?.name || "EP Plus";
+  const [hovered, setHovered] = useState(null);
+  const active = hovered ?? recommended;
   return (
     <section className="py-24 md:py-32" data-testid="ep-pricing">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
@@ -151,13 +178,13 @@ const Pricing = () => {
           align="center"
           testId="ep-pricing-heading"
         />
-        <div className="mt-16 grid items-stretch gap-5 lg:grid-cols-3" onMouseLeave={() => setActive("EP Plus")}>
-          {EP_PRICING.map((p, i) => {
+        <div className="mt-16 grid items-stretch gap-5 lg:grid-cols-3" onMouseLeave={() => setHovered(null)}>
+          {packages.map((p, i) => {
             const isActive = active === p.name;
             return (
               <Reveal key={p.name} delay={i * 0.08} className="h-full">
                 <article
-                  onMouseEnter={() => setActive(p.name)}
+                  onMouseEnter={() => setHovered(p.name)}
                   data-testid={`pricing-${p.name.toLowerCase().replace(/\s+/g, "-")}`}
                   className={`relative flex h-full flex-col rounded-[2rem] p-8 transition-all duration-500 md:p-10 ${
                     isActive
@@ -189,7 +216,7 @@ const Pricing = () => {
                   <h3 className="relative text-lg font-bold text-ink">{p.name}</h3>
                   <p className="relative mt-5 flex items-baseline gap-2">
                     <span className="text-5xl font-extrabold tracking-tight text-ink">₺{p.price}</span>
-                    <span className="text-xs font-semibold text-mute">+ KDV / ay</span>
+                    <span className="text-xs font-semibold text-mute">{p.kdv || "+ KDV / ay"}</span>
                   </p>
                   <ul className="relative mt-8 flex-1 space-y-3">
                     {p.features.map((f) => (
@@ -301,7 +328,7 @@ const Apply = () => (
 export default function EpPage() {
   return (
     <>
-      <Seo
+      <Seo page="ep"
         title="EP — Yerel İşletmeler İçin Pazaryeri Operasyonu | Epersonel"
         siteName="Epersonel"
         description="Market, kasap, manav, şarküteri, petshop ve su bayileri için pazaryeri mağaza açılışı, ürün yükleme, stok & fiyat yönetimi ve EP uygulaması."

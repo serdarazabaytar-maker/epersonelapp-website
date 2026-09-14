@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Loader2, Plus, Upload } from "lucide-react";
+import { ChevronDown, GripVertical, Loader2, Plus, Upload } from "lucide-react";
+import { toast } from "sonner";
 
 // Admin referans yönetimi — tek merkezi data; tüm public gösterimler (marquee, çözüm
 // kartları, /referanslar) buradan beslenir. Logo upload object storage'a gider.
@@ -230,6 +231,40 @@ export const ReferencesManager = ({ api }) => {
     setCreating(false);
   };
 
+  // --- Sürükle & bırak sıralama ---
+  const dragId = useRef(null);
+  const [savingOrder, setSavingOrder] = useState(false);
+
+  const onDropRow = async (targetId) => {
+    const from = dragId.current;
+    dragId.current = null;
+    if (!from || from === targetId) return;
+    const next = [...items];
+    const fromIdx = next.findIndex((r) => r.id === from);
+    const toIdx = next.findIndex((r) => r.id === targetId);
+    const [moved] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, moved);
+    const reOrdered = next.map((r, i) => ({ ...r, order: i + 1 }));
+    setItems(reOrdered);
+    setSavingOrder(true);
+    try {
+      await Promise.all(
+        reOrdered
+          .filter((r, i) => items[i]?.id !== r.id || items[i]?.order !== r.order)
+          .map((r) => {
+            const { id, logo_url, ...payload } = r;
+            return api.patch(`/admin/references/${id}`, payload);
+          })
+      );
+      toast.success("Sıralama kaydedildi");
+    } catch {
+      toast.error("Sıralama kaydedilemedi");
+      load();
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
   return (
     <div data-testid="references-manager">
       <div className="flex items-center justify-between">
@@ -267,14 +302,24 @@ export const ReferencesManager = ({ api }) => {
             {items.map((r) => {
               const open = openId === r.id;
               return (
-                <li key={r.id}>
-                  <button
-                    type="button"
-                    onClick={() => setOpenId(open ? null : r.id)}
-                    data-testid={`ref-row-${r.id}`}
-                    aria-expanded={open}
-                    className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-mist"
-                  >
+                <li
+                  key={r.id}
+                  draggable
+                  onDragStart={() => (dragId.current = r.id)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => onDropRow(r.id)}
+                >
+                  <div className="flex w-full items-center gap-3 px-6 py-4 text-left transition-colors hover:bg-mist">
+                    <span className="cursor-grab text-mute/60 transition-colors hover:text-ink active:cursor-grabbing" data-testid={`ref-drag-${r.id}`} title="Sürükleyerek sırala">
+                      <GripVertical className="h-4 w-4" />
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setOpenId(open ? null : r.id)}
+                      data-testid={`ref-row-${r.id}`}
+                      aria-expanded={open}
+                      className="flex flex-1 items-center gap-4 text-left"
+                    >
                     {r.logo_url ? (
                       <img
                         src={`${process.env.REACT_APP_BACKEND_URL}${r.logo_url}`}
@@ -300,7 +345,8 @@ export const ReferencesManager = ({ api }) => {
                       {r.active ? "Aktif" : "Pasif"}
                     </span>
                     <ChevronDown className={`h-4 w-4 shrink-0 text-mute transition-transform ${open ? "rotate-180" : ""}`} />
-                  </button>
+                    </button>
+                  </div>
                   <AnimatePresence initial={false}>
                     {open && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
